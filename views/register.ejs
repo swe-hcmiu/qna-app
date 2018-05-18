@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title> Register </title>
+	<link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+	<form method="post" action="/users/register">
+		<div class="form-group">
+			<label style = 'float: left;margin-right: 1px'>Username</label>
+			<input type="text" class="form-control" id = "username" name="username" placeholder="Username" style = 'float: left;margin-right: 4px'><div id = "message" style='margin:0px; height: 1em'></div> 
+		</div>
+
+		<div class="form-group" style = 'clear:left'>
+			<label>Password</label>
+			<input type="password" class="form-control" name="password" placeholder="Password">
+		</div>
+
+		<div class="form-group">
+			<label>Email</label>
+			<input type="email" class="form-control" name="email" placeholder="Email">
+		</div>
+
+		<button type="submit" class="btn btn-default">Register</button>
+	</form>
+	
+	<% if (errors) { 
+		errors.forEach(function(item) { %>
+		<p><%= item.msg %></p>
+	<% })
+	}%>
+	<% include header.ejs %>
+
+	<script
+	  src="https://code.jquery.com/jquery-3.3.1.js"
+	  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+	  crossorigin="anonymous"></script>
+	
+	<script src='/javascripts/script.js'> </script>
+	 
+</body>
+</html>
