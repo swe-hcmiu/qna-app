@@ -1,26 +1,25 @@
 var mysqlDAOFactory = require('../model/mysqlDAOFactory.js');
 var bcrypt = require('bcryptjs');
+var preparedStatements = require('./preparedStatements');
 
 class mysqlUserDAO {
 	constructor() {
 		var mysqlDAOFactory = require('../model/mysqlDAOFactory.js');
 		this.connection = mysqlDAOFactory.createConnection();
+		this.mysql = mysqlDAOFactory.getDbInstance();
 	}
 	
 	createUser(newUser,callback) {
 		// In callback function, 'this' can be undefined.So we assign another variable _this to save the reference of 'this'
 		var _this = this; 
 
-		bcrypt.genSalt(10, function(err, salt) {
-			bcrypt.hash(newUser.password, salt, function(err, hash) {
+		bcrypt.genSalt(10, (err, salt) => {
+			bcrypt.hash(newUser.UserPass, salt, function(err, hash) {
 				if (err) callback(err,null);
 
-				newUser.password = hash;
+				newUser.UserPass = hash;
 
-				var dataSQL = "INSERT INTO Users(UserName, UserPass) VALUES (" + _this.connection.escape(newUser.username) + "," + 
-				_this.connection.escape(newUser.password) +  ")";
-
-				_this.connection.query(dataSQL,function(err) {
+				_this.connection.query(_this.mysql.format(preparedStatements.insertQuery,['Users',newUser]), (err) => {
 					if (err) callback(err,null);
 					else callback(null,newUser);
 				});
@@ -28,11 +27,9 @@ class mysqlUserDAO {
 		});
 	}
 
-	getUserByUserName(username,callback) {
-		var dataSQL = "SELECT * FROM Users WHERE UserName = " + 
-		this.connection.escape(username);
-
-		this.connection.query(dataSQL,function(err,result,fields) {
+	getUserByUserName(UserName,callback) {
+		this.connection.query(this.mysql.format(preparedStatements.selectAllQuery,['Users','UserName',UserName])
+			,(err,result) => {
 			if (err) callback(err,null);
 			else {
 				console.log(result[0]);
@@ -42,16 +39,15 @@ class mysqlUserDAO {
 	} 
 
 	comparePassword(candidatePassword, hash, callback) {
-		bcrypt.compare(candidatePassword,hash,function(err,isMatch) {
+		bcrypt.compare(candidatePassword,hash,(err,isMatch) => {
 			if (err) callback(err,null);
 			else callback(null,isMatch);
 		})
 	}
 
 	getUserById(id,callback) {
-		var dataSQL = "SELECT * FROM Users WHERE UserId = "+ this.connection.escape(id);
-
-		this.connection.query(dataSQL, function(err,result,fields) {
+		this.connection.query(this.mysql.format(preparedStatements.selectAllQuery,['Users','UserId',id])
+			, (err,result) => {
 			if (err) callback(err,null);
 			else callback(null,result[0]);
 		})

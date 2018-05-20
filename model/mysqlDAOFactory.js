@@ -9,7 +9,7 @@ class mysqlDAOFactory {
 		var connection = mysql.createConnection({
 			host:'localhost',
 			user:'root',
-			password:'123456',
+			password:'',
 			database:'QASys'
 		});
 		return connection;

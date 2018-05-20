@@ -2,7 +2,7 @@
 		var x_timer;
 		$("#username").keyup(function(e) {
 			clearTimeout(x_timer);
-			var user = {username: $(this).val()};
+			var user = {UserName: $(this).val()};
 			var userString = JSON.stringify(user);
 			console.log(userString);
 			x_timer = setTimeout(function() {isAvailability(userString)},700);	

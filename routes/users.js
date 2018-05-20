@@ -15,10 +15,10 @@ router.get('/register',(req,res,next) => {
 		res.render('register', {errors: null});
 	}
 	else {
-		var username = JSON.parse(userString).username;
+		var UserName = JSON.parse(userString).UserName;
 		var userService = new UserService();
 
-		userService.checkUserName(username,(message) => {
+		userService.checkUserName(UserName,(message) => {
 			var messageString = JSON.stringify(message);
 			res.send(messageString); 
 		});
@@ -27,13 +27,11 @@ router.get('/register',(req,res,next) => {
 
 router.post('/register',(req,res,next) => {
 	var newUser = {};
-	newUser.username = req.body.username;
-	newUser.password = req.body.password;
-	newUser.email = req.body.email;
+	newUser.UserName = req.body.UserName;
+	newUser.UserPass = req.body.UserPass;
 
-	req.checkBody('username','Username is required').notEmpty();
-	req.checkBody('password', 'Password is required').notEmpty();
-	req.checkBody('email', 'Email is required').isEmail();
+	req.checkBody('UserName','Username is required').notEmpty();
+	req.checkBody('UserPass', 'Password is required').notEmpty();
 
 	var InputError = req.validationErrors();
 	if (InputError) {
@@ -60,9 +58,9 @@ router.get('/login', (req, res, next) => {
 });
 
 passport.use(new LocalStrategy(
-	function(username, password, done) {
+	function(UserName, UserPass, done) {
 		var userService = new UserService();
-		var user = {username:username,password:password};
+		var user = {UserName:UserName,UserPass:UserPass};
 		
 		userService.authenticate(user,(err,user,message) => {
 			done(err,user,message);

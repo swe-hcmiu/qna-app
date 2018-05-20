@@ -6,8 +6,8 @@ class UserService {
 		this.UserDAO = mysqlDAOFactory.getUserDAO();
 	}
 
-	checkUserName(username,callback) {
-		this.UserDAO.getUserByUserName(username,(err,user) => {
+	checkUserName(UserName,callback) {
+		this.UserDAO.getUserByUserName(UserName,(err,user) => {
 			if (!user) callback({status:'Available'});
 			else callback({status:'Unavailable'});
 		})
@@ -23,8 +23,8 @@ class UserService {
 	authenticate(user,callback) {
 		var _this = this;
 		console.log("Authenticate:",user);
-		console.log("UserName", user.username);
-		_this.UserDAO.getUserByUserName(user.username,(err,userReturn) => {
+		console.log("UserName", user.UserName);
+		_this.UserDAO.getUserByUserName(user.UserName,(err,userReturn) => {
 			if(err) {
 				throw err;
 			}
@@ -32,7 +32,7 @@ class UserService {
 			if(!userReturn){
 				return callback(null, false, {message: 'Unknown User'});
 			} else {
-				_this.UserDAO.comparePassword(user.password, userReturn.UserPass,(err,isMatch) => {
+				_this.UserDAO.comparePassword(user.UserPass, userReturn.UserPass,(err,isMatch) => {
 				
 					if(err) {
 						throw err;
