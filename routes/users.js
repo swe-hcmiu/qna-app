@@ -70,11 +70,11 @@ passport.use(new LocalStrategy(
 }));
 
 passport.serializeUser(function(user, done) {
-  done(null, user.id);
+  done(null, user.UserId);
 });
 
 passport.deserializeUser(function(id, done) {
-	var userService = new UserService();
+  var userService = new UserService();
   userService.UserDAO.getUserById(id, function(err, user) {
     done(err, user);
   });

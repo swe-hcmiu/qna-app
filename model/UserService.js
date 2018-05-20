@@ -22,25 +22,36 @@ class UserService {
 
 	authenticate(user,callback) {
 		var _this = this;
+		console.log("Authenticate:",user);
+		console.log("UserName", user.username);
 		_this.UserDAO.getUserByUserName(user.username,(err,userReturn) => {
 			if(err) {
 				throw err;
 			}
+
 			if(!userReturn){
 				return callback(null, false, {message: 'Unknown User'});
-			}
+			} else {
+				_this.UserDAO.comparePassword(user.password, userReturn.UserPass,(err,isMatch) => {
 				
-			_this.UserDAO.comparePassword(user.password,userReturn.password,(err,isMatch) => {
-				if(err) {
-					throw err;
-				}
-				if(isMatch){
-					return callback(null, userReturn,'Login successfully');
-				} else {
-					return callback(null, false, {message: 'Invalid password'});
-				}
-			})
-		})
+					if(err) {
+						throw err;
+					}
+					if(isMatch){
+						return callback(null, userReturn,'Login successfully');
+					} else {
+						return callback(null, false, {message: 'Invalid password'});
+					}
+				});
+			}		
+		});
+	}
+
+	getUserById(user, callback) {
+		this.UserDAO.createUser(newUser,(err,user) => {
+			if (err) callback(err,null);
+			else callback(null,user);
+		});
 	}
 }
 
