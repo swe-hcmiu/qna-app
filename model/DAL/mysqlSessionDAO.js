@@ -1,9 +1,9 @@
-var mysqlDAOFactory = require('../model/mysqlDAOFactory.js');
+var mysqlDAOFactory = require('./mysqlDAOFactory.js');
 var preparedStatements = require('./preparedStatements');
 
 class mysqlSessionDAO {
 	constructor() {
-		var mysqlDAOFactory = require('../model/mysqlDAOFactory.js');
+		var mysqlDAOFactory = require('./mysqlDAOFactory.js');
 		this.connection = mysqlDAOFactory.createConnection();
 		this.mysql = mysqlDAOFactory.getDbInstance();
 	}

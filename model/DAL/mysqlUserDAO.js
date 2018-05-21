@@ -1,10 +1,10 @@
-var mysqlDAOFactory = require('../model/mysqlDAOFactory.js');
+var mysqlDAOFactory = require('./mysqlDAOFactory.js');
 var bcrypt = require('bcryptjs');
 var preparedStatements = require('./preparedStatements');
 
 class mysqlUserDAO {
 	constructor() {
-		var mysqlDAOFactory = require('../model/mysqlDAOFactory.js');
+		var mysqlDAOFactory = require('./mysqlDAOFactory.js');
 		this.connection = mysqlDAOFactory.createConnection();
 		this.mysql = mysqlDAOFactory.getDbInstance();
 	}

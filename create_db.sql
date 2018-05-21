@@ -20,18 +20,19 @@ CREATE TABLE Sessions (
     UNIQUE (SessionName, SessionType)
 );
 
-CREATE TABLE Edits (
-    EditorId INT NOT NULL,
+CREATE TABLE Roles (
+    UserId INT NOT NULL,
     SessionId INT NOT NULL,
+    Role ENUM('EDITOR') NOT NULL,
     
-    FOREIGN KEY (EditorId)
+    FOREIGN KEY (UserId)
         REFERENCES Users(UserId)
         ON DELETE CASCADE,
     FOREIGN KEY (SessionId)
         REFERENCES Sessions(SessionId)
         ON DELETE CASCADE,
     
-    PRIMARY KEY (EditorId, SessionId)
+    PRIMARY KEY (UserId, SessionId,Role)
 );
 
 CREATE TABLE Questions (

@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var SessionService = require('../model/SessionService.js');
+var SessionService = require('../model/Services/SessionService.js');
 
 router.get('/', function(req, res, next) {
   	

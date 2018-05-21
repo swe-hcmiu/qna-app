@@ -1,4 +1,4 @@
-var DAOFactory = require('../model/DAOFactory.js');
+var DAOFactory = require('../DAL/DAOFactory.js');
 
 class UserService {
 	constructor() {

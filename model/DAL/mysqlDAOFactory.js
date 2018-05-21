@@ -1,6 +1,6 @@
 var mysql = require('mysql');
-var mysqlUserDAO = require('../model/mysqlUserDAO');
-var mysqlSessionDAO = require('../model/mysqlSessionDAO');
+var mysqlUserDAO = require('./mysqlUserDAO');
+var mysqlSessionDAO = require('./mysqlSessionDAO');
 
 
 class mysqlDAOFactory {

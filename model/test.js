@@ -1,5 +1,5 @@
-var UserService = require('../model/UserService.js');
-var SessionService = require('../model/SessionService.js');
+var UserService = require('./Services/UserService.js');
+var SessionService = require('./Services/SessionService.js');
 
 
 var userService = new UserService();

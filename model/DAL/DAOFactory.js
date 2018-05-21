@@ -1,4 +1,4 @@
-var mysqlDAOFactory = require('../model/mysqlDAOFactory.js')
+var mysqlDAOFactory = require('./mysqlDAOFactory.js')
 
 class DAOFactory {
 	static getDAOFactory(type) {
