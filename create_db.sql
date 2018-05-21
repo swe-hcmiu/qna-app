@@ -5,37 +5,37 @@ CREATE DATABASE QASys;
 USE QASys;
 
 CREATE TABLE Users (
-	UserId INT AUTO_INCREMENT,
+    UserId INT AUTO_INCREMENT PRIMARY KEY,
     UserName VARCHAR(50),
     UserPass TEXT,
     
-    PRIMARY KEY (UserId, UserName)
+    UNIQUE (UserName)
 );
 
 CREATE TABLE Sessions (
-	SessionId INT AUTO_INCREMENT,
+    SessionId INT AUTO_INCREMENT PRIMARY KEY,
     SessionName VARCHAR(50),
     SessionType ENUM('DEFAULT', 'NEEDS_VERIFICATION'),
     
-    PRIMARY KEY (SessionId, SessionName)
+    UNIQUE (SessionName, SessionType)
 );
 
 CREATE TABLE Edits (
-	EditorId INT NOT NULL,
+    EditorId INT NOT NULL,
     SessionId INT NOT NULL,
     
     FOREIGN KEY (EditorId)
         REFERENCES Users(UserId)
         ON DELETE CASCADE,
-	FOREIGN KEY (SessionId)
-		REFERENCES Sessions(SessionId)
+    FOREIGN KEY (SessionId)
+        REFERENCES Sessions(SessionId)
         ON DELETE CASCADE,
-	
+    
     PRIMARY KEY (EditorId, SessionId)
 );
 
 CREATE TABLE Questions (
-	QuestionId INT PRIMARY KEY AUTO_INCREMENT,
+    QuestionId INT PRIMARY KEY AUTO_INCREMENT,
     SessionId INT NOT NULL,
     UserId INT NOT NULL,
     Title VARCHAR(255),
@@ -45,11 +45,11 @@ CREATE TABLE Questions (
     Status ENUM('PENDING', 'UNANSWERED', 'ANSWERED'),
     Time DATETIME DEFAULT CURRENT_TIMESTAMP,
     
-	FOREIGN KEY (UserId)
+    FOREIGN KEY (UserId)
         REFERENCES Users(UserId)
         ON DELETE CASCADE,
-	FOREIGN KEY (SessionId)
-		REFERENCES Sessions(SessionId)
+    FOREIGN KEY (SessionId)
+        REFERENCES Sessions(SessionId)
         ON DELETE CASCADE
     
 );
