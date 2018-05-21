@@ -28,29 +28,37 @@ class mysqlUserDAO {
 	}
 
 	getUserByUserName(UserName,callback) {
-		this.connection.query(this.mysql.format(preparedStatements.selectAllQuery,['Users','UserName',UserName])
-			,(err,result) => {
-			if (err) callback(err,null);
-			else {
-				console.log(result[0]);
-				callback(null,result[0]);
-			}
-		});
+		this.connection.query(this.mysql.format(preparedStatements.selectAllQuery,['Users','UserName',UserName]),
+			(err,result) => {
+				if (err) callback(err,null);
+				else {
+					console.log(result[0]);
+					callback(null,result[0]);
+				}
+			});
 	} 
 
 	comparePassword(candidatePassword, hash, callback) {
 		bcrypt.compare(candidatePassword,hash,(err,isMatch) => {
 			if (err) callback(err,null);
 			else callback(null,isMatch);
-		})
+		});
 	}
 
 	getUserById(id,callback) {
-		this.connection.query(this.mysql.format(preparedStatements.selectAllQuery,['Users','UserId',id])
-			, (err,result) => {
-			if (err) callback(err,null);
-			else callback(null,result[0]);
-		})
+		this.connection.query(this.mysql.format(preparedStatements.selectAllQuery,['Users','UserId',id]),
+			(err,result) => {
+				if (err) callback(err,null);
+				else callback(null,result[0]);
+			});
+	}
+	getRoleOfUserInSession(UserId,SessionId,callback) {
+		this.connection.query(this.mysql.format(preparedStatements.selectAllQueryWithTwoConstraints,['Roles','UserId',UserId,'SessionId',SessionId]),
+			(err,result) => {
+				if (err) callback(err,null);
+				else callback(null,result);
+			});
+
 	}
 }
 

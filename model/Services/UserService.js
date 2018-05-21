@@ -10,7 +10,7 @@ class UserService {
 		this.UserDAO.getUserByUserName(UserName,(err,user) => {
 			if (!user) callback({status:'Available'});
 			else callback({status:'Unavailable'});
-		})
+		});
 	}
 
 	createUser(newUser,callback) {
@@ -51,6 +51,14 @@ class UserService {
 		this.UserDAO.createUser(newUser,(err,user) => {
 			if (err) callback(err,null);
 			else callback(null,user);
+		});
+	}
+	getRoleOfUserInSession(UserId,SessionId,callback) {
+		this.UserDAO.getRoleOfUserInSession(UserId,SessionId,(err,result) => {
+			if (err) throw err;			
+		
+			if (result.length === 0) callback(null,[{UserId:UserId,SessionId:SessionId,Role:'USER'}]);
+			else callback(null,result);
 		});
 	}
 }

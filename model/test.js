@@ -3,7 +3,10 @@ var SessionService = require('./Services/SessionService.js');
 
 
 var userService = new UserService();
-console.log(userService);
+userService.getRoleOfUserInSession(1,2,(err,result) => {
+	if (err) console.log(err);
+	else console.log(result[0].Role);
+});
 
-var sessionService = new SessionService();
-console.log(sessionService);
+
+
