@@ -22,21 +22,21 @@ class mysqlSessionDAO {
 
 		this.connection.query(this.mysql.format(preparedStatements.selectAllQuery, ['Sessions', 'SessionId', id]), (err, result) => {
 			if (err) throw err;
-			callback(null, result);
+			callback(null, result[0]);
 		});
 	}
 
-	assignEditor(editor_session, callback) {
+	assignRole(roleObject, callback) {
 
-		this.connection.query(this.mysql.format(preparedStatements.insertQuery, ['Edits', editor_session]), (err, result) => {
+		this.connection.query(this.mysql.format(preparedStatements.insertQuery, ['Roles', roleObject]), (err, result) => {
 			if (err) throw err;
 			callback(null, result);
 		});
 	}
 
-	getEditorsBySessionId(sessionId, callback) {
+	getRolesBySessionId(sessionId, callback) {
 
-		this.connection.query(this.mysql.format(preparedStatements.selectQuery, ['EditorId', 'Edits', 'SessionId', sessionId]), (err, result) => {
+		this.connection.query(this.mysql.format(preparedStatements.selectAllQuery, ['Roles', 'SessionId', sessionId]), (err, result) => {
 			if (err) throw err;
 			callback(null, result);
 		});
@@ -44,6 +44,8 @@ class mysqlSessionDAO {
 	}
 
 	addQuestion(newQuestion, callback) {
+
+		console.log(newQuestion);
 
 		this.connection.query(this.mysql.format(preparedStatements.insertQuery, ['Questions', newQuestion]), (err, result) => {
 			if (err) throw err;

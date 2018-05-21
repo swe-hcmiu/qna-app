@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var SessionService = require('../model/Services/SessionService.js');
+var EditorSessionService = require('../model/Services/EditorSessionService.js');
+var UserSessionService = require('../model/Services/UserSessionService.js');
+
 
 router.get('/', function(req, res, next) {
   	
@@ -14,9 +16,9 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/:sessionId', function(req, res, next) {
-	var sessionService = new SessionService();
+	var editorSessionService = new EditorSessionService();
 
-	sessionService.getSessionById(req.params.sessionId, (err, result) => {
+	editorSessionService.getSessionById(req.params.sessionId, (err, result) => {
 		if (err) throw err;
 		res.send(result);
 	})
@@ -25,7 +27,7 @@ router.get('/:sessionId', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
   
-	var sessionService = new SessionService();
+	var editorSessionService = new EditorSessionService();
 
 	if (req.user) {
 		console.log(req.user);
@@ -35,7 +37,7 @@ router.post('/', function(req, res, next) {
 		let session = {sessionName, sessionType};
 		console.log('Session', session);
 
-		sessionService.createSession(userId, session, (err, result) => {
+		editorSessionService.createSession(userId, session, (err, result) => {
 			if (err) throw err;
 			res.redirect(`/sessions/${result}`);
 		});
