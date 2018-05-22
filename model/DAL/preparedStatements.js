@@ -9,3 +9,5 @@ module.exports.selectAllQueryWithConstraints = "SELECT * FROM ?? WHERE ?? = ? LI
 module.exports.selectQueryWithConstraints = "SELECT ?? FROM ?? WHERE ?? = ? LIMIT ? ORDER BY ??";
 
 module.exports.selectAllQueryWithTwoConstraints = "SELECT * FROM ?? WHERE ?? = ? AND ?? = ?";
+
+module.exports.selectAllQueryWithTwoConstraints2 = "SELECT * FROM ?? WHERE ?? = ? AND ?? <> ?";

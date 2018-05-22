@@ -55,11 +55,18 @@ class UserService {
 	}
 	getRoleOfUserInSession(UserId,SessionId,callback) {
 		this.UserDAO.getRoleOfUserInSession(UserId,SessionId,(err,result) => {
-			if (err) throw err;			
-		
-			if (result.length === 0) callback(null,[{UserId:UserId,SessionId:SessionId,Role:'USER'}]);
+			if (err) throw err;		
+
+			if (!result) callback(null,{UserId:UserId,SessionId:SessionId,Role:'USER'});
 			else callback(null,result);
 		});
+	}
+
+	getUserId(user) {
+		if (user)
+			return user.UserId;
+		else
+			return 1;
 	}
 }
 

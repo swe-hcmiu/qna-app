@@ -56,7 +56,7 @@ class mysqlUserDAO {
 		this.connection.query(this.mysql.format(preparedStatements.selectAllQueryWithTwoConstraints,['Roles','UserId',UserId,'SessionId',SessionId]),
 			(err,result) => {
 				if (err) callback(err,null);
-				else callback(null,result);
+				else callback(null,result[0]);
 			});
 
 	}

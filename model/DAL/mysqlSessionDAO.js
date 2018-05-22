@@ -45,12 +45,26 @@ class mysqlSessionDAO {
 
 	addQuestion(newQuestion, callback) {
 
-		console.log(newQuestion);
-
 		this.connection.query(this.mysql.format(preparedStatements.insertQuery, ['Questions', newQuestion]), (err, result) => {
 			if (err) throw err;
 			callback(null, result.insertId);
 		});
+	}
+
+	getQuestionsOfSession(SessionId, includingPending, callback) {
+
+		let subCallBack = (err, result) => {
+			if (err) throw err;
+			callback(null, result);
+		}
+
+		if (includingPending) {
+			this.connection.query(this.mysql.format(preparedStatements.selectAllQuery, ['Questions', 'SessionId', SessionId]), subCallBack);	
+		} else {
+			this.connection.query(this.mysql.format(preparedStatements.selectAllQueryWithTwoConstraints2, 
+				['Questions', 'SessionId', SessionId, 'Status', 'PENDING']), subCallBack);
+		}
+		
 	}
 }
 

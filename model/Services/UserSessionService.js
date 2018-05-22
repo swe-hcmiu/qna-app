@@ -29,6 +29,13 @@ class UserSessionService extends SessionService {
 		});
 	}
 
+	getQuestionsOfSession(SessionId, callback) {
+		this.SessionDAO.getQuestionsOfSession(SessionId, false, (err, result) => {
+			if (err) throw err;
+			callback(null, result);
+		});
+	}
+
 }
 
 module.exports = UserSessionService;
