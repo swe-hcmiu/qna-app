@@ -6,7 +6,7 @@
   </head>
   <body>
     <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-    <% include header.ejs %>
+    <p>Welcome <% if (user) { %> <%= user.DisplayName %> <% } %> to <%= title %></p>
+    <% include template/header.ejs %>
   </body>
 </html>

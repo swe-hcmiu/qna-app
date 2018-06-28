@@ -5,6 +5,7 @@
 	<link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
+	<% include template/header.ejs %>
 	<form method="post" action="/users/login">
 		<div class="form-group">
 			<label>Username</label>
@@ -17,6 +18,8 @@
 		</div>
 		<button type="submit" class="btn btn-default">Submit</button>
 	</form>
-	<% include header.ejs %>
+	<a href = "/auth/google"> Google+ </a> <br>
 </body>
 </html>
+
+

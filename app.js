@@ -3,16 +3,17 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var bodyParser = require('body-parser');
-var expressValidator = require('express-validator');
 var flash = require('connect-flash');
 var session = require('express-session');
 var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
+var expressValidator = require('express-validator');
+var bodyParser = require('body-parser');
+var config = require('./src/config');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var sessionsRouter = require('./routes/sessions'); 
+var authRouter = require('./routes/auth');
+var sessionRouter = require('./routes/sessions');
 
 var app = express();
 
@@ -45,17 +46,16 @@ app.use(passport.session());
 // Connect Flash
 app.use(flash());
 
-// Global Vars
-app.use(function (req, res, next) {
-  res.locals.success_msg = req.flash('success_msg');
-  res.locals.error_msg = req.flash('error_msg');
-  res.locals.error = req.flash('error');
-  res.locals.success = req.flash('success');
-  res.locals.user = req.user || null;
-  next();
+app.use(function(req,res,next) {
+ res.locals.success_msg = req.flash('success_msg');
+ res.locals.error_msg = req.flash('error_msg');
+ res.locals.error = req.flash('error');
+ res.locals.success = req.flash('success');
+ res.locals.user = req.user || null;
+ next();
 });
 
-//Express validator
+// express validator
 app.use(expressValidator({
   errorFormatter: function(param, msg, value) {
       var namespace = param.split('.')
@@ -75,7 +75,8 @@ app.use(expressValidator({
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/sessions', sessionsRouter);
+app.use('/auth',authRouter);
+app.use('/sessions',sessionRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -93,9 +94,28 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+const server = app.listen(process.env.PORT||3000, function () {
+ console.log(`Node.js listening on ${process.env.PORT||3000} ...`);
+});
 
-app.listen(process.env.PORT||3000, function () {
-   console.log(`Node.js listening on ${process.env.PORT||3000} ...`);
+var io = require('socket.io')(server);
+var historyLog = [];
+
+io.on('connection', function (socket) {
+  console.log('A user connected');
+  socket.emit('show history',historyLog);
+
+  socket.on('disconnect', function() {
+    console.log('A user disconnected');
+  });
+
+  socket.on('chat message',function(msg) {
+   historyLog.push(msg);
+   io.emit('chat message',msg);
  });
+});
+
 
 module.exports = app;
+
+
