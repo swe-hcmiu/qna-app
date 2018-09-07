@@ -1,4 +1,5 @@
 const DAOFactory = require('../DAL/DAOFactory');
+const UserDAO = require('../DAL/mysqlUserDAO');
 
 class UserService {
   constructor() {
@@ -24,7 +25,7 @@ class UserService {
       const userReturn = await this.UserDAO.getQnAUserByUserName(user.UserName);
       if (!userReturn) return { user: false, message: 'Unknown User' };
 
-      const isMatch = await this.UserDAO.comparePasswordQnAUser(user.UserPass, userReturn.UserPass);
+      const isMatch = await UserDAO.comparePasswordQnAUser(user.UserPass, userReturn.UserPass);
       if (isMatch) return { user: userReturn, message: 'Login successfully' };
       return { user: false, message: 'Invalid password' };
     } catch (err) {
