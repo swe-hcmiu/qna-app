@@ -8,7 +8,9 @@ const session = require('express-session');
 const passport = require('passport');
 const expressValidator = require('express-validator');
 const bodyParser = require('body-parser');
-const config = require('./src/config');
+
+const passportConfig = require('./src/config/passport-config');
+const mysqlConfig = require('./src/config/mysql-config');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');

@@ -1,15 +1,11 @@
 const bcrypt = require('bcryptjs');
 const preparedStatements = require('./preparedStatements');
+const mysqlConfig = require('../config/mysql-config');
 
-
-class mysqlUserDAO {
-  constructor() {
-    this.pool = require('./mysqlDAOFactory').pool;
-  }
-
+module.exports = {
   async createUser(user) {
     try {
-      const connection = await this.pool.getConnection();
+      const connection = await mysqlConfig.pool.getConnection();
       try {
         const result = await connection.query(preparedStatements.insertQuery, ['users', user]);
         return result;
@@ -21,11 +17,11 @@ class mysqlUserDAO {
     } catch (err) {
       throw err;
     }
-  }
+  },
 
   async createQnAUserTransaction(newUser) {
     try {
-      const connection = await this.pool.getConnection();
+      const connection = await mysqlConfig.pool.getConnection();
       try {
         const part1User = {
           DisplayName: newUser.DisplayName,
@@ -51,9 +47,9 @@ class mysqlUserDAO {
     } catch (err) {
       throw err;
     }
-  }
+  },
 
-  static async createQnAUser(qnaUser, connection) {
+  async createQnAUser(qnaUser, connection) {
     function hashing() {
       return new Promise((resolve, reject) => {
         bcrypt.genSalt(10, (err, salt) => {
@@ -75,11 +71,11 @@ class mysqlUserDAO {
     } catch (err) {
       throw err;
     }
-  }
+  },
 
   async createGoogleUserTransaction(newUser) {
     try {
-      const connection = await this.pool.getConnection();
+      const connection = await mysqlConfig.pool.getConnection();
       try {
         const part1User = {
           DisplayName: newUser.DisplayName,
@@ -104,20 +100,20 @@ class mysqlUserDAO {
     } catch (err) {
       throw err;
     }
-  }
+  },
 
-  static async createGoogleUser(googleUser, connection) {
+  async createGoogleUser(googleUser, connection) {
     try {
       const result = await connection.query(preparedStatements.insertQuery, ['googleusers', googleUser]);
       return result;
     } catch (err) {
       throw err;
     }
-  }
+  },
 
   async getUserById(id) {
     try {
-      const connection = await this.pool.getConnection();
+      const connection = await mysqlConfig.pool.getConnection();
       try {
         const result = await connection.query(preparedStatements.selectAllQuery, ['users', 'UserId', id]);
         return result[0];
@@ -129,11 +125,11 @@ class mysqlUserDAO {
     } catch (err) {
       throw err;
     }
-  }
+  },
 
   async getQnAUserByUserName(username) {
     try {
-      const connection = await this.pool.getConnection();
+      const connection = await mysqlConfig.pool.getConnection();
       try {
         const result = await connection.query(preparedStatements.selectAllQuery, ['qnausers', 'UserName', username]);
         return result[0];
@@ -145,11 +141,11 @@ class mysqlUserDAO {
     } catch (err) {
       throw err;
     }
-  }
+  },
 
   async getGoogleUserByEmail(email) {
     try {
-      const connection = await this.pool.getConnection();
+      const connection = await mysqlConfig.pool.getConnection();
       try {
         const result = await connection.query(preparedStatements.selectAllQuery, ['googleusers', 'Email', email]);
         return result[0];
@@ -161,9 +157,9 @@ class mysqlUserDAO {
     } catch (err) {
       throw err;
     }
-  }
+  },
 
-  static async comparePasswordQnAUser(candidatePassword, hash) {
+  async comparePasswordQnAUser(candidatePassword, hash) {
     function comparing() {
       return new Promise((resolve, reject) => {
         bcrypt.compare(candidatePassword, hash, (err, isMatch) => {
@@ -179,14 +175,14 @@ class mysqlUserDAO {
     } catch (err) {
       throw err;
     }
-  }
+  },
 
   async getRoleOfUserInSession(UserId, SessionId) {
     try {
-      const connection = await this.pool.getConnection();
+      const connection = await mysqlConfig.pool.getConnection();
       try {
         const result = await connection.query(preparedStatements.selectAllQueryWithTwoConstraints,
-          ['Roles', 'UserId', UserId, 'SessionId', SessionId]);
+          ['roles', 'UserId', UserId, 'SessionId', SessionId]);
         return result[0];
       } catch (err) {
         throw err;
@@ -196,7 +192,5 @@ class mysqlUserDAO {
     } catch (err) {
       throw err;
     }
-  }
-}
-
-module.exports = mysqlUserDAO;
+  },
+};
