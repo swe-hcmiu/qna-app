@@ -1,117 +1,122 @@
-var preparedStatements = require('./preparedStatements');
+const preparedStatements = require('./preparedStatements');
 
 class mysqlSessionDAO {
-	constructor() {
-		this.pool = require('./mysqlDAOFactory').pool;
-	}
+  constructor() {
+    this.pool = require('./mysqlDAOFactory').pool;
+  }
 
-	async createSessionTransaction(creatorId, newSession, role) {
-		try {
-			var connection = await this.pool.getConnection();
-			
-			await connection.beginTransaction();
-			const sessionId = await this.createSession(newSession,connection);
-			const roleObject = {
-				UserId: creatorId,
-				SessionId: sessionId,
-				Role: role
-			}
-			const result = await this.assignRole(roleObject, connection);
-			connection.commit();
-			return sessionId;
-		}
-		catch(err) {
-			connection.rollback();
-			throw err;
-		}
-		finally {
-			connection.release();
-		}
-	}
+  async createSessionTransaction(creatorId, newSession, role) {
+    try {
+      const connection = await this.pool.getConnection();
+      try {
+        await connection.beginTransaction();
+        const sessionId = await this.createSession(newSession, connection);
+        const roleObject = {
+          UserId: creatorId,
+          SessionId: sessionId,
+          Role: role,
+        };
+        await this.assignRole(roleObject, connection);
+        await connection.commit();
+        return sessionId;
+      } catch (err) {
+        await connection.rollback();
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
 
-	async createSession(newSession, connection) {
-		try {
-			const result = await connection.query(preparedStatements.insertQuery,['Sessions', newSession]);
-			return result.insertId;
-		}
-		catch(err) {
-			throw err;
-		}
-	}
+  static async createSession(newSession, connection) {
+    try {
+      const result = await connection.query(preparedStatements.insertQuery, ['sessions', newSession]);
+      return result.insertId;
+    } catch (err) {
+      throw err;
+    }
+  }
 
-	async assignRole(roleObject, connection) {
-		try {
-			const result = await connection.query(preparedStatements.insertQuery,['Roles',roleObject]);
-			return result;
-		}
-		catch(err) {
-			throw err;
-		}
-	}
+  static async assignRole(roleObject, connection) {
+    try {
+      const result = await connection.query(preparedStatements.insertQuery, ['roles', roleObject]);
+      return result;
+    } catch (err) {
+      throw err;
+    }
+  }
 
-	async getSessionById(id) {
-		try {
-			var connection = await this.pool.getConnection();
-			const result = await connection.query(preparedStatements.selectAllQuery,['Sessions','SessionId',id]);
-			return result[0];
-		}
-		catch(err) {
-			throw err;
-		}
-		finally {
-			connection.release();
-		}
-	}
+  async getSessionById(id) {
+    try {
+      const connection = await this.pool.getConnection();
+      try {
+        const result = await connection.query(preparedStatements.selectAllQuery, ['sessions', 'SessionId', id]);
+        return result[0];
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
 
-	async getRolesBySessionId(sessionId) {
-		try {
-			var connection = await this.pool.getConnection();
-			const result = await connection.query(preparedStatements.selectAllQuery,['Roles','SessionId',sessionId]);
-			return result;
-		}
-		catch(err) {
-			throw err;
-		}
-		finally {
-			connection.release();
-		}
-	}
+  async getRolesBySessionId(sessionId) {
+    try {
+      const connection = await this.pool.getConnection();
+      try {
+        const result = await connection.query(preparedStatements.selectAllQuery, ['roles', 'SessionId', sessionId]);
+        return result;
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
 
-	async addQuestion(newQuestion) {
-		try {
-			var connection = await this.pool.getConnection();
-			const result = await connection.query(preparedStatements.insertQuery, ['Questions', newQuestion]);
-			return result.insertId;
-		}
-		catch(err) {
-			throw err;
-		}
-		finally {
-			connection.release();
-		}
-	}
+  async addQuestion(newQuestion) {
+    try {
+      const connection = await this.pool.getConnection();
+      try {
+        const result = await connection.query(preparedStatements.insertQuery, ['questions', newQuestion]);
+        return result.insertId;
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
 
-	async getQuestionsOfSession(SessionId,includingPending) {
-		try {
-			var connection = await this.pool.getConnection();
-			
-			if (includingPending) {
-				const result = await connection.query(preparedStatements.selectAllQuery, ['Questions', 'SessionId', SessionId]);
-				return result;
-			}
-			else {
-				const result = await connection.query(preparedStatements.selectAllQueryWithTwoConstraints2, 
-					['Questions', 'SessionId', SessionId, 'Status', 'PENDING']);
-				return result;
-			}
-		}
-		catch(err) {
-			throw err;
-		}
-		finally {
-			connection.release();
-		}
-	}
+  async getQuestionsOfSession(SessionId, includingPending) {
+    try {
+      const connection = await this.pool.getConnection();
+      try {
+        let result;
+        if (includingPending) {
+          result = await connection.query(preparedStatements.selectAllQuery, ['questions', 'SessionId', SessionId]);
+        } else {
+          result = await connection.query(preparedStatements.selectAllQueryWithTwoConstraints2,
+            ['Questions', 'SessionId', SessionId, 'Status', 'PENDING']);
+        }
+        return result;
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 
 module.exports = mysqlSessionDAO;

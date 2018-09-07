@@ -1,49 +1,37 @@
-var DAOFactory = require('./DAL/DAOFactory');
+// var mysql = require('promise-mysql');
+// var preparedStatements = require('./DAL/preparedStatements');
+ 
+// mysql.createConnection({
+//     host: 'localhost',
+//     user: 'root',
+//     password: '',
+//     database: 'qasys2'
+// }).then(function(conn){
+//     // do stuff with conn
+//     console.log('OK');
+//     conn.end();
+// }).catch((err) => {
+//   console.log(err);
+// });
 
-var mysqlDAOFactory = DAOFactory.getDAOFactory(DAOFactory.mysql);
-var UserDAO = mysqlDAOFactory.getUserDAO();
-// var newUser = {
-// 	DisplayName:'Starkkk',
-// 	Provider:'qna'
-// };
+// var pool = mysql.createPool({
+//   host: 'localhost',
+//   user: 'root',
+//   password: '',
+//   database: 'qasys2',
+//   connectionLimit: 10
+// });
 
-// UserDAO.createUser(newUser)
-// 	.then((result) => {
-// 		console.log(result.insertId);
-// 	})
-// 	.catch((err) => {
-// 		console.log(err);
-// 	})
+// pool.getConnection().then(function(connection) {
+//   console.log('connected');
+//   const part1User = {
+//     DisplayName: 'duy phan',
+//     Provider: 'qna'
+//   };
 
-// newUser = {
-// 	UserId:2,
-// 	UserName:'duyphan',
-// 	UserPass:'123'
-// }
-
-// UserDAO.createQnAUser(newUser)
-// 	.then((result) => {
-// 		console.log(result);
-// 	})
-// 	.catch((err) => {
-// 		console.log(err);
-// 	})
-
-// UserDAO.comparePasswordQnAUser('123','$2a$10$LoKwwAlZSL0ND6CiqCisTeRzsbVuhKKYVFQnb3C58oQnS0wLvexCi')
-// 	.then((result) => {
-// 		console.log(result);
-// 	})
-
-// var newUser = {
-// 	DisplayName:'Starkkk',
-// 	Provider:'qna',
-// 	UserName:'duyphan',
-// 	UserPass:'123'
-// };
-
-// UserDAO.createQnAUserTransaction(newUser).then((result) => {
-// 	console.log(result);
-// })
-
-var UserSessionService = require('./Services/UserSessionService');
-var service = new UserSessionService();
+//   connection.query(preparedStatements.insertQuery,['users',part1User]).then((result) => {
+//     console.log(result);
+//   });
+// }).catch(function(err) {
+//   done(err);
+// });
