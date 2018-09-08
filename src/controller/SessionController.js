@@ -35,3 +35,18 @@ exports.sessionId_get = async (req, res) => {
     throw err;
   }
 };
+
+exports.sessionId_post = async (req, res) => {
+  const { title, content } = req.body;
+  const question = { title, content };
+  const userId = UserService.getUserId(req.user);
+  const { sessionId } = req.params;
+
+  try {
+    const questionId = await SessionService.addQuestion(sessionId, userId, question);
+    const returnObj = { questionId };
+    res.send(returnObj);
+  } catch (err) {
+    throw err;
+  }
+};

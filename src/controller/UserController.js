@@ -22,8 +22,7 @@ exports.user_register_post = async (req, res) => {
         Provider: 'qna',
       };
 
-      const userService = new UserService();
-      await userService.registerQnAUser(newUser);
+      await UserService.registerQnAUser(newUser);
 
       req.flash('success_msg', 'register successfully');
       res.redirect('/users/login');

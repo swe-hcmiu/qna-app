@@ -20,8 +20,8 @@ module.exports = {
         default:
           return undefined;
       }
-      const result = await Session.addQuestion(Object.assign(questionObj, { Status }));
-      return result;
+      const questionId = await Session.addQuestion(Object.assign(questionObj, { Status }));
+      return questionId;
     } catch (err) {
       throw err;
     }
