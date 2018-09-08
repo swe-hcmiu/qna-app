@@ -13,9 +13,10 @@ exports.session_post = async (req, res) => {
     const session = { sessionName, sessionType };
 
     const sessionId = await EditorSessionService.createSession(userId, session);
-    res.redirect(`/sessions/${sessionId}`);
+    const returnObj = { sessionId };
+    res.send(returnObj);
   } catch (err) {
-    throw err;
+    res.sendStatus(500);
   }
 };
 
@@ -47,6 +48,6 @@ exports.sessionId_post = async (req, res) => {
     const returnObj = { questionId };
     res.send(returnObj);
   } catch (err) {
-    throw err;
+    res.sendStatus(500);
   }
 };

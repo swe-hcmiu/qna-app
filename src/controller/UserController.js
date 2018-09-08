@@ -24,11 +24,11 @@ exports.user_register_post = async (req, res) => {
 
       await UserService.registerQnAUser(newUser);
 
-      req.flash('success_msg', 'register successfully');
-      res.redirect('/users/login');
+      res.status(200);
+      res.send('REGISTRATION COMPLETED');
     } catch (err) {
-      req.flash('error_msg', 'username already exists!');
-      res.redirect('/users/register');
+      res.status(409);
+      res.send('USERNAME ALREADY EXISTS!');
     }
   }
 };
