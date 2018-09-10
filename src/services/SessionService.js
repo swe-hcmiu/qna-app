@@ -1,7 +1,7 @@
 const Session = require('../models/Session');
 const UserSessionService = require('./UserSessionService');
 const EditorSessionService = require('./EditorSessionService');
-const UserServirce = require('./UserService');
+const UserService = require('./UserService');
 
 module.exports = {
   getServiceByRole(role) {
@@ -28,7 +28,7 @@ module.exports = {
 
   async getInfoSessionByRole(sessionId, userId) {
     try {
-      const result = await UserServirce.getRoleOfUserInSession(userId, sessionId);
+      const result = await UserService.getRoleOfUserInSession(userId, sessionId);
       const role = result.Role;
       const service = this.getServiceByRole(role);
 
@@ -43,7 +43,7 @@ module.exports = {
 
   async getListOfQuestionsByRole(sessionId, userId) {
     try {
-      const result = await UserServirce.getRoleOfUserInSession(userId, sessionId);
+      const result = await UserService.getRoleOfUserInSession(userId, sessionId);
       const role = result.Role;
       const service = this.getServiceByRole(role);
 
@@ -67,7 +67,7 @@ module.exports = {
 
   async addQuestionByRole(sessionId, userId, question) {
     try {
-      const result = await UserServirce.getRoleOfUserInSession(userId, sessionId);
+      const result = await UserService.getRoleOfUserInSession(userId, sessionId);
       const role = result.Role;
 
       const service = this.getServiceByRole(role);
@@ -83,7 +83,7 @@ module.exports = {
     try {
       await this.checkQuestionInSession(sessionId, questionId);
 
-      const result = await UserServirce.getRoleOfUserInSession(userId, sessionId);
+      const result = await UserService.getRoleOfUserInSession(userId, sessionId);
       const role = result.Role;
       const service = this.getServiceByRole(role);
 
@@ -98,7 +98,7 @@ module.exports = {
     try {
       await this.checkQuestionInSession(sessionId, questionId);
 
-      const result = await UserServirce.getRoleOfUserInSession(userId, sessionId);
+      const result = await UserService.getRoleOfUserInSession(userId, sessionId);
       const role = result.Role;
       const service = this.getServiceByRole(role);
 
@@ -112,7 +112,7 @@ module.exports = {
     try {
       await this.checkQuestionInSession(sessionId, questionId);
 
-      const result = await UserServirce.getRoleOfUserInSession(userId, sessionId);
+      const result = await UserService.getRoleOfUserInSession(userId, sessionId);
       const role = result.Role;
       const service = this.getServiceByRole(role);
 
