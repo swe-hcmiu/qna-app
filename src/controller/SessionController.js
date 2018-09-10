@@ -8,7 +8,7 @@ exports.session_get = async (req, res) => {
 
 exports.session_post = async (req, res) => {
   try {
-    const userId = req.user.UserId;
+    const userId = UserService.getUserId(req.user);
     const { sessionName, sessionType } = req.body;
     const session = { sessionName, sessionType };
 
@@ -24,30 +24,76 @@ exports.sessionId_get = async (req, res) => {
   try {
     const userId = UserService.getUserId(req.user);
     const { sessionId } = req.params;
-    const result = await UserService.getRoleOfUserInSession(userId, sessionId);
-    const role = result.Role;
-    const service = SessionService.getServiceByRole(role);
 
-    const [session, listOfQuestions] = await Promise.all([SessionService.getSessionById(sessionId),
-      service.getQuestionsOfSession(sessionId)]);
-    const returnObj = { session, listOfQuestions };
+    const returnObj = await SessionService.getInfoSessionByRole(sessionId, userId);
     res.send(returnObj);
   } catch (err) {
     throw err;
   }
 };
 
-exports.sessionId_post = async (req, res) => {
+exports.sessionId_question_get = async (req, res) => {
+  try {
+    const userId = UserService.getUserId(req.user);
+    const { sessionId } = req.params;
+
+    const returnObj = await SessionService.getListOfQuestionsByRole(sessionId, userId);
+    res.send(returnObj);
+  } catch (err) {
+    res.sendStatus(404);
+  }
+};
+
+exports.sessionId_question_post = async (req, res) => {
   const { title, content } = req.body;
   const question = { title, content };
   const userId = UserService.getUserId(req.user);
   const { sessionId } = req.params;
 
   try {
-    const questionId = await SessionService.addQuestion(sessionId, userId, question);
+    const questionId = await SessionService.addQuestionByRole(sessionId, userId, question);
     const returnObj = { questionId };
     res.send(returnObj);
   } catch (err) {
     res.sendStatus(500);
+  }
+};
+
+exports.sessionId_questionId_get = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { questionId } = req.params;
+    const userId = UserService.getUserId(req.user);
+
+    const question = await SessionService.getQuestionByRole(sessionId, questionId, userId);
+    res.send(question);
+  } catch (err) {
+    res.sendStatus(404);
+  }
+};
+
+exports.sessionId_questionId_vote_put = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { questionId } = req.params;
+    const userId = UserService.getUserId(req.user);
+
+    await SessionService.addVoteByRole(sessionId, questionId, userId);
+    res.sendStatus(200);
+  } catch (err) {
+    res.sendStatus(404);
+  }
+};
+
+exports.sessionId_questionId_vote_delete = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { questionId } = req.params;
+    const userId = UserService.getUserId(req.user);
+
+    await SessionService.cancleVoteByRole(sessionId, questionId, userId);
+    res.sendStatus(200);
+  } catch (err) {
+    res.sendStatus(404);
   }
 };

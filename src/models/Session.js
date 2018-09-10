@@ -114,4 +114,92 @@ module.exports = {
       throw err;
     }
   },
+
+  async getQuestion(questionId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        const result = await connection.query(preparedStatements.selectAllQuery,
+          ['questions', 'QuestionId', questionId]);
+        return result[0];
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async addVoteTransaction(questionId, userId, role) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        await connection.beginTransaction();
+
+        const votingObj = { QuestionId: questionId, UserId: userId };
+        await connection.query(preparedStatements.insertQuery, ['voting', votingObj]);
+        switch (role) {
+          case 'USER': {
+            await connection.query(preparedStatements.updateUserVoteQuery, ['questions', 'QuestionId', questionId]);
+            break;
+          }
+          case 'EDITOR': {
+            await connection.query(preparedStatements.updateEditorVoteQuery, ['questions', 'QuestionId', questionId]);
+            break;
+          }
+          default:
+            throw new Error('Role incorrect');
+        }
+        await connection.commit();
+      } catch (err) {
+        await connection.rollback();
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async cancleVoteTransaction(questionId, userId, role) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        await connection.beginTransaction();
+        const result = await connection.query(preparedStatements.selectAllQueryWithTwoConstraints,
+          ['voting', 'QuestionId', questionId, 'UserId', userId]);
+
+        if (result[0]) {
+          await connection.query(preparedStatements.deleteAllQueryWithTwoConstraints,
+            ['voting', 'QuestionId', questionId, 'UserId', userId]);
+
+          switch (role) {
+            case 'USER': {
+              await connection.query(preparedStatements.cancleUserVoteQuery, ['questions', 'QuestionId', questionId]);
+              break;
+            }
+            case 'EDITOR': {
+              await connection.query(preparedStatements.cancleEditorVoteQuery, ['questions', 'QuestionId', questionId]);
+              break;
+            }
+            default:
+              throw new Error('Role incorrect');
+          }
+          await connection.commit();
+        } else {
+          throw new Error('Not Found');
+        }
+      } catch (err) {
+        await connection.rollback();
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
 };

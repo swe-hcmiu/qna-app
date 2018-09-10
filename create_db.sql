@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `qasys2`.`users` (
   `Provider` ENUM('qna', 'google') NULL DEFAULT NULL,
   PRIMARY KEY (`UserId`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
+AUTO_INCREMENT = 12
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `qasys2`.`sessions` (
   PRIMARY KEY (`SessionId`),
   UNIQUE INDEX `SessionName` (`SessionName` ASC, `SessionType` ASC))
 ENGINE = InnoDB
-AUTO_INCREMENT = 6
+AUTO_INCREMENT = 14
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -102,6 +102,7 @@ CREATE TABLE IF NOT EXISTS `qasys2`.`questions` (
     REFERENCES `qasys2`.`sessions` (`SessionId`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
+AUTO_INCREMENT = 8
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -121,6 +122,26 @@ CREATE TABLE IF NOT EXISTS `qasys2`.`roles` (
   CONSTRAINT `roles_ibfk_2`
     FOREIGN KEY (`SessionId`)
     REFERENCES `qasys2`.`sessions` (`SessionId`)
+    ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `qasys2`.`voting`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `qasys2`.`voting` (
+  `UserId` INT(11) NOT NULL,
+  `QuestionId` INT(11) NOT NULL,
+  PRIMARY KEY (`UserId`, `QuestionId`),
+  INDEX `QuestionId` (`QuestionId` ASC),
+  CONSTRAINT `voting_ibfk_1`
+    FOREIGN KEY (`UserId`)
+    REFERENCES `qasys2`.`users` (`UserId`)
+    ON DELETE CASCADE,
+  CONSTRAINT `voting_ibfk_2`
+    FOREIGN KEY (`QuestionId`)
+    REFERENCES `qasys2`.`questions` (`QuestionId`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;

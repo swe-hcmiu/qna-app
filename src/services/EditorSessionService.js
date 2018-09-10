@@ -31,4 +31,29 @@ module.exports = {
       throw err;
     }
   },
+
+  async getQuestion(questionId) {
+    try {
+      const question = await Session.getQuestion(questionId);
+      return question;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async addVote(questionId, userId) {
+    try {
+      await Session.addVoteTransaction(questionId, userId, 'EDITOR');
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async cancleVote(questionId, userId) {
+    try {
+      await Session.cancleVoteTransaction(questionId, userId, 'EDITOR');
+    } catch (err) {
+      throw err;
+    }
+  },
 };

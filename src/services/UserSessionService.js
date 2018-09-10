@@ -35,4 +35,31 @@ module.exports = {
       throw err;
     }
   },
+
+  async getQuestion(questionId) {
+    try {
+      const question = await Session.getQuestion(questionId);
+      if (question.Status !== 'PENDING') return question;
+      throw new Error('Authorization required');
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async addVote(questionId, userId) {
+    try {
+      await this.getQuestion(questionId);
+      await Session.addVoteTransaction(questionId, userId, 'USER');
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async cancleVote(questionId, userId) {
+    try {
+      await Session.cancleVoteTransaction(questionId, userId, 'USER');
+    } catch (err) {
+      throw err;
+    }
+  },
 };
