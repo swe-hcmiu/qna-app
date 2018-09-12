@@ -1,0 +1,27 @@
+.currentSession {
+  border: 1px solid black;
+  width: 400px;
+  margin: 0px auto;
+  text-align: center;
+}
+
+ul {
+  padding: 0 0;
+  list-style-type: none;
+  text-decoration: underline;
+}
+
+.createSession {
+  border: 1px solid black;
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+
+.createSession h2 {
+  text-align: center;
+}
+
+.createSession button {
+  margin: 10px 40%;
+}

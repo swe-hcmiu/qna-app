@@ -1,12 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" dir="ltr">
   <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <meta charset="utf-8">
+    <title>QnA App</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/index.css">
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome <% if (user) { %> <%= user.DisplayName %> <% } %> to <%= title %></p>
-    <% include template/header.ejs %>
+  	<% include template/navbar.ejs %>
+
+    <div class="container">
+      <form id="inputform" action="/users/register">
+        <h2>Register</h2>
+        <div class="form-group">
+          <label for="FirstName">First Name</label>
+          <input type="text" class="form-control" id="FirstName" name="FirstName" placeholder="A, B, C ...." required>
+        </div>
+        <div class="form-group">
+          <label for="LastName">Last Name</label>
+          <input type="text" class="form-control" id="LastName" name="LastName" placeholder="Nguyen, Tran, ...." required>
+        </div>
+
+        <div class="form-group">
+          <label for="UserName">Username</label>
+          <input type="email" class="form-control" id="Username" name="Username" placeholder="Username" required>
+        </div>
+        <div class="form-group">
+          <label for="UserPass">Password</label>
+          <input type="password" class="form-control" id="UserPass" name="UserPass" placeholder="Password" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="signin">Sign Up</button>
+      </form>
+    </div>
+
+    <script type="text/javascript" src="/javascripts/index.js"></script>
   </body>
 </html>
