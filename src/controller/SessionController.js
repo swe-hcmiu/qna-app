@@ -46,7 +46,7 @@ exports.sessionId_question_get = async (req, res) => {
     const returnObj = await SessionService.getListOfQuestionsByRole(sessionId, userId);
     res.send(returnObj);
   } catch (err) {
-    //res.sendStatus(404);
+    // res.sendStatus(404);
     throw err;
   }
 };
@@ -62,7 +62,7 @@ exports.sessionId_question_post = async (req, res) => {
     const returnObj = { questionId };
     res.send(returnObj);
   } catch (err) {
-    //res.sendStatus(500);
+    // res.sendStatus(500);
     throw err;
   }
 };
@@ -76,7 +76,7 @@ exports.sessionId_questionId_get = async (req, res) => {
     const question = await SessionService.getQuestionByRole(sessionId, questionId, userId);
     res.send(question);
   } catch (err) {
-    //res.sendStatus(404);
+    // res.sendStatus(404);
     throw err;
   }
 };
@@ -90,7 +90,7 @@ exports.sessionId_questionId_vote_put = async (req, res) => {
     await SessionService.addVoteByRole(sessionId, questionId, userId);
     res.sendStatus(200);
   } catch (err) {
-    //res.sendStatus(404);
+    // res.sendStatus(404);
     throw err;
   }
 };
@@ -104,7 +104,7 @@ exports.sessionId_questionId_vote_delete = async (req, res) => {
     await SessionService.cancelVoteByRole(sessionId, questionId, userId);
     res.sendStatus(200);
   } catch (err) {
-    //res.sendStatus(404);
+    // res.sendStatus(404);
     throw err;
   }
 };

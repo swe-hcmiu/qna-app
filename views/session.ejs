@@ -23,21 +23,21 @@
 	      </ul>
 	    </div>
 
-	    <form class="createSession" action="/sessions" method="POST">
+	    <form class="createSession" action="/api/sessions" method="POST">
 	      <h2>Create New Session</h2>
 	      <div class="form-row">
 	        <div class="form-group col-md-6">
 	          <label for="name">Name</label>
-	          <input type="text" id="nameSession" name="name" required>
+	          <input type="text" id="nameSession" name="sessionName" required>
 	        </div>
 	        <div class="form-group col-md-6">
 	          <label for="typeSession">Type: </label>
 	          <div class="form-check">
-	            <input class="form-check-input" type="radio" name="typeSession" id="typeSession" value="Default" checked>
+	            <input class="form-check-input" type="radio" name="sessionType" id="typeSession" value="DEFAULT" checked>
 	            <label class="form-check-label" for="exampleRadios1">Default</label>
 	          </div>
 	          <div class="form-check">
-	            <input class="form-check-input" type="radio" name="typeSession" id="typeSession" value="Verification">
+	            <input class="form-check-input" type="radio" name="sessionType" id="typeSession" value="NEEDS_VERIFICATION">
 	            <label class="form-check-label" for="exampleRadios2">Verification</label>
 	          </div>
 	        </div>
@@ -49,7 +49,8 @@
 	<script
 	  src="https://code.jquery.com/jquery-3.3.1.js"
 	  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-	  crossorigin="anonymous"></script>
+    crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	  <script type="text/javascript" src="/javascripts/session.js"></script>
 </body>
 </html>

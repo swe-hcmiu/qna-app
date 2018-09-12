@@ -1,7 +1,14 @@
+const urlSegments = window.location.pathname.split('/');
+const sessionId = urlSegments[urlSegments.length - 1];
+
 const addQuestionBtn = document.getElementById("addQuestionBtn");
+
 function getJSON() {
-  const url='api/sessions/5';
-  axios.get(url).then(res => render(res.data.listOfQuestions));
+  const url = `/api/sessions/${sessionId}`;
+  axios.get(url).then((res) => {
+    console.log(res);
+    render(res.data.listOfQuestions);
+  });
 }
 
 function createHtmlForPost(post) {
@@ -41,24 +48,24 @@ function setButtons() {
   const likeButtons = document.getElementByClass("")
 }
 
-addQuestionBtn.addEventListener("click", function() {
+addQuestionBtn.addEventListener("click", function () {
   // action="http://dcd85867.ap.ngrok.io/sessions/5/questions" method="post"
-  const url="http://dcd85867.ap.ngrok.io/sessions/5/questions";
+  const url = `/api/sessions/${sessionId}/questions`;
 
 
   axios.post(url, {
     title: document.getElementById("title-ask").value,
     content: document.getElementById("content-ask").value
   })
-  .then(function (response) {
-    console.log(response);
-    getJSON();
-    document.getElementById("title-ask").value = '';
-    document.getElementById("content-ask").value = '';
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+    .then(function (response) {
+      console.log(response);
+      getJSON();
+      document.getElementById("title-ask").value = '';
+      document.getElementById("content-ask").value = '';
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 })
 
 getJSON();
