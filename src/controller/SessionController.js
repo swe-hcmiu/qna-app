@@ -3,7 +3,12 @@ const UserService = require('../services/UserService');
 const SessionService = require('../services/SessionService');
 
 exports.session_get = async (req, res) => {
-  res.render('session');
+  try {
+    const listOfSessions = await SessionService.getListOfSessions();
+    res.send(listOfSessions);
+  } catch (err) {
+    throw err;
+  }
 };
 
 exports.session_post = async (req, res) => {
@@ -16,7 +21,8 @@ exports.session_post = async (req, res) => {
     const returnObj = { sessionId };
     res.send(returnObj);
   } catch (err) {
-    res.sendStatus(500);
+    // res.sendStatus(500);
+    throw err;
   }
 };
 
@@ -40,7 +46,8 @@ exports.sessionId_question_get = async (req, res) => {
     const returnObj = await SessionService.getListOfQuestionsByRole(sessionId, userId);
     res.send(returnObj);
   } catch (err) {
-    res.sendStatus(404);
+    //res.sendStatus(404);
+    throw err;
   }
 };
 
@@ -55,7 +62,8 @@ exports.sessionId_question_post = async (req, res) => {
     const returnObj = { questionId };
     res.send(returnObj);
   } catch (err) {
-    res.sendStatus(500);
+    //res.sendStatus(500);
+    throw err;
   }
 };
 
@@ -68,7 +76,8 @@ exports.sessionId_questionId_get = async (req, res) => {
     const question = await SessionService.getQuestionByRole(sessionId, questionId, userId);
     res.send(question);
   } catch (err) {
-    res.sendStatus(404);
+    //res.sendStatus(404);
+    throw err;
   }
 };
 
@@ -81,7 +90,8 @@ exports.sessionId_questionId_vote_put = async (req, res) => {
     await SessionService.addVoteByRole(sessionId, questionId, userId);
     res.sendStatus(200);
   } catch (err) {
-    res.sendStatus(404);
+    //res.sendStatus(404);
+    throw err;
   }
 };
 
@@ -91,9 +101,10 @@ exports.sessionId_questionId_vote_delete = async (req, res) => {
     const { questionId } = req.params;
     const userId = UserService.getUserId(req.user);
 
-    await SessionService.cancleVoteByRole(sessionId, questionId, userId);
+    await SessionService.cancelVoteByRole(sessionId, questionId, userId);
     res.sendStatus(200);
   } catch (err) {
-    res.sendStatus(404);
+    //res.sendStatus(404);
+    throw err;
   }
 };

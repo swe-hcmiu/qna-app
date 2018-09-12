@@ -2,6 +2,8 @@ module.exports.insertQuery = 'INSERT INTO ?? SET ?';
 
 module.exports.selectAllQuery = 'SELECT * FROM ?? WHERE ?? = ?';
 
+module.exports.selectAllQuery2 = 'SELECT * FROM ??';
+
 module.exports.selectQuery = 'SELECT ?? FROM ?? WHERE ?? = ?';
 
 module.exports.selectAllQueryWithConstraints = 'SELECT * FROM ?? WHERE ?? = ? LIMIT ? ORDER BY ??';

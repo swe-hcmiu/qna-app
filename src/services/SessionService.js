@@ -17,6 +17,15 @@ module.exports = {
     }
   },
 
+  async getListOfSessions() {
+    try {
+      const listOfSessions = await Session.getListOfSessions();
+      return listOfSessions;
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async getSessionById(sessionId) {
     try {
       const result = await Session.getSessionById(sessionId);
@@ -108,7 +117,7 @@ module.exports = {
     }
   },
 
-  async cancleVoteByRole(sessionId, questionId, userId) {
+  async cancelVoteByRole(sessionId, questionId, userId) {
     try {
       await this.checkQuestionInSession(sessionId, questionId);
 
@@ -116,7 +125,7 @@ module.exports = {
       const role = result.Role;
       const service = this.getServiceByRole(role);
 
-      await service.cancleVote(questionId, userId);
+      await service.cancelVote(questionId, userId);
     } catch (err) {
       throw err;
     }

@@ -2,6 +2,22 @@ const preparedStatements = require('./preparedStatements');
 const mysqlConfig = require('../config/mysql-config');
 
 module.exports = {
+  async getListOfSessions() {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        const listOfSessions = await connection.query(preparedStatements.selectAllQuery2, ['sessions']);
+        return listOfSessions;
+      } catch (err) {
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async createSessionTransaction(creatorId, newSession, role) {
     try {
       const connection = await mysqlConfig.pool.getConnection();
@@ -164,7 +180,7 @@ module.exports = {
     }
   },
 
-  async cancleVoteTransaction(questionId, userId, role) {
+  async cancelVoteTransaction(questionId, userId, role) {
     try {
       const connection = await mysqlConfig.pool.getConnection();
       try {
@@ -178,11 +194,11 @@ module.exports = {
 
           switch (role) {
             case 'USER': {
-              await connection.query(preparedStatements.cancleUserVoteQuery, ['questions', 'QuestionId', questionId]);
+              await connection.query(preparedStatements.cancelUserVoteQuery, ['questions', 'QuestionId', questionId]);
               break;
             }
             case 'EDITOR': {
-              await connection.query(preparedStatements.cancleEditorVoteQuery, ['questions', 'QuestionId', questionId]);
+              await connection.query(preparedStatements.cancelEditorVoteQuery, ['questions', 'QuestionId', questionId]);
               break;
             }
             default:

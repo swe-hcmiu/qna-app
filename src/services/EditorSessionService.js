@@ -49,9 +49,9 @@ module.exports = {
     }
   },
 
-  async cancleVote(questionId, userId) {
+  async cancelVote(questionId, userId) {
     try {
-      await Session.cancleVoteTransaction(questionId, userId, 'EDITOR');
+      await Session.cancelVoteTransaction(questionId, userId, 'EDITOR');
     } catch (err) {
       throw err;
     }
