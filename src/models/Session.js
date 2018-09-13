@@ -218,4 +218,21 @@ module.exports = {
       throw err;
     }
   },
+
+  async getListOfVotedQuestions(sessionId, userId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        const listOfVotedQuestions = await connection.query(preparedStatements.selectListOfVotedQuestions,
+          [userId, sessionId]);
+        return listOfVotedQuestions;
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
 };

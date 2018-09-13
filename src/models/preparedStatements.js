@@ -23,3 +23,6 @@ module.exports.updateEditorVoteQuery = 'UPDATE ?? SET VoteByEditor = VoteByEdito
 module.exports.cancelUserVoteQuery = 'UPDATE ?? SET VoteByUser = VoteByUser - 1 WHERE ?? = ?';
 
 module.exports.cancelEditorVoteQuery = 'UPDATE ?? SET VoteByEditor = VoteByEditor - 1 WHERE ?? = ?';
+
+module.exports.selectListOfVotedQuestions = `SELECT voting.QuestionId FROM voting, questions WHERE voting.QuestionId
+= questions.QuestionId AND voting.UserId = ? AND questions.SessionId = ?`;

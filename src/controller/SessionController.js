@@ -108,3 +108,15 @@ exports.sessionId_questionId_vote_delete = async (req, res) => {
     throw err;
   }
 };
+
+exports.sessionId_user_vote = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const userId = UserService.getUserId(req.user);
+
+    const listOfVotedQuestions = await SessionService.getListOfVotedQuestions(sessionId, userId);
+    res.send(listOfVotedQuestions);
+  } catch (err) {
+    throw err;
+  }
+};

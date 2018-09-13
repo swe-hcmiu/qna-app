@@ -130,4 +130,13 @@ module.exports = {
       throw err;
     }
   },
+
+  async getListOfVotedQuestions(sessionId, userId) {
+    try {
+      const listOfVotedQuestions = await Session.getListOfVotedQuestions(sessionId, userId);
+      return listOfVotedQuestions;
+    } catch (err) {
+      throw err;
+    }
+  },
 };

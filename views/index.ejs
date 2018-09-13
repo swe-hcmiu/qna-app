@@ -14,7 +14,7 @@
   	<% include template/navbar.ejs %>
 
     <div class="container">
-      <form id="inputform" action="/users/register">
+      <form id="inputform" action="/users/register" method="POST">
         <h2>Register</h2>
         <div class="form-group">
           <label for="FirstName">First Name</label>
@@ -27,7 +27,7 @@
 
         <div class="form-group">
           <label for="UserName">Username</label>
-          <input type="email" class="form-control" id="Username" name="Username" placeholder="Username" required>
+          <input type="=text" class="form-control" id="Username" name="UserName" placeholder="Username" required>
         </div>
         <div class="form-group">
           <label for="UserPass">Password</label>
@@ -38,6 +38,6 @@
       </form>
     </div>
 
-    <script type="text/javascript" src="/javascripts/index.js"></script>
+    <!-- <script type="text/javascript" src="/javascripts/index.js"></script> -->
   </body>
 </html>

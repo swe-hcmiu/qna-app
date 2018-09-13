@@ -16,4 +16,6 @@ router.get('/:sessionId/questions/:questionId', SessionController.sessionId_ques
 router.put('/:sessionId/questions/:questionId/vote', SessionController.sessionId_questionId_vote_put);
 router.delete('/:sessionId/questions/:questionId/vote', SessionController.sessionId_questionId_vote_delete);
 
+router.get('/:sessionId/users/vote', SessionController.sessionId_user_vote);
+
 module.exports = router;
