@@ -6,6 +6,17 @@ module.exports = {
     return -1;
   },
 
+  async validateUserId(userId) {
+    try {
+      if (userId === -1) {
+        userId = await User.createAnonymousUser();
+      }
+      return userId;
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async registerQnAUser(newUser) {
     try {
       await User.createQnAUserTransaction(newUser);

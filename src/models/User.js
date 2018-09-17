@@ -19,6 +19,19 @@ module.exports = {
     }
   },
 
+  async createAnonymousUser() {
+    try {
+      const user = {
+        DisplayName : Math.random().toString(36),
+        Provider: 'anonymous'
+      }
+      const result = await this.createUser(user);
+      return result.insertId;
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async createQnAUserTransaction(newUser) {
     try {
       const connection = await mysqlConfig.pool.getConnection();

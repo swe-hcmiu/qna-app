@@ -80,6 +80,7 @@ module.exports = {
       const role = result.Role;
 
       const service = this.getServiceByRole(role);
+      // userId = await UserService.validateUserId(userId);
       const questionId = await service.addQuestion(userId, sessionId, question.title,
         question.content);
       return questionId;
