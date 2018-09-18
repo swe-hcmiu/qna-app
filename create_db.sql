@@ -23,7 +23,7 @@ USE `qasys2` ;
 CREATE TABLE IF NOT EXISTS `qasys2`.`users` (
   `UserId` INT(11) NOT NULL AUTO_INCREMENT,
   `DisplayName` VARCHAR(50) NOT NULL,
-  `Provider` ENUM('qna', 'google') NULL DEFAULT NULL,
+  `Provider` ENUM('qna', 'google', 'anonymous') NULL DEFAULT NULL,
   PRIMARY KEY (`UserId`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 12

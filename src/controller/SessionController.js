@@ -54,7 +54,14 @@ exports.sessionId_question_get = async (req, res) => {
 exports.sessionId_question_post = async (req, res) => {
   const { title, content } = req.body;
   const question = { title, content };
-  const userId = UserService.getUserId(req.user);
+  const _userId = UserService.getUserId(req.user);
+  const userId = await UserService.validateUserId(_userId);
+  //add user to session?
+
+  // if (!req.user) {
+  //   req.user = await UserService.getUserById(userId);
+  //   console.log(req.user);
+  // }
   const { sessionId } = req.params;
 
   try {
