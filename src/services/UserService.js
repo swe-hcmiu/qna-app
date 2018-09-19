@@ -8,9 +8,20 @@ module.exports = {
 
   async validateUserId(userId) {
     try {
-      if (userId === -1) {
-        userId = await User.createAnonymousUser();
+      let returnId = userId;
+      if (returnId === -1) {
+        const user = await User.createAnonymousUser();
+        returnId = user.insertId;
       }
+      return returnId;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async createAnonymousUser() {
+    try {
+      const userId = await User.createAnonymousUser();
       return userId;
     } catch (err) {
       throw err;

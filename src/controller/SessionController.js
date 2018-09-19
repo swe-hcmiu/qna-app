@@ -1,3 +1,4 @@
+const passport = require('passport');
 const EditorSessionService = require('../services/EditorSessionService');
 const UserService = require('../services/UserService');
 const SessionService = require('../services/SessionService');
@@ -54,18 +55,16 @@ exports.sessionId_question_get = async (req, res) => {
 exports.sessionId_question_post = async (req, res) => {
   const { title, content } = req.body;
   const question = { title, content };
+  // const userId = UserService.getUserId(req.user);
   const rawUserId = UserService.getUserId(req.user);
   const userId = await UserService.validateUserId(rawUserId);
 
   if (!req.user) {
-    if (!req._passport.session) {
-      req._passport.session = {};
-    }
-    req._passport.session.user = userId;
-    if (!req.session) {
-      req.session = {};
-    }
-    req.session.passport = req._passport.session;
+    const user = await UserService.getUserById(userId);
+
+    req.login(user, (err) => {
+      if (err) throw err;
+    });
   }
   const { sessionId } = req.params;
 

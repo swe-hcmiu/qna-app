@@ -22,11 +22,11 @@ module.exports = {
   async createAnonymousUser() {
     try {
       const user = {
-        DisplayName : Math.random().toString(36),
-        Provider: 'anonymous'
-      }
+        DisplayName: Math.random().toString(36),
+        Provider: 'anonymous',
+      };
       const result = await this.createUser(user);
-      return result.insertId;
+      return result;
     } catch (err) {
       throw err;
     }
