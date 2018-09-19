@@ -1,4 +1,3 @@
-const passport = require('passport');
 const EditorSessionService = require('../services/EditorSessionService');
 const UserService = require('../services/UserService');
 const SessionService = require('../services/SessionService');
@@ -52,6 +51,26 @@ exports.sessionId_question_get = async (req, res) => {
   }
 };
 
+async function createAnonymousSession(req, userId) {
+  try {
+    if (!req.user) {
+      const user = await UserService.getUserById(userId);
+      const createSessionPromise = () => (
+        new Promise((resolve, reject) => {
+          req.login(user, (err) => {
+            if (err) reject(err);
+            resolve();
+          });
+        })
+      );
+
+      await createSessionPromise();
+    }
+  } catch (err) {
+    throw err;
+  }
+}
+
 exports.sessionId_question_post = async (req, res) => {
   const { title, content } = req.body;
   const question = { title, content };
@@ -59,13 +78,8 @@ exports.sessionId_question_post = async (req, res) => {
   const rawUserId = UserService.getUserId(req.user);
   const userId = await UserService.validateUserId(rawUserId);
 
-  if (!req.user) {
-    const user = await UserService.getUserById(userId);
+  await createAnonymousSession(req, userId);
 
-    req.login(user, (err) => {
-      if (err) throw err;
-    });
-  }
   const { sessionId } = req.params;
 
   try {
@@ -96,7 +110,10 @@ exports.sessionId_questionId_vote_put = async (req, res) => {
   try {
     const { sessionId } = req.params;
     const { questionId } = req.params;
-    const userId = UserService.getUserId(req.user);
+    const rawUserId = UserService.getUserId(req.user);
+    const userId = await UserService.validateUserId(rawUserId);
+
+    await createAnonymousSession(req, userId);
 
     await SessionService.addVoteByRole(sessionId, questionId, userId);
     res.sendStatus(200);
