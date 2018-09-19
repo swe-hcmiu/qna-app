@@ -140,4 +140,13 @@ module.exports = {
       throw err;
     }
   },
+
+  async getListOfEditors(sessionId) {
+    try {
+      const listOfEditors = await Session.getListOfEditors(sessionId);
+      return listOfEditors;
+    } catch (err) {
+      throw err;
+    }
+  },
 };

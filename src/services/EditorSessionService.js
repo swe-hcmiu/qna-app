@@ -56,4 +56,28 @@ module.exports = {
       throw err;
     }
   },
+
+  async updateQuestionStatus(questionId, status) {
+    try {
+      await Session.updateQuestionStatus(questionId, status);
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async addEditor(sessionId, userId) {
+    try {
+      await Session.addEditor(sessionId, userId);
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async removeEditor(sessionId, userId) {
+    try {
+      await Session.removeEditor(sessionId, userId);
+    } catch (err) {
+      throw err;
+    }
+  },
 };
