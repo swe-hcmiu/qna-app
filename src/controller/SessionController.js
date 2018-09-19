@@ -54,14 +54,19 @@ exports.sessionId_question_get = async (req, res) => {
 exports.sessionId_question_post = async (req, res) => {
   const { title, content } = req.body;
   const question = { title, content };
-  const _userId = UserService.getUserId(req.user);
-  const userId = await UserService.validateUserId(_userId);
-  //add user to session?
+  const rawUserId = UserService.getUserId(req.user);
+  const userId = await UserService.validateUserId(rawUserId);
 
-  // if (!req.user) {
-  //   req.user = await UserService.getUserById(userId);
-  //   console.log(req.user);
-  // }
+  if (!req.user) {
+    if (!req._passport.session) {
+      req._passport.session = {};
+    }
+    req._passport.session.user = userId;
+    if (!req.session) {
+      req.session = {};
+    }
+    req.session.passport = req._passport.session;
+  }
   const { sessionId } = req.params;
 
   try {
