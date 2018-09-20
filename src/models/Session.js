@@ -52,6 +52,21 @@ module.exports = {
     }
   },
 
+  async deleteSession(sessionId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        await connection.query(preparedStatements.deleteQuery, ['sessions', 'SessionId', sessionId]);
+      } catch (err) {
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async assignRole(roleObject, connection) {
     try {
       const result = await connection.query(preparedStatements.insertQuery, ['roles', roleObject]);

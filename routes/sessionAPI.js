@@ -7,6 +7,7 @@ router.get('/', SessionController.session_get);
 router.post('/', SessionController.session_post);
 
 router.get('/:sessionId', SessionController.sessionId_get);
+router.delete('/:sessionId', SessionController.sessionId_delete);
 
 router.get('/:sessionId/questions/', SessionController.sessionId_question_get);
 router.post('/:sessionId/questions/', SessionController.sessionId_question_post);

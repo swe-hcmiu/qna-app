@@ -38,6 +38,23 @@ exports.sessionId_get = async (req, res) => {
   }
 };
 
+exports.sessionId_delete = async (req, res) => {
+  try {
+    const userId = UserService.getUserId(req.user);
+    const { sessionId } = req.params;
+
+    const role = await UserService.getRoleOfUserInSession(userId, sessionId);
+    if (role === 'EDITOR') {
+      await EditorSessionService.deleteSession(sessionId);
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(401);
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
 exports.sessionId_question_get = async (req, res) => {
   try {
     const userId = UserService.getUserId(req.user);

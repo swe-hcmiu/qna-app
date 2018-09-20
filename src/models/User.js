@@ -32,6 +32,22 @@ module.exports = {
     }
   },
 
+  async deleteAnonymousUsersInSession(sessionId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        await connection.query(preparedStatements.deleteUsersInVotingTableOfSession, ['anonymous', sessionId]);
+        await connection.query(preparedStatements.deleteUsersInQuestionsTableOfSession, ['anonymous', sessionId]);
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async createQnAUserTransaction(newUser) {
     try {
       const connection = await mysqlConfig.pool.getConnection();

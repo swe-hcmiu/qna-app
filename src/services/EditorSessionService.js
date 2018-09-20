@@ -1,4 +1,5 @@
 const Session = require('../models/Session');
+const User = require('../models/User');
 
 module.exports = {
   async createSession(creatorId, newSession) {
@@ -52,6 +53,15 @@ module.exports = {
   async cancelVote(questionId, userId) {
     try {
       await Session.cancelVoteTransaction(questionId, userId, 'EDITOR');
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async deleteSession(sessionId) {
+    try {
+      await User.deleteAnonymousUsersInSession(sessionId);
+      await Session.deleteSession(sessionId);
     } catch (err) {
       throw err;
     }
