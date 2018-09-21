@@ -1,5 +1,4 @@
 const Session = require('../models/Session');
-const User = require('../models/User');
 
 module.exports = {
   async createSession(creatorId, newSession) {
@@ -60,8 +59,7 @@ module.exports = {
 
   async deleteSession(sessionId) {
     try {
-      await User.deleteAnonymousUsersInSession(sessionId);
-      await Session.deleteSession(sessionId);
+      await Session.deleteSessionTransaction(sessionId);
     } catch (err) {
       throw err;
     }
