@@ -7,6 +7,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "app-root-path": "^2.1.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "connect-flash": "^0.1.1",
@@ -16,6 +17,7 @@
     "express": "^4.16.3",
     "express-session": "^1.15.6",
     "express-validator": "^5.2.0",
+    "express-winston": "^3.0.0",
     "http-errors": "~1.6.2",
     "jshint": "^2.9.5",
     "morgan": "~1.9.0",
@@ -25,7 +27,8 @@
     "passport-google-oauth20": "^1.0.0",
     "passport-local": "^1.0.0",
     "promise-mysql": "^3.3.1",
-    "socket.io": "^2.1.1"
+    "socket.io": "^2.1.1",
+    "winston": "^3.1.0"
   },
   "author": "",
   "license": "ISC",
