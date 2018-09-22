@@ -16,6 +16,10 @@ module.exports.selectAllQueryWithTwoConstraints2 = 'SELECT * FROM ?? WHERE ?? = 
 
 module.exports.deleteAllQueryWithTwoConstraints = 'DELETE FROM ?? WHERE ?? = ? AND ?? = ?';
 
+module.exports.deleteAllQueryWithThreeConstraints = 'DELETE FROM ?? WHERE ?? = ? AND ?? = ? AND ?? = ?';
+
+module.exports.updateQueryWithConstraints = 'UPDATE ?? SET ?? = ? WHERE ?? = ?';
+
 module.exports.updateUserVoteQuery = 'UPDATE ?? SET VoteByUser = VoteByUser + 1 WHERE ?? = ?';
 
 module.exports.updateEditorVoteQuery = 'UPDATE ?? SET VoteByEditor = VoteByEditor + 1 WHERE ?? = ?';
