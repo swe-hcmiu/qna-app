@@ -45,10 +45,18 @@ exports.sessionId_delete = async (req, res) => {
 
     const result = await UserService.getRoleOfUserInSession(userId, sessionId);
     const role = result.Role;
-    if (role === 'EDITOR') {
-      await EditorSessionService.deleteSession(sessionId);
+    // if (role === 'EDITOR') {
+    //   await EditorSessionService.deleteSession(sessionId);
+    //   res.sendStatus(200);
+    // } else {
+    //   res.sendStatus(401);
+    // }
+
+    const service = SessionService.getServiceByRole(role);
+    try {
+      await service.deleteSession(sessionId);
       res.sendStatus(200);
-    } else {
+    } catch (err) {
       res.sendStatus(401);
     }
   } catch (err) {
