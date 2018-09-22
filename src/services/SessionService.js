@@ -43,7 +43,7 @@ module.exports = {
 
       const [session, listOfQuestions] = await Promise.all([this.getSessionById(sessionId),
         service.getQuestionsOfSession(sessionId)]);
-      const returnObj = { session, listOfQuestions };
+      const returnObj = { session, role, listOfQuestions };
       return returnObj;
     } catch (err) {
       throw err;
