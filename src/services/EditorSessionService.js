@@ -80,4 +80,12 @@ module.exports = {
       throw err;
     }
   },
+
+  async deleteSession(sessionId) {
+    try {
+      await Session.deleteSessionTransaction(sessionId);
+    } catch (err) {
+      throw err;
+    }
+  },
 };

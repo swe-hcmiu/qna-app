@@ -1,5 +1,6 @@
 const preparedStatements = require('./preparedStatements');
 const mysqlConfig = require('../config/mysql-config');
+const User = require('./User');
 
 module.exports = {
   async getListOfSessions() {
@@ -47,6 +48,33 @@ module.exports = {
     try {
       const result = await connection.query(preparedStatements.insertQuery, ['sessions', newSession]);
       return result.insertId;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async deleteSession(sessionId, connection) {
+    try {
+      await connection.query(preparedStatements.deleteQuery, ['sessions', 'SessionId', sessionId]);
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async deleteSessionTransaction(sessionId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        await connection.beginTransaction();
+        await User.deleteAnonymousUsersInSession(sessionId);
+        await this.deleteSession(sessionId, connection);
+        await connection.commit();
+      } catch (err) {
+        connection.rollback();
+        throw err;
+      } finally {
+        connection.release();
+      }
     } catch (err) {
       throw err;
     }
