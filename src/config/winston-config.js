@@ -8,28 +8,68 @@ const dynamicMetaConfig = (req, res) => {
   };
 };
 
-const options = {
-  info: {
-    transports: [
-      new winston.transports.Console({
-        json: true,
-        colorize: true,
-      }),
-      new winston.transports.File({
-        json: true,
-        colorize: false,
-        filename: `${appRoot}/logs/info.log`,
-      }),
-    ],
-    meta: true,
-    msg: 'HTTP {{req.method}} {{req.url}}',
-    expressFormat: true,
-    ignoreRoute: (req, res) => { return false; },
-    dynamicMeta: dynamicMetaConfig,
-  },
-
+const logFormat = {
+  console: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.colorize(),
+    winston.format.simple(),
+  ),
+  file: winston.format.combine(winston.format.timestamp(), winston.format.prettyPrint()),
 };
 
-const logger = expressWinston.logger(options.info);
+const console = winston.createLogger({
+  transports: [
+    new winston.transports.Console(),
+  ],
+  format: logFormat.console,
+  level: 'debug',
+});
 
-module.exports = logger;
+const infoFile = winston.createLogger({
+  transports: [
+    new winston.transports.File({
+      filename: `${appRoot}/logs/info.log`,
+    }),
+  ],
+  format: logFormat.file,
+  level: 'info',
+});
+
+const errorFile = winston.createLogger({
+  transports: [
+    new winston.transports.File({
+      filename: `${appRoot}/logs/error.log`,
+    }),
+  ],
+  format: logFormat.file,
+  level: 'error',
+});
+
+const consoleLogger = expressWinston.logger({
+  meta: false,
+  expressFormat: true,
+  colorize: true,
+  winstonInstance: console,
+});
+
+const infoFileLogger = expressWinston.logger({
+  meta: true,
+  expressFormat: true,
+  colorize: false,
+  dynamicMeta: dynamicMetaConfig,
+  winstonInstance: infoFile,
+});
+
+const errorFileLogger = expressWinston.logger({
+  meta: true,
+  expressFormat: true,
+  colorize: false,
+  dynamicMeta: dynamicMetaConfig,
+  winstonInstance: errorFile,
+});
+
+module.exports = {
+  consoleLogger,
+  infoFileLogger,
+  errorFileLogger,
+};
