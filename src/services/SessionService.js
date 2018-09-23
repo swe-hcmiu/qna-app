@@ -43,7 +43,7 @@ module.exports = {
 
       const [session, listOfQuestions] = await Promise.all([this.getSessionById(sessionId),
         service.getQuestionsOfSession(sessionId)]);
-      const returnObj = { session, listOfQuestions };
+      const returnObj = { session, role, listOfQuestions };
       return returnObj;
     } catch (err) {
       throw err;
@@ -136,6 +136,15 @@ module.exports = {
     try {
       const listOfVotedQuestions = await Session.getListOfVotedQuestions(sessionId, userId);
       return listOfVotedQuestions;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async getListOfEditors(sessionId) {
+    try {
+      const listOfEditors = await Session.getListOfEditors(sessionId);
+      return listOfEditors;
     } catch (err) {
       throw err;
     }

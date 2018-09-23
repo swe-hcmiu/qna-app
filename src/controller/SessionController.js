@@ -163,6 +163,18 @@ exports.sessionId_questionId_vote_delete = async (req, res) => {
   }
 };
 
+exports.sessionId_questionId_status_put = async (req, res) => {
+  try {
+    const { questionId } = req.params;
+    const status = req.body.Status;
+
+    await EditorSessionService.updateQuestionStatus(questionId, status);
+    res.sendStatus(200);
+  } catch (err) {
+    throw err;
+  }
+};
+
 exports.sessionId_user_vote = async (req, res) => {
   try {
     const { sessionId } = req.params;
@@ -170,6 +182,41 @@ exports.sessionId_user_vote = async (req, res) => {
 
     const listOfVotedQuestions = await SessionService.getListOfVotedQuestions(sessionId, userId);
     res.send(listOfVotedQuestions);
+  } catch (err) {
+    throw err;
+  }
+};
+
+exports.sessionId_editor_get = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    const listOfEditors = await SessionService.getListOfEditors(sessionId);
+    res.send(listOfEditors);
+  } catch (err) {
+    throw err;
+  }
+};
+
+exports.sessionId_editor_permission_post = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { userId } = req.body;
+
+    await EditorSessionService.addEditor(sessionId, userId);
+    res.sendStatus(200);
+  } catch (err) {
+    throw err;
+  }
+};
+
+exports.sessionId_editor_permission_delete = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { userId } = req.body;
+
+    await EditorSessionService.removeEditor(sessionId, userId);
+    res.sendStatus(200);
   } catch (err) {
     throw err;
   }

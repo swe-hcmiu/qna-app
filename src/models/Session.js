@@ -263,4 +263,74 @@ module.exports = {
       throw err;
     }
   },
+
+  async updateQuestionStatus(questionId, status) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        await connection.query(preparedStatements.updateQueryWithConstraints, ['questions', 'Status', status,
+          'QuestionId', questionId]);
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async getListOfEditors(sessionId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        const listOfEditors = await connection.query(preparedStatements.selectQuery, ['UserId', 'roles',
+          'SessionId', sessionId]);
+        return listOfEditors;
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async addEditor(sessionId, userId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        const roleObject = {
+          UserId: userId,
+          SessionId: sessionId,
+          Role: 'EDITOR',
+        };
+        await connection.query(preparedStatements.insertQuery, ['roles', roleObject]);
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async removeEditor(sessionId, userId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        const role = 'EDITOR';
+        await connection.query(preparedStatements.deleteAllQueryWithThreeConstraints, ['roles', 'UserId',
+          userId, 'SessionId', sessionId, 'Role', role]);
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
 };
