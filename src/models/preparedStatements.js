@@ -14,6 +14,8 @@ module.exports.selectAllQueryWithTwoConstraints = 'SELECT * FROM ?? WHERE ?? = ?
 
 module.exports.selectAllQueryWithTwoConstraints2 = 'SELECT * FROM ?? WHERE ?? = ? AND ?? <> ?';
 
+module.exports.deleteQuery = 'DELETE FROM ?? WHERE ?? = ?';
+
 module.exports.deleteAllQueryWithTwoConstraints = 'DELETE FROM ?? WHERE ?? = ? AND ?? = ?';
 
 module.exports.deleteAllQueryWithThreeConstraints = 'DELETE FROM ?? WHERE ?? = ? AND ?? = ? AND ?? = ?';
@@ -30,3 +32,7 @@ module.exports.cancelEditorVoteQuery = 'UPDATE ?? SET VoteByEditor = VoteByEdito
 
 module.exports.selectListOfVotedQuestions = `SELECT voting.QuestionId FROM voting, questions WHERE voting.QuestionId
 = questions.QuestionId AND voting.UserId = ? AND questions.SessionId = ?`;
+
+module.exports.deleteUsersInVotingTableOfSession = 'DELETE FROM users WHERE Provider = ? AND UserId IN (SELECT DISTINCT voting.UserId FROM voting, questions WHERE voting.QuestionId = questions.QuestionId AND SessionId = ?)';
+
+module.exports.deleteUsersInQuestionsTableOfSession = 'DELETE FROM users WHERE Provider = ? AND UserId IN (SELECT DISTINCT UserId FROM questions WHERE SessionId = ?)';

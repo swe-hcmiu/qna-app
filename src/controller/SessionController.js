@@ -38,6 +38,32 @@ exports.sessionId_get = async (req, res) => {
   }
 };
 
+exports.sessionId_delete = async (req, res) => {
+  try {
+    const userId = UserService.getUserId(req.user);
+    const { sessionId } = req.params;
+
+    const result = await UserService.getRoleOfUserInSession(userId, sessionId);
+    const role = result.Role;
+    // if (role === 'EDITOR') {
+    //   await EditorSessionService.deleteSession(sessionId);
+    //   res.sendStatus(200);
+    // } else {
+    //   res.sendStatus(401);
+    // }
+
+    const service = SessionService.getServiceByRole(role);
+    try {
+      await service.deleteSession(sessionId);
+      res.sendStatus(200);
+    } catch (err) {
+      res.sendStatus(401);
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
 exports.sessionId_question_get = async (req, res) => {
   try {
     const userId = UserService.getUserId(req.user);
