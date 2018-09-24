@@ -17,16 +17,10 @@
     "express": "^4.16.3",
     "express-session": "^1.15.6",
     "express-validator": "^5.2.0",
-<<<<<<< HEAD
     "express-winston": "^3.0.0",
     "http-errors": "~1.6.2",
     "jshint": "^2.9.6",
     "morgan": "~1.9.0",
-=======
-    "http-errors": "^1.6.3",
-    "jshint": "^2.9.5",
-    "morgan": "^1.9.0",
->>>>>>> rewrite-dependencies
     "mysql": "^2.15.0",
     "nodemon": "^1.17.4",
     "passport": "^0.4.0",
@@ -34,9 +28,7 @@
     "passport-local": "^1.0.0",
     "promise-mysql": "^3.3.1",
     "socket.io": "^2.1.1",
-<<<<<<< HEAD
     "winston": "^3.1.0"
-=======
     "abbrev": "^1.1.1",
     "accepts": "^1.3.5",
     "acorn": "^5.7.1",
@@ -469,7 +461,6 @@
     "xmlhttprequest-ssl": "^1.5.5",
     "yallist": "^2.1.2",
     "yeast": "^0.1.2"
->>>>>>> rewrite-dependencies
   },
   "author": "",
   "license": "ISC",
