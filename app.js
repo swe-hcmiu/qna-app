@@ -25,8 +25,6 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(winstonConfig.consoleLogger, winstonConfig.infoFileLogger, winstonConfig.errorFileLogger);
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -78,11 +76,15 @@ app.use(expressValidator({
   },
 }));
 
+app.use(winstonConfig.consoleLogger, winstonConfig.infoFileLogger);
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/sessions', sessionRouter);
 app.use('/api/sessions', sessionAPIRouter);
+
+app.use(winstonConfig.errorFileLogger);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

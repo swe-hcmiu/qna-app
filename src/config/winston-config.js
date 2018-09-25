@@ -47,6 +47,7 @@ const errorFile = winston.createLogger({
 
 const consoleLogger = expressWinston.logger({
   meta: false,
+  statusLevels: true,
   expressFormat: true,
   colorize: true,
   winstonInstance: console,
@@ -60,7 +61,7 @@ const infoFileLogger = expressWinston.logger({
   winstonInstance: infoFile,
 });
 
-const errorFileLogger = expressWinston.logger({
+const errorFileLogger = expressWinston.errorLogger({
   meta: true,
   expressFormat: true,
   colorize: false,
