@@ -134,7 +134,7 @@ module.exports = {
   async getListOfVotedQuestions(sessionId, userId) {
     try {
       const listOfVotedQuestions = await Session.getListOfVotedQuestions(sessionId, userId);
-      return listOfVotedQuestions;
+      return { listOfVotedQuestions };
     } catch (err) {
       throw err;
     }

@@ -20,7 +20,7 @@ askBtn.addEventListener("click", () => {
 
 // Event listener
 submitBtn.addEventListener("click", function() {
-  const url="api/sessions/"+sessionId+"/questions";
+  const url="/api/sessions/"+sessionId+"/questions";
 
   axios.post(url, {
     title: document.getElementById("title-ask").value,
@@ -50,24 +50,24 @@ function init() { // Get session data
 	axios.get(url)
 	.then((response)=> {
 		sessionData = response.data.session;
-		document.getElementById("session-name").innerHTML= sessionData.session.SessionName;
+		document.getElementById("session-name").innerHTML= sessionData.SessionName;
 		render();
 	})
 }
 async function render() {
-	const questionsUrl='api/sessions/'+sessionId+'/questions';
+	const questionsUrl='/api/sessions/'+sessionId+'/questions';
 	const likesUrl='/api/sessions/'+sessionId+'/users/vote';
 	const questionsPromise = axios(questionsUrl);
-	const likesPromise = axios(likesUrl);
+  const likesPromise = axios(likesUrl);
 
-	const [questionList, likeList] = await Promise.all([questionsPromise, likesPromise]);
+  const [questionList, likeList] = await Promise.all([questionsPromise, likesPromise]);
 
 	renderHTML(questionList.data.listOfQuestions, likeList.data.listOfVotedQuestions, 'top10');
 }
 
 function renderHTML(questionData, likeData, position) {
 	likeData = likeData.map(like => like.QuestionId);
-	let htmlString='';
+  let htmlString='';
 	questionData.forEach(question => {
 		htmlString+= createHtmlForPost(question, likeData.includes(question.QuestionId))
 	})
@@ -75,6 +75,8 @@ function renderHTML(questionData, likeData, position) {
 }
 
 function createHtmlForPost(post, isLiked) {
+  console.log(post);
+  console.log(isLiked);
   let postString = `
 		<div class="question d-flex py-2" id=${post.QuestionId}>
       <div class="question-info pl-2 flex-grow-1">
@@ -83,7 +85,6 @@ function createHtmlForPost(post, isLiked) {
             <p class="question-title mb-0">${post.Title}</p>
             ${post.VoteByAdmin ? '<p class="editor mb-0 ml-auto p-1">Editor Choice</p>':''}
           </div>
-          <p class="question-title mb-0">${post.Title}</p>
           <p class="question-content mb-0">
             ${post.Content}
           </p>
@@ -91,7 +92,7 @@ function createHtmlForPost(post, isLiked) {
         <div class="question-personal-info mt-1 d-flex">
           <p class="question-likeCount mb-1 px-2"><span class="number">${post.VoteByUser}</span> votes</p>
           <p class="question-author mb-1 pl-2">written by <span class="author">Username ${post.UserId}</span></p>
-		      ${session.role === "USER" ?
+		      ${sessionData.role === "USER" ?
 		      '':
 		      `<div class="ml-auto mb-1">
 		      	<button onclick="handlePost" class="btn btn-sm btn-success approveBtn">${sessionData.SessionType==="DEFAULT" || post.Status==="UNANSWERED" ? "Answer":"Approve"}</button>
@@ -133,7 +134,7 @@ function unvotePost(e) {
 }
 
 function handlePost(e) {
-	const status;
+	let status;
 	if(e.innerHTML === "Remove" || e.innerHTML === "Answer") {
     status = "ANSWERED";
   } else {

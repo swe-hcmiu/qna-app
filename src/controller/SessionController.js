@@ -18,8 +18,9 @@ exports.session_post = async (req, res) => {
     const session = { sessionName, sessionType };
 
     const sessionId = await EditorSessionService.createSession(userId, session);
-    const returnObj = { sessionId };
-    res.send(returnObj);
+    // const returnObj = { sessionId };
+    // res.send(returnObj);
+    res.redirect(`/sessions/${sessionId}`);
   } catch (err) {
     // res.sendStatus(500);
     throw err;
