@@ -3,7 +3,7 @@ function getSession() {
   .then(response => {
     var HTMLString = '';
     response.forEach(session => {
-      HTMLString += `<li><a href="/sessions/${session.id}">Session ${session.name}</a></li>`
+      HTMLString += `<li><a href="/sessions/${session.id}">${session.name}</a></li>`
     })
     document.getElementById("sessionList").innerHTML = HTMLString;
   })

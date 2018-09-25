@@ -28,7 +28,7 @@ submitBtn.addEventListener("click", function() {
   })
   .then(response => {
     console.log(response);
-    getJSON();
+    render();
     document.getElementById("title-ask").value = '';
     document.getElementById("content-ask").value = '';
   })
