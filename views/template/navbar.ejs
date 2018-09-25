@@ -1,37 +1,31 @@
-<nav class="navbar navbar-default">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" id="brand" href="#">Q&A</a>
-    </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <span class="navbar-brand title" href="#">QnA App</span>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Session <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Session 189</a></li>
-            <li><a href="#">Session 242</a></li>
-          </ul>
-        </li>
-      </ul>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link text-white" href="/sessions">Session</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav ml-auto">
       <% if(user) { %>
-        <ul class="nav navbar-nav navbar-right">
-        	<li><a href="#"><%= user.DisplayName %></a> </li>
-        	<li><a href="/users/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-      	</ul>
+        <li class="nav-item ">
+          <span class="nav-link text-white"><%= user.DisplayName %></span>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link text-white" href="/logout"><i class="fas fa-sign-out-alt"></i> Log out</a>
+        </li>
       <% } else { %>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="/users/login"><i class="fas fa-user-plus"></i> Log in</a></li>
-        <li><a href="/users/register"><i class="fas fa-user"></i> Sign up</a></li>
-      </ul>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="/login"><i class="fas fa-user"></i> Log In</a>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link text-white" href="/login"><i class="fas fa-sign-in-alt"></i> Sign up</a>
+        </li>
       <% } %>
-    </div>
+    </ul>
   </div>
 </nav>
-

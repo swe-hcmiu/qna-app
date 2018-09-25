@@ -3,9 +3,9 @@ function getSession() {
   .then(response => {
     var HTMLString = '';
     response.forEach(session => {
-      HTMLString += `<li><a href="/session/${session.id}">Session ${session.name}</a></li>`
+      HTMLString += `<li><a href="/sessions/${session.id}">Session ${session.name}</a></li>`
     })
-    document.getElementById("questionList").innerHTML = HTMLString;
+    document.getElementById("sessionList").innerHTML = HTMLString;
   })
   .catch((err) => {console.log(err)})
 }
