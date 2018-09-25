@@ -1,49 +1,83 @@
-/* Bordered form */
-form {
-    border: 3px solid #f1f1f1;
-    width: 400px;
-    margin: 0 auto;
-    /* position: fixed; */
+@import url('https://fonts.googleapis.com/css?family=Dancing+Script');
+
+body {
+  height: 100%;
+  font-family: Arial, sans-serif;
 }
 
-/* Full-width inputs */
-input[type=text], input[type=password] {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
+nav {
+  background-color: #2F3239;
+  color: #FFFFFF;
 }
 
-/* Set a style for all buttons */
-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    cursor: pointer;
-    width: 100%;
+nav .title {
+  color: #FFF;
+  font-family: 'Dancing Script', cursive;
+  font-size: 24px;
 }
 
-/* Add a hover effect for buttons */
-button:hover {
-    opacity: 0.8;
+nav .title:hover {
+  background-color: #2F3239;
 }
 
-/* Add padding to containers */
-.container {
-    padding: 16px;
+nav a {
+  color: #FFF;
 }
 
-/* Change styles for span and cancel button on extra small screens */
-@media screen and (max-width: 300px) {
-    span.psw {
-        display: block;
-        float: none;
-    }
-    .cancelbtn {
-        width: 100%;
-    }
+nav a:hover {
+  color: #FFF;
+  background-color: #FF7361;
+  border-radius: 5px;
+}
+
+.headerbar {
+  font-size: 28px;
+  color: #979797;
+  border-bottom: 1px #D8D8D8 solid;
+}
+
+.headerbar div {
+  cursor: pointer;
+}
+
+.active {
+  color: #FF7361;
+}
+
+.myform label {
+  font-weight: 700;
+}
+
+.myform span {
+  margin-left: 2px;
+  color: #F00;
+}
+
+.myform input {
+  background-color: #F3F3F3;
+  border: 1px #999999 solid;
+  border-radius: 5px;
+  height: 2.2rem;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.myform input:focus {
+  outline-style: none !important;
+  outline: none !important;
+  outline: 0 !important;
+  border: 2px #FF7361 solid;
+}
+
+.myform input {
+  width: 100%;
+}
+
+.myform button {
+  background-color: #FF7361;
+  color: #FFF;
+}
+
+.undisplay {
+  display: none;
 }
