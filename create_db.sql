@@ -23,10 +23,10 @@ USE `qasys2` ;
 CREATE TABLE IF NOT EXISTS `qasys2`.`users` (
   `UserId` INT(11) NOT NULL AUTO_INCREMENT,
   `DisplayName` VARCHAR(50) NOT NULL,
-  `Provider` ENUM('qna', 'google') NULL DEFAULT NULL,
+  `Provider` ENUM('qna', 'google', 'anonymous') NULL DEFAULT NULL,
   PRIMARY KEY (`UserId`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 12
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `qasys2`.`sessions` (
   PRIMARY KEY (`SessionId`),
   UNIQUE INDEX `SessionName` (`SessionName` ASC, `SessionType` ASC))
 ENGINE = InnoDB
-AUTO_INCREMENT = 14
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS `qasys2`.`questions` (
     REFERENCES `qasys2`.`sessions` (`SessionId`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 8
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8;
 
 

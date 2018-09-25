@@ -38,7 +38,7 @@ exports.user_login_get = async (req, res) => {
 };
 
 exports.user_login_post = async (req, res) => {
-  res.redirect('/');
+  res.redirect('/sessions');
 };
 
 exports.user_logout_get = async (req, res) => {

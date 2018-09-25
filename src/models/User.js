@@ -19,6 +19,40 @@ module.exports = {
     }
   },
 
+  async createAnonymousUser() {
+    try {
+      const user = {
+        DisplayName: Math.random().toString(36),
+        Provider: 'anonymous',
+      };
+      const result = await this.createUser(user);
+      return result;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async deleteAnonymousUsersInSession(sessionId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        await connection.beginTransaction();
+
+        await connection.query(preparedStatements.deleteUsersInVotingTableOfSession, ['anonymous', sessionId]);
+        await connection.query(preparedStatements.deleteUsersInQuestionsTableOfSession, ['anonymous', sessionId]);
+
+        await connection.commit();
+      } catch (err) {
+        await connection.rollback();
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async createQnAUserTransaction(newUser) {
     try {
       const connection = await mysqlConfig.pool.getConnection();
