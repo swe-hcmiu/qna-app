@@ -1,31 +1,72 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <title> Login </title>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
-	<link rel='stylesheet' href='/stylesheets/login.css' />
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <!-- fontawsome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+  <title>QnA app</title>
+
+  <link rel="stylesheet" href="/stylesheets/login.css">
 </head>
 <body>
 	<% include template/navbar.ejs %>
-    <div class="container">
-      <form id="inputform" action="/users/login" method="POST">
-        <h2>Log In</h2>
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
-        </div>
 
-        <button type="submit" class="btn btn-primary" id="login">Log in</button>
-      </form>
+  <div class="container">
+    <div class="myform">
+      <div class="headerbar d-flex my-2">
+        <div class="signUpTab active">Sign Up</div>
+        <div class="logInTab ml-auto">Log In</div>
+      </div>
+      <div class="signUpForm">
+        <div>
+          <label for="FirstName">First Name<span>*</span></label>
+          <input type="text" id="FirstName" name="FirstName" required>
+        </div>
+        <div>
+          <label for="LastName">Last Name<span>*</span></label>
+          <input type="text" id="LastName" name="LastName">
+        </div>
+        <div>
+          <label for="UserName">Username<span>*</span></label>
+          <input type="text" id="UserName" name="UserName" required>
+        </div>
+        <div>
+          <label for="UserPass">Password<span>*</span></label>
+          <input type="password" id="UserPass" name="UserPass" required>
+        </div>
+        <button class="btn btn-lg d-block mx-auto mt-2" id="signUpBtn">Register</button>
+      </div>
+      <div class="logInForm undisplay">
+        <div>
+          <label for="username">Username<span>*</span></label>
+          <input type="text" id="username" name="username" required>
+        </div>
+        <div>
+          <label for="password">Password<span>*</span></label>
+          <input type="password" id="password" name="password" required>
+          <button class="btn btn-lg d-block mx-auto mt-2" id="logInBtn">Log In</button>
+        </div>
+      </div>
+      <button class="btn btn-sm d-block ml-0 mt-2 ">
+        <a class="text-white" href="/auth/google">Log in with Google+</a>
+      </button>
     </div>
-	<a href = "/auth/google"> Google+ </a> <br>
+  </div>
+
+
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script src="/javascripts/login.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </body>
 </html>

@@ -1,162 +1,107 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
+  <!-- Required meta tags -->
   <meta charset="utf-8">
-  <title>QnA app</title>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/questionBoard.css">
- --></head>
-<body>
-  <% include template/navbar.ejs %>
-      <!-- Add question -->
-    <div id="addQuestionForm">
-      <div class="row">
-        <div class="col-lg-3"></div>
-        <div class="col-lg-6" id="ask-box">
-          <div class="row">
-            <div class="col-lg-12" id="add"> Add Question </div>
-          <!-- </div> -->
-          <hr/>
-          <div class="row">
-            <div class="col-lg-3">
-              <label style="margin-left: 50px; " for='title-ask'>Title</label>
-            </div>
-            <div class="col-lg-9"><input id='title-ask' type="text" name="title-ask"></div>
-          </div>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-          <div class="row">
-            <div class="col-lg-3">
-              <label style="margin-left: 50px; " for='Title'>Content</label>
-            </div>
-            <div class="col-lg-9">
-              <textarea id="content-ask" name="content-ask"></textarea>
-              <!-- <input id="content-ask" type="text" name="content-ask"> -->
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-lg-12">
-              <button id="addQuestionBtn" class="btn btn-default" style="margin-left: 82%; margin-top: 5px; margin-bottom: 10px;">Submit</button>
-            </div>
-          </div>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <!-- fontawsome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+  <title>QnA app</title>
+
+  <link rel="stylesheet" href="/stylesheets/questionBoard.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <span class="navbar-brand title" href="#">QnA App</span>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item ">
+          <a class="nav-link text-white" href="/sessions">Session</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item ">
+          <a class="nav-link text-white undisplay" id="askBtn" href="#">
+            Ask ?</a>
+        </li>
+        <li class="nav-item ">
+          <span class="nav-link text-white">
+            <%= user.DisplayName %></span>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link text-white" href="/users/logout">
+            <i class="fas fa-sign-out-alt"></i> Log out</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="session-name items-align-center text-center my-1">
+      <span id="session-name">Software Engineering</span>
+    </div>
+
+    <div class="questionForm w-sm-100 w-md-75 mx-auto pb-2">
+      <div class="questionForm-head d-flex text-center">
+        <p class=" w-100 h2">Add new question</p>
+        <i class="fas fa-times ml-auto mr-3 my-2"></i>
+      </div>
+      <div class="form">
+        <div class="title d-flex">
+          <label class="w-25" for="title">Title:</label>
+          <input class="w-100" type="text" id="title-ask" autocomplete="off">
         </div>
-        <div class="col-lg-3"></div>
+        <div class="content d-flex">
+          <label class="w-25" for="content">Content:</label>
+          <textarea class="w-100" type="text" id="content-ask" autocomplete="off">
+
+          </textarea>
+        </div>
+        <button class="btn btn-lg submitBtn d-block mx-auto my-2 w-sm-25 " id="submitBtn">
+          Submit
+        </button>
+      </div>
+    </div>
+
+    <ul class="nav nav-tabs nav-fill pt-3" id="myTab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="newest-tab" data-toggle="tab" href="#newest" role="tab" aria-controls="newest" aria-selected="true">Newest</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="top10-tab" data-toggle="tab" href="#top10" role="tab" aria-controls="top10" aria-selected="false">Top 10</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="answered-tab" data-toggle="tab" href="#answered" role="tab" aria-controls="Answered" aria-selected="false">Answered</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="newest" role="tabpanel" aria-labelledby="newest-tab">
+
+      </div>
+      <div class="tab-pane fade" id="top10" role="tabpanel" aria-labelledby="top10-tab">
+
+      </div>
+      <div class="tab-pane fade" id="answered" role="tabpanel" aria-labelledby="answered-tab">
+
       </div>
     </div>
 
 
-
-  <div class="row">
-    <div class="col-md-5 top10TaBle" id="top10Table">
-      <div class="row top10" >QUESTIONS</div>
-      <!-- First Post -->
-
-
-    </div> <!--End of question table -->
-
-    <div class="col-md-2"></div>
-
-    <!-- top10 table -->
-    <div class="col-md-5 top10TaBle">
-      <div class="row top10" >TOP 10</div>
-      <!-- First Post -->
-      <div class="row userPost" id="userPost1">
-        <div class="col-md-3 user">
-          <img src="https://instagram.fdad1-1.fna.fbcdn.net/vp/6cbeeeb5904eae32a7f5c5d8e1e927e7/5B9A1C30/t51.2885-19/s320x320/30830360_1919864968323704_6723598940555444224_n.jpg"  class="img-circle avatarUser" alt="Cinque Terre">
-          <div class="userName"> johnhuytran</div>
-        </div>
-
-        <div class="col-md-9 content">
-          <div class="row" id="titlePost">Các phương thức xét tuyển.</div>
-          <div class="row" id="contentPost">Em xin hỏi thầy/cô rằng trường chúng ta sẽ có bao nhiêu hình thức xét tuyển? Mỗi phương thức sẽ có bao nhiêu chỉ tiêu? Và hình thức cụ thể của từng phương thức như thế nào? Em xin cảm ơn. </div>
-        </div>
-      <hr class="style14">
-      <div class="row inforPost">
-        <span class="timePost">1h ago</span>
-        <span><i class="fas fa-heart"></i></span>
-        <span class="voteAmount"><span class="bold">522</span> votes</span>
-        <span class="rating bold">#1</span>
-      </div>
-
-      </div> <!-- End of user post 1 -->
-
-      <div class="row userPost" id="userPostSBE4">
-        <div class="col-md-3 user">
-          <img src="https://i1.sndcdn.com/avatars-000328399620-ouyykm-t500x500.jpg"  class="img-circle avatarUser" alt="Cinque Terre">
-          <div class="userName"> trang</div>
-        </div>
-
-        <div class="col-md-9 content">
-          <div class="row" id="titlePost">Các phương thức xét tuyển.</div>
-          <div class="row" id="contentPost">Em xin hỏi thầy/cô rằng trường chúng ta sẽ có bao nhiêu hình thức xét tuyển? Mỗi phương thức sẽ có bao nhiêu chỉ tiêu? Và hình thức cụ thể của từng phương thức như thế nào? Em xin cảm ơn. </div>
-
-        </div>
-      <hr class="style14">
-      <div class="row inforPost">
-        <span class="timePost">3h ago</span>
-
-        <span><i class="fas fa-heart"></i></span>
-        <span class="voteAmount"><span class="bold">855</span> votes</span>
-        <span class="SBE bold">selected by editor</span>
-
-      </div>
-
-      </div> <!-- End of user post 4 selected by editor -->
-
-            <div class="row userPost" id="userNewestPost1">
-        <div class="col-md-3 user">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdhttUkj8Nc8H4JIM2DHszaSP2i96vdYFiN5SiDYYOdceTmiev"  class="img-circle avatarUser" alt="Cinque Terre">
-          <div class="userName"> cahoihoang</div>
-        </div>
-
-        <div class="col-md-9 haveBorder content">
-          <div class="row" id="titlePost">Các phương thức xét tuyển.</div>
-          <div class="row" id="contentPost">Em xin hỏi thầy/cô rằng trường chúng ta sẽ có bao nhiêu hình thức xét tuyển? Mỗi phương thức sẽ có bao nhiêu chỉ tiêu? Và hình thức cụ thể của từng phương thức như thế nào? Em xin cảm ơn. </div>
-
-        </div>
-      <hr class="style14">
-      <div class="row inforPost">
-        <span class="timePost">1m ago</span>
-
-        <span><i class="fas fa-heart"></i></span>
-        <span class="voteAmount"><span class="bold">1</span> votes</span>
-        <span class="newest bold">newest</span>
-
-      </div>
-
-      </div> <!-- End of newest post 1 -->
-
-       <div class="row userPost" id="userNewestPost2">
-        <div class="col-md-3 user">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrveZPz48yhRojlCv9hmSYQ0fDyIWUs2b2ftYxIibVXz7rai304A"  class="img-circle avatarUser" alt="Cinque Terre">
-          <div class="userName"> anonymous</div>
-        </div>
-
-        <div class="col-md-9 haveBorde content">
-          <div class="row" id="titlePost">Các phương thức xét tuyển các phương thức xét tuyển.</div>
-          <div class="row" id="contentPost"> Và hình thức cụ thể của từng phương thức như thế nào? Em xin cảm ơn. Em xin hỏi thầy/cô rằng trường chúng ta sẽ có bao nhiêu hình thức xét tuyển? Mỗi phương thức sẽ có bao nhiêu chỉ tiêu? Và hình thức cụ thể của từng phương thức như thế nào? Em xin cảm ơn. </div>
-
-        </div>
-      <hr class="style14">
-      <div class="row inforPost">
-        <span class="timePost">1w ago</span>
-
-        <span><i class="fas fa-heart"></i></span>
-        <span class="voteAmount"><span class="bold">2</span> votes</span>
-        <span class="newest bold"> newest</span>
-
-      </div>
-
-      </div> <!-- End of newest user post 2 -->
-    </div> <!--End of top 10 table -->
   </div>
 
-  </div> <!--End of col-md8-->
-
-  </div>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script type="text/javascript" src="/javascripts/questionBoard.js"></script>
 </body>
