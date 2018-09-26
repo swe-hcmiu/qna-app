@@ -16,14 +16,14 @@
           <span class="nav-link text-white"><%= user.DisplayName %></span>
         </li>
         <li class="nav-item ">
-          <a class="nav-link text-white" href="/logout"><i class="fas fa-sign-out-alt"></i> Log out</a>
+          <a class="nav-link text-white" href="/users/logout"><i class="fas fa-sign-out-alt"></i> Log out</a>
         </li>
       <% } else { %>
         <li class="nav-item">
-          <a class="nav-link text-white" href="/login"><i class="fas fa-user"></i> Log In</a>
+          <a class="nav-link text-white" href="/users/login"><i class="fas fa-user"></i> Log In</a>
         </li>
         <li class="nav-item ">
-          <a class="nav-link text-white" href="/login"><i class="fas fa-sign-in-alt"></i> Sign up</a>
+          <a class="nav-link text-white" href="/users/login"><i class="fas fa-sign-in-alt"></i> Sign up</a>
         </li>
       <% } %>
     </ul>

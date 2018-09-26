@@ -6,59 +6,55 @@ const signUpBtn = document.getElementById("signUpBtn");
 const logInBtn = document.getElementById("logInBtn");
 
 signUpTab.addEventListener("click", () => {
-	signUpTab.classList.add("active");
-	logInTab.classList.remove("active");
-	signUpForm.classList.remove("undisplay");
-	logInForm.classList.add("undisplay");
+  signUpTab.classList.add("active");
+  logInTab.classList.remove("active");
+  signUpForm.classList.remove("undisplay");
+  logInForm.classList.add("undisplay");
 })
 
 logInTab.addEventListener("click", () => {
-	logInTab.classList.add("active");
-	signUpTab.classList.remove("active");
-	logInForm.classList.remove("undisplay");
-	signUpForm.classList.add("undisplay");
+  logInTab.classList.add("active");
+  signUpTab.classList.remove("active");
+  logInForm.classList.remove("undisplay");
+  signUpForm.classList.add("undisplay");
 })
 
 signUpBtn.addEventListener("click", () => {
-	const url = "/users/register";
-	const data = {
-		FirstName: document.getElementById("FirstName"),
-		LastName: document.getElementById("LastName"),
-		UserName: document.getElementById("UserName"),
-		UserPass: document.getElementById("UserPass"),
-	};
-	fetch(url, {
-		method: 'POST',
-    headers: {
-        "Content-Type": "application/json; charset=utf-8",
-    },
-    body: JSON.stringify(data)
-	}).then((response) => {
-		if (response.status == 200) {
-			window.locate("/sessions");
-		} else {
-			alert(response.content);
-		}
-	})
+  const url = "/users/register";
+  const data = {
+    FirstName: document.getElementById("FirstName").value,
+    LastName: document.getElementById("LastName").value,
+    UserName: document.getElementById("UserName").value,
+    UserPass: document.getElementById("UserPass").value,
+  };
+  axios.post(url, { FirstName, LastName, UserName, UserPass } = data)
+    .then((response) => {
+      if (response.status == 200) {
+        window.location = "/users/login";
+      } else {
+        alert(response.content);
+      }
+    });
 })
 
 logInBtn.addEventListener("click", () => {
-	const url = "/users/login";
-	const data = {
-		username: document.getElementById("username"),
-		password: document.getElementById("password")
-	};
-	fetch(url, {
-		method: 'POST',
+  const url = "/users/login";
+  const data = {
+    username: document.getElementById("username").value,
+    password: document.getElementById("password").value
+  };
+  fetch(url, {
+    method: 'POST',
     headers: {
-        "Content-Type": "application/json; charset=utf-8",
+      "Content-Type": "application/json; charset=utf-8",
     },
     body: JSON.stringify(data)
-	}).then((response) => {
-		if (response.status == 302) {
-			window.locate("/sessions");
-		} else {
-			alert("Username doesn't existed");
-		}
-	})
+  }).then((response) => {
+    console.log(response);
+    if (response.status == 200) {
+      window.location = "/sessions";
+    } else {
+      alert("Username doesn't existed");
+    }
+  })
 })
