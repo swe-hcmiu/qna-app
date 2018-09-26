@@ -27,15 +27,6 @@ module.exports = {
     }
   },
 
-  async getQuestionsOfSession(SessionId) {
-    try {
-      const result = await Session.getQuestionsOfSession(SessionId, false);
-      return result;
-    } catch (err) {
-      throw err;
-    }
-  },
-
   async getQuestion(questionId) {
     try {
       const question = await Session.getQuestion(questionId);

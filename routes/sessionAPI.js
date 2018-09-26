@@ -9,7 +9,9 @@ router.post('/', SessionController.session_post);
 router.get('/:sessionId', SessionController.sessionId_get);
 router.delete('/:sessionId', SessionController.sessionId_delete);
 
-router.get('/:sessionId/questions/', SessionController.sessionId_question_get);
+router.get('/:sessionId/questions/newest', SessionController.sessionId_question_newest);
+router.get('/:sessionId/questions/top', SessionController.sessionId_question_top);
+router.get('/:sessionId/questions/pending', SessionController.sessionId_question_pending);
 router.post('/:sessionId/questions/', SessionController.sessionId_question_post);
 
 router.get('/:sessionId/questions/:questionId', SessionController.sessionId_questionId_get);
