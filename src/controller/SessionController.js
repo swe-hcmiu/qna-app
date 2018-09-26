@@ -65,15 +65,47 @@ exports.sessionId_delete = async (req, res) => {
   }
 };
 
-exports.sessionId_question_get = async (req, res) => {
+exports.sessionId_question_newest = async (req, res) => {
   try {
-    const userId = UserService.getUserId(req.user);
     const { sessionId } = req.params;
 
-    const returnObj = await SessionService.getListOfQuestionsByRole(sessionId, userId);
-    res.send(returnObj);
+    const listOfNewestQuestions = await SessionService.getNewestQuestionsOfSession(sessionId);
+    res.send(listOfNewestQuestions);
   } catch (err) {
     // res.sendStatus(404);
+    throw err;
+  }
+};
+
+exports.sessionId_question_top = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
+    res.send(listOfFavoriteQuestions);
+  } catch (err) {
+    throw err;
+  }
+};
+
+exports.sessionId_question_answered = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    const listOfAnsweredQuestions = await SessionService.getAnsweredQuestionsOfSession(sessionId);
+    res.send(listOfAnsweredQuestions);
+  } catch (err) {
+    throw err;
+  }
+};
+
+exports.sessionId_question_pending = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    const listOfPendingQuestions = await EditorSessionService.getPendingQuestionsOfSession(sessionId);
+    res.send(listOfPendingQuestions);
+  } catch (err) {
     throw err;
   }
 };
