@@ -5,9 +5,26 @@ const urlSegments = window.location.pathname.split('/');
 const sessionId = urlSegments[urlSegments.length-1];
 const submitBtn = document.getElementById("submitBtn");
 let likeList = [];
-let questionList = [];
+let questionList = {
+	newest: [],
+	top10: [],
+	answered: [],
+};
 let sessionData = null;
 let roleData = null;
+
+async function fetchData() {
+	const questionsUrl='/api/sessions/'+sessionId+'/questions';
+	const likesUrl='/api/sessions/'+sessionId+'/users/vote';
+	const listOfQuestions = await axios(questionsUrl);
+	likeList = await axios(likesUrl);
+	localStorage.setItem('newest', listOfQuestions.filter(q=> q.Status !== "ANSWERED"));
+	localStorage.setItem('answered', listOfQuestions.filter(q=> q.Status === "ANSWERED"));
+	localStorage.setItem('likeList', likeList.data.listOfVotedQuestions.map(like => like.QuestionId));
+	// questionList.newest = listOfQuestions.filter(q=> q.Status !== "ANSWERED");
+	// questionList.answered = listOfQuestions.filter(q=> q.Status === "ANSWERED");
+	// likeList = likeList.data.listOfVotedQuestions.map(like => like.QuestionId);
+}
 
 closeBtn.addEventListener("click", () => {
 	questionForm.classList.add("undisplay");
@@ -39,24 +56,21 @@ submitBtn.addEventListener("click", function() {
 })
 
 // function
-async function getQuestionData() {
-  const url='api/sessions/'+sessionId+'/questions';
-  axios.get(url).then(res => {
-  	questionList = res.data.listOfQuestions;
-  });
-}
-
 function init() { // Get session data
 	const url = "/api/sessions/"+sessionId;
 	axios.get(url)
 	.then((response)=> {
     sessionData = response.data.session;
+		console.log(sessionData);
+		// questionList.newest = response.data.listOfQuestions.filter(q=> q.Status !== "ANSWERED");
+		// questionList.answered = response.data.listOfQuestions.filter(q=> q.Status === "ANSWERED");
+		questionList = response.data.listOfQuestions;
     roleData = response.data.role;
-    console.log(sessionData);
 		document.getElementById("session-name").innerHTML= sessionData.SessionName;
 		render();
 	})
 }
+
 async function render() {
 	const questionsUrl='/api/sessions/'+sessionId+'/questions';
 	const likesUrl='/api/sessions/'+sessionId+'/users/vote';
@@ -64,7 +78,8 @@ async function render() {
   const likesPromise = axios(likesUrl);
 
   const [questionList, likeList] = await Promise.all([questionsPromise, likesPromise]);
-
+	// console.log(questionList);
+	// console.log(likeList);
 	renderHTML(questionList.data.listOfQuestions.filter(q=> q.Status !== "ANSWERED"), likeList.data.listOfVotedQuestions, 'newest');
 	renderHTML(questionList.data.listOfQuestions.filter(q=> q.Status === "ANSWERED"), likeList.data.listOfVotedQuestions, 'answered');
 }
@@ -79,18 +94,16 @@ function renderHTML(questionData, likeData, position) {
 }
 
 function createHtmlForPost(post, isLiked) {
-  console.log(post);
-  console.log(isLiked);
-  console.log(sessionData);
+	console.log(post);
   let postString = `
-		<div class="question d-flex py-2" id=${post.QuestionId}>
+		<div class="question d-flex py-2 w-100" id=${post.QuestionId}>
       <div class="question-info pl-2 flex-grow-1">
         <div class="question-main-info pb-1">
            <div class="d-flex">
-            <p class="question-title mb-0">${post.Title}</p>
-            ${post.VoteByEditor ? '<p class="editor mb-0 ml-auto p-1">Editor Choice</p>':''}
+            <p class="question-title mb-0 text-justify">${post.Title}</p>
+            ${post.VoteByEditor ? '<p class="editor mb-0 ml-auto p-1 text-center">Editor Choice</p>':''}
           </div>
-          <p class="question-content mb-0">
+          <p class="question-content mb-0 text-justify" >
             ${post.Content}
           </p>
         </div>
@@ -105,23 +118,22 @@ function createHtmlForPost(post, isLiked) {
 		      </div>`}
         </div>
       </div>
-      ${
-      	!isLiked ?
-      	'<div class="question-icon p-2 m-auto"><i onclick="handleVote(this)" class="far fa-heart"></i></div>'
-      	: '<div class="question-icon p-2 m-auto"><i onclick="handleVote(this)" class="fas fa-heart"></i></div>'
-      }
+	      ${
+	      	!isLiked ?
+	      	'<div class="question-icon p-2 m-auto"><i onclick="handleVote(this)" class="far fa-heart"></i></div>'
+	      	: '<div class="question-icon p-2 m-auto"><i onclick="handleVote(this)" class="fas fa-heart"></i></div>'
+	      }
     </div>`
   return postString;
 }
 
-function handleVote(e) {
-  console.log(e.classList.contains("fas"));
+async function handleVote(e) {
+	console.log(e.classList.contains("fas"));
   if(e.classList.contains("fas")) {
-    unvotePost(e);
+		unvotePost(e);
   } else {
-    votePost(e);
+		votePost(e);
   }
-  render();
 }
 
 function votePost(e) {
@@ -130,9 +142,7 @@ function votePost(e) {
   axios.put(url)
   .then(response => {
     if(response.status == 200) {
-      e.classList.toggle("fas");
-      e.classList.toggle("far");
-      // e.parentElement.parentElement.querySelector("span").innerHTML = Number(e.parentElement.parentElement.querySelector("span").innerHTML)+1;
+			render();
     }})
   .catch(error => console.log(error));
 }
@@ -143,9 +153,7 @@ function unvotePost(e) {
   axios.delete(url)
   .then(response => {
     if(response.status == 200) {
-      e.classList.toggle("fas");
-      e.classList.toggle("far");
-      // e.parentElement.parentElement.querySelector("span").innerHTML = Number(e.parentElement.parentElement.querySelector("span").innerHTML)-1;
+			render();
     }})
   .catch(error => console.log(error));
 }
@@ -158,7 +166,7 @@ function handlePost(e) {
   } else {
     status = "UNANSWERED";
   }
-  console.log(status);
+  // console.log(status);
 	const url = "/api/sessions/"+sessionId+"/questions/"+questionId+"/status";
 	axios.put(url, {
 		Status: status
@@ -168,5 +176,6 @@ function handlePost(e) {
   render();
 }
 
-
 init();
+
+// setInterval(render, 2000);
