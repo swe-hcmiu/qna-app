@@ -31,22 +31,28 @@
         <li class="nav-item ">
           <a class="nav-link text-white undisplay" id="askBtn" href="#">
             Ask ?</a>
-        </li>
-        <li class="nav-item ">
-          <span class="nav-link text-white">
-            <%= user.DisplayName %></span>
-        </li>
-        <li class="nav-item ">
-          <a class="nav-link text-white" href="/users/logout">
-            <i class="fas fa-sign-out-alt"></i> Log out</a>
-        </li>
+        <% if(user) { %>
+          <li class="nav-item ">
+            <span class="nav-link text-white"><%= user.DisplayName %></span>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link text-white" href="/users/logout"><i class="fas fa-sign-out-alt"></i> Log out</a>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="/users/login"><i class="fas fa-user"></i> Log In</a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link text-white" href="/users/login"><i class="fas fa-sign-in-alt"></i> Sign up</a>
+          </li>
+        <% } %>
       </ul>
     </div>
   </nav>
 
   <div class="container">
     <div class="session-name items-align-center text-center my-1">
-      <span id="session-name">Software Engineering</span>
+      <span id="session-name"></span>
     </div>
 
     <div class="questionForm w-sm-100 w-md-75 mx-auto pb-2">
@@ -84,13 +90,10 @@
     </ul>
     <div class="tab-content" id="myTabContent">
       <div class="tab-pane fade show active" id="newest" role="tabpanel" aria-labelledby="newest-tab">
-
       </div>
       <div class="tab-pane fade" id="top10" role="tabpanel" aria-labelledby="top10-tab">
-
       </div>
       <div class="tab-pane fade" id="answered" role="tabpanel" aria-labelledby="answered-tab">
-
       </div>
     </div>
 
