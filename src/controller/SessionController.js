@@ -115,6 +115,39 @@ exports.sessionId_question_pending = async (req, res, next) => {
   }
 };
 
+exports.sessionId_question_top = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
+    res.send(listOfFavoriteQuestions);
+  } catch (err) {
+    throw err;
+  }
+};
+
+exports.sessionId_question_answered = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    const listOfAnsweredQuestions = await SessionService.getAnsweredQuestionsOfSession(sessionId);
+    res.send(listOfAnsweredQuestions);
+  } catch (err) {
+    throw err;
+  }
+};
+
+exports.sessionId_question_pending = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    const listOfPendingQuestions = await EditorSessionService.getPendingQuestionsOfSession(sessionId);
+    res.send(listOfPendingQuestions);
+  } catch (err) {
+    throw err;
+  }
+};
+
 async function createAnonymousSession(req, userId) {
   try {
     if (!req.user) {
