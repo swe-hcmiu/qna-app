@@ -30,8 +30,16 @@ module.exports = {
   async getQuestion(questionId) {
     try {
       const question = await Session.getQuestion(questionId);
+      if (!question) {
+        const err = new Error('Not Found');
+        err.description = { question: 'Not Found' };
+        throw err;
+      }
       if (question.Status !== 'PENDING') return question;
-      throw new Error('Authorization required');
+
+      const err = new Error('Authorization required');
+      err.description = { user: 'user must be editor of this session' };
+      throw err;
     } catch (err) {
       throw err;
     }

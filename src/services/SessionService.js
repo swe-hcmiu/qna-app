@@ -95,16 +95,6 @@ module.exports = {
     }
   },
 
-  async checkQuestionInSession(sessionId, questionId) {
-    try {
-      const question = await Session.getQuestion(questionId);
-      const sessionIdTemp = parseInt(sessionId, 10);
-      if (question.SessionId !== sessionIdTemp) throw new Error('This question does not belong to this session');
-    } catch (err) {
-      throw err;
-    }
-  },
-
   async addQuestionByRole(sessionId, userId, question) {
     try {
       const result = await UserService.getRoleOfUserInSession(userId, sessionId);
@@ -120,43 +110,45 @@ module.exports = {
     }
   },
 
-  async getQuestionByRole(sessionId, questionId, userId) {
+  async getQuestion(questionId) {
     try {
-      await this.checkQuestionInSession(sessionId, questionId);
-
-      const result = await UserService.getRoleOfUserInSession(userId, sessionId);
-      const role = result.Role;
-      const service = this.getServiceByRole(role);
-
-      const question = await service.getQuestion(questionId);
+      const question = await Session.getQuestion(questionId);
       return question;
     } catch (err) {
       throw err;
     }
   },
 
-  async addVoteByRole(sessionId, questionId, userId) {
+  async getQuestionByRole(sessionId, questionId, userId) {
     try {
-      await this.checkQuestionInSession(sessionId, questionId);
-
       const result = await UserService.getRoleOfUserInSession(userId, sessionId);
       const role = result.Role;
       const service = this.getServiceByRole(role);
 
+      const question = await service.getQuestion(questionId);
+      if (question.SessionId !== parseInt(sessionId, 10)) {
+        const err = new Error('Not Found');
+        err.description = { question: 'Not Found' };
+        throw err;
+      }
+      return question;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async addVoteByRole(sessionId, questionId, userId, role) {
+    try {
+      const service = this.getServiceByRole(role);
       await service.addVote(questionId, userId);
     } catch (err) {
       throw err;
     }
   },
 
-  async cancelVoteByRole(sessionId, questionId, userId) {
+  async cancelVoteByRole(sessionId, questionId, userId, role) {
     try {
-      await this.checkQuestionInSession(sessionId, questionId);
-
-      const result = await UserService.getRoleOfUserInSession(userId, sessionId);
-      const role = result.Role;
       const service = this.getServiceByRole(role);
-
       await service.cancelVote(questionId, userId);
     } catch (err) {
       throw err;

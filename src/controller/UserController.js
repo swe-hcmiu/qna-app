@@ -1,35 +1,42 @@
 const UserService = require('../services/UserService');
+const validateRegisterHandler = require('../validator/register');
 
 exports.user_register_get = async (req, res) => {
   res.render('register', { errors: null });
 };
 
-exports.user_register_post = async (req, res) => {
-  req.checkBody('FirstName', 'Firstname is required').notEmpty();
-  req.checkBody('LastName', 'Lastname is required').notEmpty();
-  req.checkBody('UserName', 'Username is required').notEmpty();
-  req.checkBody('UserPass', 'Password is required').notEmpty();
+exports.user_register_post = async (req, res, next) => {
+  try {
+    const validateObj = {
+      FirstName: req.body.FirstName,
+      LastName: req.body.LastName,
+      UserName: req.body.UserName,
+      UserPass: req.body.UserPass,
+    };
+    validateRegisterHandler(validateObj);
 
-  const InputErrors = req.validationErrors();
-  if (InputErrors) {
-    res.render('register', { errors: InputErrors });
-  } else {
-    try {
-      const newUser = {
-        DisplayName: `${req.body.FirstName} ${req.body.LastName}`,
-        UserName: req.body.UserName,
-        UserPass: req.body.UserPass,
-        Provider: 'qna',
-      };
+    const newUser = {
+      DisplayName: `${req.body.FirstName} ${req.body.LastName}`,
+      UserName: req.body.UserName,
+      UserPass: req.body.UserPass,
+      Provider: 'qna',
+    };
 
-      await UserService.registerQnAUser(newUser);
+    await UserService.registerQnAUser(newUser);
 
-      res.status(200);
-      res.send('REGISTRATION COMPLETED');
-    } catch (err) {
-      res.status(409);
-      res.send('USERNAME ALREADY EXISTS!');
+    res.sendStatus(200);
+  } catch (err) {
+    switch (err.code) {
+      case 'ER_DUP_ENTRY': {
+        err.httpCode = 409;
+        err.description = 'Username already exists';
+        break;
+      }
+      default: {
+        break;
+      }
     }
+    next(err);
   }
 };
 
@@ -43,6 +50,5 @@ exports.user_login_post = async (req, res) => {
 
 exports.user_logout_get = async (req, res) => {
   req.logout();
-  req.flash('success_msg', 'You are logged out');
   res.redirect('/');
 };

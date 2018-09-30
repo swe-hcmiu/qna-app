@@ -26,6 +26,11 @@ module.exports = {
   async getQuestion(questionId) {
     try {
       const question = await Session.getQuestion(questionId);
+      if (!question) {
+        const err = new Error('Not Found');
+        err.description = { question: 'Not Found' };
+        throw err;
+      }
       return question;
     } catch (err) {
       throw err;
