@@ -126,11 +126,6 @@ module.exports = {
       const service = this.getServiceByRole(role);
 
       const question = await service.getQuestion(questionId);
-      if (question.SessionId !== parseInt(sessionId, 10)) {
-        const err = new Error('Not Found');
-        err.description = { question: 'Not Found' };
-        throw err;
-      }
       return question;
     } catch (err) {
       throw err;

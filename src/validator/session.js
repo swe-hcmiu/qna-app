@@ -59,7 +59,7 @@ module.exports = {
       const session = await SessionService.getSessionById(sessionId);
       if (!session) {
         const err = new Error('Not Found');
-        description.push({ session: 'session not found' });
+        description.push({ session: 'Not Found' });
         err.description = description;
         throw err;
       }
@@ -131,6 +131,24 @@ module.exports = {
         throw err;
       }
       return question;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async validateGetSpecificQuestion(data) {
+    try {
+      await this.validateSession(data.sessionId);
+      const description = [];
+      if (!Validator.isInt(data.questionId)) {
+        description.push({ questionId: 'question id must be an integer' });
+      }
+      if (!isEmpty(description)) {
+        const err = new Error('Invalid input');
+        err.description = description;
+        throw err;
+      }
+      await this.validateQuestionBelongToSession(data.questionId, data.sessionId);
     } catch (err) {
       throw err;
     }

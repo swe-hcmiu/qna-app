@@ -21,11 +21,11 @@ const validateRegisterInput = (data) => {
   }
 
   if (!Validator.isLength(dataTemp.UserName, { min: 2, max: 30 })) {
-    description.push({ UserName: 'user name must between 6 and 30 characters' });
+    description.push({ UserName: 'user name must between 2 and 30 characters' });
   }
 
   if (!Validator.isLength(dataTemp.UserPass, { min: 2, max: 30 })) {
-    description.push({ UserPass: 'password must between 6 and 30 characters' });
+    description.push({ UserPass: 'password must between 2 and 30 characters' });
   }
 
   if (!isEmpty(description)) {

@@ -115,39 +115,6 @@ exports.sessionId_question_pending = async (req, res, next) => {
   }
 };
 
-exports.sessionId_question_top = async (req, res) => {
-  try {
-    const { sessionId } = req.params;
-
-    const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
-    res.send(listOfFavoriteQuestions);
-  } catch (err) {
-    throw err;
-  }
-};
-
-exports.sessionId_question_answered = async (req, res) => {
-  try {
-    const { sessionId } = req.params;
-
-    const listOfAnsweredQuestions = await SessionService.getAnsweredQuestionsOfSession(sessionId);
-    res.send(listOfAnsweredQuestions);
-  } catch (err) {
-    throw err;
-  }
-};
-
-exports.sessionId_question_pending = async (req, res) => {
-  try {
-    const { sessionId } = req.params;
-
-    const listOfPendingQuestions = await EditorSessionService.getPendingQuestionsOfSession(sessionId);
-    res.send(listOfPendingQuestions);
-  } catch (err) {
-    throw err;
-  }
-};
-
 async function createAnonymousSession(req, userId) {
   try {
     if (!req.user) {
@@ -194,9 +161,12 @@ exports.sessionId_question_post = async (req, res, next) => {
 exports.sessionId_questionId_get = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
-    await ValidateSessionHandler.validateSession(sessionId);
-
     const { questionId } = req.params;
+    const validateObj = {
+      sessionId,
+      questionId,
+    }
+    await ValidateSessionHandler.validateGetSpecificQuestion(validateObj);
     const userId = UserService.getUserId(req.user);
 
     const question = await SessionService.getQuestionByRole(sessionId, questionId, userId);
@@ -326,6 +296,16 @@ exports.sessionId_editor_permission_post = async (req, res, next) => {
     await EditorSessionService.addEditor(sessionId, userId);
     res.sendStatus(200);
   } catch (err) {
+    switch (err.code) {
+      case 'ER_DUP_ENTRY': {
+        err.httpCode = 409;
+        err.description = 'user is already editor of this session';
+        break;
+      }
+      default: {
+        break;
+      }
+    }
     next(err);
   }
 };
