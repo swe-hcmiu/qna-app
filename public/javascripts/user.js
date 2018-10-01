@@ -1,11 +1,11 @@
 function getUserInfo() {
-  const url="";
-  fetch(url)((
+  const url="/api/users/info";
+  axios(url)
   .then(res => {
-    document.getElementById("staticUsername").innerHTML = res.Username;
-    document.getElementById("staticUserId").innerHTML = res.UserId;
-    document.getElementById("staticFirstName").innerHTML = res.FirstName;
-    document.getElementById("staticLastName").innerHTML = res.LastName;
+    document.getElementById("staticUsername").value = res.data.DisplayName;
+    document.getElementById("staticUserId").value = res.data.UserId;
+    // document.getElementById("staticFirstName").innerHTML = res.FirstName;
+    // document.getElementById("staticLastName").innerHTML = res.LastName;
   })
 }
 

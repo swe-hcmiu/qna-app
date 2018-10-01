@@ -1,5 +1,5 @@
 const UserService = require('../services/UserService');
-const validateRegisterHandler = require('../validator/register');
+const validateUserHandler = require('../validator/user');
 
 exports.user_register_get = async (req, res) => {
   res.render('register', { errors: null });
@@ -13,7 +13,7 @@ exports.user_register_post = async (req, res, next) => {
       UserName: req.body.UserName,
       UserPass: req.body.UserPass,
     };
-    validateRegisterHandler(validateObj);
+    validateUserHandler(validateObj);
 
     const newUser = {
       DisplayName: `${req.body.FirstName} ${req.body.LastName}`,
@@ -51,4 +51,16 @@ exports.user_login_post = async (req, res) => {
 exports.user_logout_get = async (req, res) => {
   req.logout();
   res.redirect('/');
+};
+
+exports.user_info_get = async (req, res, next) => {
+  try {
+    const validateObj = {
+      user: req.user,
+    };
+    await validateUserHandler.validateUserLogin(validateObj);
+    res.send(req.user);
+  } catch (err) {
+    next(err);
+  }
 };
