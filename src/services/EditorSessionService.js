@@ -23,15 +23,6 @@ module.exports = {
     }
   },
 
-  async getQuestionsOfSession(SessionId) {
-    try {
-      const result = await Session.getQuestionsOfSession(SessionId, true);
-      return result;
-    } catch (err) {
-      throw err;
-    }
-  },
-
   async getQuestion(questionId) {
     try {
       const question = await Session.getQuestion(questionId);
@@ -84,6 +75,15 @@ module.exports = {
   async deleteSession(sessionId) {
     try {
       await Session.deleteSessionTransaction(sessionId);
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async getPendingQuestionsOfSession(sessionId) {
+    try {
+      const listOfPendingQuestions = await Session.getPendingQuestionsOfSession(sessionId);
+      return listOfPendingQuestions;
     } catch (err) {
       throw err;
     }

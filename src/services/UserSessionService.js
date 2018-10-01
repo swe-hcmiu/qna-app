@@ -27,20 +27,14 @@ module.exports = {
     }
   },
 
-  async getQuestionsOfSession(SessionId) {
-    try {
-      const result = await Session.getQuestionsOfSession(SessionId, false);
-      return result;
-    } catch (err) {
-      throw err;
-    }
-  },
-
   async getQuestion(questionId) {
     try {
       const question = await Session.getQuestion(questionId);
       if (question.Status !== 'PENDING') return question;
-      throw new Error('Authorization required');
+
+      const err = new Error('Authorization required');
+      err.description = { user: 'user must be editor of this session' };
+      throw err;
     } catch (err) {
       throw err;
     }
