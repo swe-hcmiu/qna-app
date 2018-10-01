@@ -41,34 +41,55 @@ module.exports = {
       const role = result.Role;
       const service = this.getServiceByRole(role);
 
-      const [session, listOfQuestions] = await Promise.all([this.getSessionById(sessionId),
-        service.getQuestionsOfSession(sessionId)]);
-      const returnObj = { session, role, listOfQuestions };
+      const [session, listOfNewestQuestions, listOfTopFavoriteQuestion, listOfAnsweredQuestions] = await Promise.all([
+        this.getSessionById(sessionId),
+        this.getNewestQuestionsOfSession(sessionId),
+        this.getTopFavoriteQuestionsOfSession(sessionId),
+        this.getAnsweredQuestionsOfSession(sessionId),
+      ]);
+      const returnObj = {
+        session,
+        role,
+        listOfNewestQuestions,
+        listOfTopFavoriteQuestion,
+        listOfAnsweredQuestions,
+      };
+
+      try {
+        const listOfPendingQuestions = await service.getPendingQuestionsOfSession(sessionId);
+        returnObj.listOfPendingQuestions = listOfPendingQuestions;
+      } catch (err) {
+        // continue regardless error
+      }
+
       return returnObj;
     } catch (err) {
       throw err;
     }
   },
 
-  async getListOfQuestionsByRole(sessionId, userId) {
+  async getNewestQuestionsOfSession(sessionId) {
     try {
-      const result = await UserService.getRoleOfUserInSession(userId, sessionId);
-      const role = result.Role;
-      const service = this.getServiceByRole(role);
-
-      const listOfQuestions = await service.getQuestionsOfSession(sessionId);
-      const returnObj = { listOfQuestions };
-      return returnObj;
+      const listOfNewestQuestions = await Session.getNewestQuestionsOfSession(sessionId);
+      return listOfNewestQuestions;
     } catch (err) {
       throw err;
     }
   },
 
-  async checkQuestionInSession(sessionId, questionId) {
+  async getTopFavoriteQuestionsOfSession(sessionId) {
     try {
-      const question = await Session.getQuestion(questionId);
-      const sessionIdTemp = parseInt(sessionId, 10);
-      if (question.SessionId !== sessionIdTemp) throw new Error('This question does not belong to this session');
+      const listOfTopFavoriteQuestions = await Session.getTopFavoriteQuestionsOfSession(sessionId);
+      return listOfTopFavoriteQuestions;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async getAnsweredQuestionsOfSession(sessionId) {
+    try {
+      const listOfAnsweredQuestions = await Session.getAnsweredQuestionsOfSession(sessionId);
+      return listOfAnsweredQuestions;
     } catch (err) {
       throw err;
     }
@@ -89,10 +110,17 @@ module.exports = {
     }
   },
 
+  async getQuestion(questionId) {
+    try {
+      const question = await Session.getQuestion(questionId);
+      return question;
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async getQuestionByRole(sessionId, questionId, userId) {
     try {
-      await this.checkQuestionInSession(sessionId, questionId);
-
       const result = await UserService.getRoleOfUserInSession(userId, sessionId);
       const role = result.Role;
       const service = this.getServiceByRole(role);
@@ -104,28 +132,18 @@ module.exports = {
     }
   },
 
-  async addVoteByRole(sessionId, questionId, userId) {
+  async addVoteByRole(sessionId, questionId, userId, role) {
     try {
-      await this.checkQuestionInSession(sessionId, questionId);
-
-      const result = await UserService.getRoleOfUserInSession(userId, sessionId);
-      const role = result.Role;
       const service = this.getServiceByRole(role);
-
       await service.addVote(questionId, userId);
     } catch (err) {
       throw err;
     }
   },
 
-  async cancelVoteByRole(sessionId, questionId, userId) {
+  async cancelVoteByRole(sessionId, questionId, userId, role) {
     try {
-      await this.checkQuestionInSession(sessionId, questionId);
-
-      const result = await UserService.getRoleOfUserInSession(userId, sessionId);
-      const role = result.Role;
       const service = this.getServiceByRole(role);
-
       await service.cancelVote(questionId, userId);
     } catch (err) {
       throw err;

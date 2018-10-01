@@ -18,6 +18,7 @@ const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
 const sessionRouter = require('./routes/sessions');
 const sessionAPIRouter = require('./routes/sessionAPI');
+const ErrorController = require('./src/controller/ErrorController');
 
 const app = express();
 
@@ -83,6 +84,8 @@ app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/sessions', sessionRouter);
 app.use('/api/sessions', sessionAPIRouter);
+
+app.use(ErrorController);
 
 app.use(winstonConfig.errorFileLogger);
 

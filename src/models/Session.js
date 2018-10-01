@@ -137,18 +137,61 @@ module.exports = {
     }
   },
 
-  async getQuestionsOfSession(SessionId, includingPending) {
+  async getNewestQuestionsOfSession(sessionId) {
     try {
       const connection = await mysqlConfig.pool.getConnection();
       try {
-        let result;
-        if (includingPending) {
-          result = await connection.query(preparedStatements.selectAllQuery, ['questions', 'SessionId', SessionId]);
-        } else {
-          result = await connection.query(preparedStatements.selectAllQueryWithTwoConstraints2,
-            ['questions', 'SessionId', SessionId, 'Status', 'PENDING']);
-        }
+        const result = await connection.query(preparedStatements.selectNewestQuestions, [sessionId]);
         return result;
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async getTopFavoriteQuestionsOfSession(sessionId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        const listOfTopFavoriteQuestions = await connection.query(preparedStatements.selectTopFavoriteQuestions,
+          [sessionId]);
+        return listOfTopFavoriteQuestions;
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async getAnsweredQuestionsOfSession(sessionId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        const listOfAnsweredQuestions = await connection.query(preparedStatements.selectAnsweredQuestions, [sessionId]);
+        return listOfAnsweredQuestions;
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async getPendingQuestionsOfSession(sessionId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        const listOfPendingQuestions = await connection.query(preparedStatements.selectPendingQuestions, [sessionId]);
+        return listOfPendingQuestions;
       } catch (err) {
         throw err;
       } finally {

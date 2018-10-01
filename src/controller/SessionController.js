@@ -1,6 +1,7 @@
 const EditorSessionService = require('../services/EditorSessionService');
 const UserService = require('../services/UserService');
 const SessionService = require('../services/SessionService');
+const ValidateSessionHandler = require('../validator/session');
 
 exports.session_get = async (req, res) => {
   try {
@@ -11,8 +12,15 @@ exports.session_get = async (req, res) => {
   }
 };
 
-exports.session_post = async (req, res) => {
+exports.session_post = async (req, res, next) => {
   try {
+    const validateObj = {
+      sessionName: req.body.sessionName,
+      sessionType: req.body.sessionType,
+      user: req.user,
+    };
+    await ValidateSessionHandler.validateCreateSessionInput(validateObj);
+
     const userId = UserService.getUserId(req.user);
     const { sessionName, sessionType } = req.body;
     const session = { sessionName, sessionType };
@@ -22,59 +30,88 @@ exports.session_post = async (req, res) => {
     // res.send(returnObj);
     res.redirect(`/sessions/${sessionId}`);
   } catch (err) {
-    // res.sendStatus(500);
-    throw err;
+    next(err);
   }
 };
 
-exports.sessionId_get = async (req, res) => {
+exports.sessionId_get = async (req, res, next) => {
   try {
-    const userId = UserService.getUserId(req.user);
     const { sessionId } = req.params;
+    await ValidateSessionHandler.validateSession(sessionId);
+    const userId = UserService.getUserId(req.user);
 
     const returnObj = await SessionService.getInfoSessionByRole(sessionId, userId);
     res.send(returnObj);
   } catch (err) {
-    throw err;
+    next(err);
   }
 };
 
-exports.sessionId_delete = async (req, res) => {
+exports.sessionId_delete = async (req, res, next) => {
   try {
-    const userId = UserService.getUserId(req.user);
+    const validateObj = {
+      sessionId: req.params.sessionId,
+      user: req.user,
+    };
+    await ValidateSessionHandler.validateDeleteSession(validateObj);
+
     const { sessionId } = req.params;
-
-    const result = await UserService.getRoleOfUserInSession(userId, sessionId);
-    const role = result.Role;
-    // if (role === 'EDITOR') {
-    //   await EditorSessionService.deleteSession(sessionId);
-    //   res.sendStatus(200);
-    // } else {
-    //   res.sendStatus(401);
-    // }
-
-    const service = SessionService.getServiceByRole(role);
-    try {
-      await service.deleteSession(sessionId);
-      res.sendStatus(200);
-    } catch (err) {
-      res.sendStatus(401);
-    }
+    await EditorSessionService.deleteSession(sessionId);
+    res.sendStatus(200);
   } catch (err) {
-    throw err;
+    next(err);
   }
 };
 
-exports.sessionId_question_get = async (req, res) => {
+exports.sessionId_question_newest = async (req, res, next) => {
   try {
-    const userId = UserService.getUserId(req.user);
     const { sessionId } = req.params;
+    await ValidateSessionHandler.validateSession(sessionId);
 
-    const returnObj = await SessionService.getListOfQuestionsByRole(sessionId, userId);
-    res.send(returnObj);
+    const listOfNewestQuestions = await SessionService.getNewestQuestionsOfSession(sessionId);
+    res.send(listOfNewestQuestions);
   } catch (err) {
-    // res.sendStatus(404);
-    throw err;
+    next(err);
+  }
+};
+
+exports.sessionId_question_top = async (req, res, next) => {
+  try {
+    const { sessionId } = req.params;
+    await ValidateSessionHandler.validateSession(sessionId);
+
+    const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
+    res.send(listOfFavoriteQuestions);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.sessionId_question_answered = async (req, res, next) => {
+  try {
+    const { sessionId } = req.params;
+    await ValidateSessionHandler.validateSession(sessionId);
+
+    const listOfAnsweredQuestions = await SessionService.getAnsweredQuestionsOfSession(sessionId);
+    res.send(listOfAnsweredQuestions);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.sessionId_question_pending = async (req, res, next) => {
+  try {
+    const { sessionId } = req.params;
+    const validateObj = {
+      sessionId,
+      user: req.user,
+    };
+    await ValidateSessionHandler.validateGetPendingQuestions(validateObj);
+
+    const listOfPendingQuestions = await EditorSessionService.getPendingQuestionsOfSession(sessionId);
+    res.send(listOfPendingQuestions);
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -98,127 +135,198 @@ async function createAnonymousSession(req, userId) {
   }
 }
 
-exports.sessionId_question_post = async (req, res) => {
+exports.sessionId_question_post = async (req, res, next) => {
   const { title, content } = req.body;
-  const question = { title, content };
-  // const userId = UserService.getUserId(req.user);
-  const rawUserId = UserService.getUserId(req.user);
-  const userId = await UserService.validateUserId(rawUserId);
-
-  await createAnonymousSession(req, userId);
-
   const { sessionId } = req.params;
-
+  const validateObj = {
+    title,
+    content,
+    sessionId,
+  };
   try {
+    await ValidateSessionHandler.validateUserAddQuestions(validateObj);
+
+    const question = { title, content };
+    const rawUserId = UserService.getUserId(req.user);
+    const userId = await UserService.validateUserId(rawUserId);
+    await createAnonymousSession(req, userId);
     const questionId = await SessionService.addQuestionByRole(sessionId, userId, question);
     const returnObj = { questionId };
     res.send(returnObj);
   } catch (err) {
-    // res.sendStatus(500);
-    throw err;
+    next(err);
   }
 };
 
-exports.sessionId_questionId_get = async (req, res) => {
+exports.sessionId_questionId_get = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
     const { questionId } = req.params;
+    const validateObj = {
+      sessionId,
+      questionId,
+    }
+    await ValidateSessionHandler.validateGetSpecificQuestion(validateObj);
     const userId = UserService.getUserId(req.user);
 
     const question = await SessionService.getQuestionByRole(sessionId, questionId, userId);
     res.send(question);
   } catch (err) {
-    // res.sendStatus(404);
-    throw err;
+    next(err);
   }
 };
 
-exports.sessionId_questionId_vote_put = async (req, res) => {
+exports.sessionId_questionId_vote_put = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
     const { questionId } = req.params;
     const rawUserId = UserService.getUserId(req.user);
     const userId = await UserService.validateUserId(rawUserId);
+    const result = await UserService.getRoleOfUserInSession(userId, sessionId);
+    const role = result.Role;
+
+    const validateObj = {
+      sessionId,
+      questionId,
+      role,
+    };
+
+    await ValidateSessionHandler.validateUserVoteQuestions(validateObj);
 
     await createAnonymousSession(req, userId);
-
-    await SessionService.addVoteByRole(sessionId, questionId, userId);
+    await SessionService.addVoteByRole(sessionId, questionId, userId, role);
     res.sendStatus(200);
   } catch (err) {
-    // res.sendStatus(404);
-    throw err;
+    switch (err.code) {
+      case 'ER_DUP_ENTRY': {
+        err.httpCode = 409;
+        err.description = 'user already voted this question';
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    next(err);
   }
 };
 
-exports.sessionId_questionId_vote_delete = async (req, res) => {
+exports.sessionId_questionId_vote_delete = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
     const { questionId } = req.params;
-    const userId = UserService.getUserId(req.user);
+    const validateObj = {
+      sessionId,
+      questionId,
+    };
+    await ValidateSessionHandler.validateUserCancleVoteQuestions(validateObj);
 
-    await SessionService.cancelVoteByRole(sessionId, questionId, userId);
+    const userId = UserService.getUserId(req.user);
+    const result = await UserService.getRoleOfUserInSession(userId, sessionId);
+    const role = result.Role;
+    await SessionService.cancelVoteByRole(sessionId, questionId, userId, role);
     res.sendStatus(200);
   } catch (err) {
-    // res.sendStatus(404);
-    throw err;
+    next(err);
   }
 };
 
-exports.sessionId_questionId_status_put = async (req, res) => {
+exports.sessionId_questionId_status_put = async (req, res, next) => {
   try {
+    const { sessionId } = req.params;
     const { questionId } = req.params;
     const status = req.body.Status;
+    const userId = UserService.getUserId(req.user);
+    const result = await UserService.getRoleOfUserInSession(userId, sessionId);
+    const role = result.Role;
+    const validateObj = {
+      sessionId,
+      questionId,
+      role,
+      status,
+    };
+    await ValidateSessionHandler.validateChangeQuestionStatus(validateObj);
 
     await EditorSessionService.updateQuestionStatus(questionId, status);
     res.sendStatus(200);
   } catch (err) {
-    throw err;
+    next(err);
   }
 };
 
-exports.sessionId_user_vote = async (req, res) => {
+exports.sessionId_user_vote = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
+    await ValidateSessionHandler.validateSession(sessionId);
     const userId = UserService.getUserId(req.user);
 
     const listOfVotedQuestions = await SessionService.getListOfVotedQuestions(sessionId, userId);
     res.send(listOfVotedQuestions);
   } catch (err) {
-    throw err;
+    next(err);
   }
 };
 
-exports.sessionId_editor_get = async (req, res) => {
+exports.sessionId_editor_get = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
+    await ValidateSessionHandler.validateSession(sessionId);
 
     const listOfEditors = await SessionService.getListOfEditors(sessionId);
     res.send(listOfEditors);
   } catch (err) {
-    throw err;
+    next(err);
   }
 };
 
-exports.sessionId_editor_permission_post = async (req, res) => {
+exports.sessionId_editor_permission_post = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
     const { userId } = req.body;
+    const editorId = UserService.getUserId(req.user);
+    const result = await UserService.getRoleOfUserInSession(editorId, sessionId);
+    const role = result.Role;
+    const validateObj = {
+      sessionId,
+      userId,
+      role,
+    };
+    await ValidateSessionHandler.validateGivePermissions(validateObj);
 
     await EditorSessionService.addEditor(sessionId, userId);
     res.sendStatus(200);
   } catch (err) {
-    throw err;
+    switch (err.code) {
+      case 'ER_DUP_ENTRY': {
+        err.httpCode = 409;
+        err.description = 'user is already editor of this session';
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    next(err);
   }
 };
 
-exports.sessionId_editor_permission_delete = async (req, res) => {
+exports.sessionId_editor_permission_delete = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
     const { userId } = req.body;
+    const editorId = UserService.getUserId(req.user);
+    const result = await UserService.getRoleOfUserInSession(editorId, sessionId);
+    const role = result.Role;
+    const validateObj = {
+      sessionId,
+      userId,
+      role,
+    };
+    await ValidateSessionHandler.validateGivePermissions(validateObj);
 
     await EditorSessionService.removeEditor(sessionId, userId);
     res.sendStatus(200);
   } catch (err) {
-    throw err;
+    next(err);
   }
 };
