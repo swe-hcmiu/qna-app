@@ -33,21 +33,21 @@ nav a:hover {
   border-radius: 5px;
 }
 
-.sessionList {
+.editorList {
   background-color: #FEFEFE;
   border-radius: 5px;
 }
 
-.sessionList h2 {
+.editorList h2 {
   color: black;
   font-weight: 700;
 }
 
-.sessionList ul {
+.editorList ul {
   border-radius: 5px;
 }
 
-.sessionList a {
+.editorList li {
   background-color: #EEE;
   color: #000;
   display: block;
@@ -58,21 +58,21 @@ nav a:hover {
   transition: 200ms;
 }
 
-.sessionList ul li:first-child a {
+.editorList ul li:first-child  {
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 }
 
-.sessionList ul li:last-child a {
+.editorList ul li:last-child  {
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
 }
 
-.sessionList a:hover {
+.editorList li:hover {
   background-color: #FF7361;
   color: white;
   text-decoration: none;
-  transform: 200ms;
+  transform:
 }
 
 .sessionForm {
@@ -91,12 +91,22 @@ nav a:hover {
   text-align: center;
 }
 
-.createSession .btn {
-  margin: 10px auto;
+.createSession button {
+  margin: 10px 40%;
 }
-
-
 
 .createSession #nameSession {
   border: #BFBFBF 1px solid;
+}
+
+.session-name {
+  font-size: 30px;
+  color: #FFF;
+  background-color: inherit;
+}
+
+.session-name #session-name {
+  background-color: #FF7361;
+  padding: 5px;
+  border-radius: 5px;
 }

@@ -311,7 +311,7 @@ module.exports = {
     try {
       const connection = await mysqlConfig.pool.getConnection();
       try {
-        await connection.query(preparedStatements.updateQueryWithConstraints, ['questions', 'Status', status,
+        await connection.query(preparedStatements.updateQuestionStatus, ['questions', 'Status', status,
           'QuestionId', questionId]);
       } catch (err) {
         throw err;
@@ -327,8 +327,7 @@ module.exports = {
     try {
       const connection = await mysqlConfig.pool.getConnection();
       try {
-        const listOfEditors = await connection.query(preparedStatements.selectQuery, ['UserId', 'roles',
-          'SessionId', sessionId]);
+        const listOfEditors = await connection.query(preparedStatements.selectListOfEditors, [sessionId]);
         return listOfEditors;
       } catch (err) {
         throw err;

@@ -15,6 +15,7 @@ const winstonConfig = require('./src/config/winston-config');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const userAPIRouter = require('./routes/userAPI');
 const authRouter = require('./routes/auth');
 const sessionRouter = require('./routes/sessions');
 const sessionAPIRouter = require('./routes/sessionAPI');
@@ -81,6 +82,7 @@ app.use(winstonConfig.consoleLogger, winstonConfig.infoFileLogger);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/api/users', userAPIRouter);
 app.use('/auth', authRouter);
 app.use('/sessions', sessionRouter);
 app.use('/api/sessions', sessionAPIRouter);

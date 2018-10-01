@@ -41,7 +41,7 @@ module.exports = {
       const role = result.Role;
       const service = this.getServiceByRole(role);
 
-      const [session, listOfNewestQuestions, listOfTopFavoriteQuestion, listOfAnsweredQuestions] = await Promise.all([
+      const [session, listOfNewestQuestions, listOfTopFavoriteQuestions, listOfAnsweredQuestions] = await Promise.all([
         this.getSessionById(sessionId),
         this.getNewestQuestionsOfSession(sessionId),
         this.getTopFavoriteQuestionsOfSession(sessionId),
@@ -51,7 +51,7 @@ module.exports = {
         session,
         role,
         listOfNewestQuestions,
-        listOfTopFavoriteQuestion,
+        listOfTopFavoriteQuestions,
         listOfAnsweredQuestions,
       };
 

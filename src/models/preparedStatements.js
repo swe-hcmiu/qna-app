@@ -38,13 +38,18 @@ module.exports.deleteUsersInVotingTableOfSession = 'DELETE FROM users WHERE Prov
 module.exports.deleteUsersInQuestionsTableOfSession = 'DELETE FROM users WHERE Provider = ? AND UserId IN (SELECT DISTINCT UserId FROM questions WHERE SessionId = ?)';
 
 module.exports.selectNewestQuestions = `SELECT * FROM questions WHERE SessionId = ? AND Status = "UNANSWERED" 
-ORDER BY Time DESC`;
+ORDER BY UpdateTime DESC`;
 
 module.exports.selectTopFavoriteQuestions = `SELECT * FROM questions WHERE SessionId = ? AND Status = "UNANSWERED" 
 ORDER BY VoteByEditor DESC, VoteByUser DESC`;
 
 module.exports.selectAnsweredQuestions = `SELECT * FROM questions WHERE SessionId = ? AND Status = "ANSWERED" 
-ORDER BY Time DESC`;
+ORDER BY UpdateTime DESC`;
 
 module.exports.selectPendingQuestions = `SELECT * FROM questions WHERE SessionId = ? AND Status = "PENDING" ORDER BY 
-Time DESC`;
+UpdateTime DESC`;
+
+module.exports.updateQuestionStatus = 'UPDATE ?? SET ?? = ?, UpdateTime = CURRENT_TIMESTAMP() WHERE ?? = ?';
+
+module.exports.selectListOfEditors = `select roles.UserId, users.DisplayName from roles, users where roles.SessionId = ? 
+and users.UserId = roles.UserId`;
