@@ -13,4 +13,8 @@ router.post('/login', passport.authenticate('local', { failureRedirect: '/users/
 
 router.get('/logout', UserController.user_logout_get);
 
+router.get('/', (req, res) => {
+  res.render('user');
+});
+
 module.exports = router;

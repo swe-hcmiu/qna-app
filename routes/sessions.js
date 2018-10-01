@@ -10,4 +10,8 @@ router.get('/:sessionId', (req, res) => {
   res.render('questionBoard');
 });
 
+router.get('/:sessionId/editors', (req, res) => {
+  res.render('editor');
+});
+
 module.exports = router;
