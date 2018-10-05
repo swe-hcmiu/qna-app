@@ -45,7 +45,9 @@ exports.user_login_get = async (req, res) => {
 };
 
 exports.user_login_post = async (req, res) => {
-  res.redirect('/sessions');
+  res.status(200).json({
+    msg: 'loggin succsess',
+  });
 };
 
 exports.user_logout_get = async (req, res) => {

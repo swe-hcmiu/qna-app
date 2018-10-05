@@ -28,7 +28,11 @@ exports.session_post = async (req, res, next) => {
     const sessionId = await EditorSessionService.createSession(userId, session);
     // const returnObj = { sessionId };
     // res.send(returnObj);
-    res.redirect(`/sessions/${sessionId}`);
+    // res.redirect(`/sessions/${sessionId}`);
+    res.status(200).json({
+      msg: 'create session success!',
+      sessionId,
+    });
   } catch (err) {
     next(err);
   }
@@ -57,7 +61,7 @@ exports.sessionId_delete = async (req, res, next) => {
 
     const { sessionId } = req.params;
     await EditorSessionService.deleteSession(sessionId);
-    res.sendStatus(200);
+    res.status(200).json({ msg: 'delete session success!' });
   } catch (err) {
     next(err);
   }
@@ -69,7 +73,8 @@ exports.sessionId_question_newest = async (req, res, next) => {
     await ValidateSessionHandler.validateSession(sessionId);
 
     const listOfNewestQuestions = await SessionService.getNewestQuestionsOfSession(sessionId);
-    res.send(listOfNewestQuestions);
+    // res.send(listOfNewestQuestions);
+    res.status(200).json(listOfNewestQuestions);
   } catch (err) {
     next(err);
   }
@@ -165,7 +170,7 @@ exports.sessionId_questionId_get = async (req, res, next) => {
     const validateObj = {
       sessionId,
       questionId,
-    }
+    };
     await ValidateSessionHandler.validateGetSpecificQuestion(validateObj);
     const userId = UserService.getUserId(req.user);
 
@@ -291,11 +296,14 @@ exports.sessionId_editor_permission_post = async (req, res, next) => {
       userId,
       role,
     };
+    console.log(typeof(userId));
     await ValidateSessionHandler.validateGivePermissions(validateObj);
 
     await EditorSessionService.addEditor(sessionId, userId);
     res.sendStatus(200);
   } catch (err) {
+    console.log('aaaaaaa', err);
+    
     switch (err.code) {
       case 'ER_DUP_ENTRY': {
         err.httpCode = 409;
