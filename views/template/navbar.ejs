@@ -13,7 +13,7 @@
     <ul class="navbar-nav ml-auto">
       <% if(user) { %>
         <li class="nav-item ">
-          <span class="nav-link text-white"><%= user.DisplayName %></span>
+          <a class="nav-link text-white" href="/users"><%= user.DisplayName %></a>
         </li>
         <li class="nav-item ">
           <a class="nav-link text-white" href="/users/logout"><i class="fas fa-sign-out-alt"></i> Log out</a>

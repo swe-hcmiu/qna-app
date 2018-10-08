@@ -29,10 +29,11 @@ signUpBtn.addEventListener("click", () => {
   };
   axios.post(url, { FirstName, LastName, UserName, UserPass } = data)
     .then((response) => {
-      if (response.status == 200) {
-        window.location = "/users/login";
+      if (response.status === 200) {
+        // window.location = "/users/login";
+        alert("Register succesfully. You can log in.");
       } else {
-        alert(response.content);
+        alert("Input must be between 2 and 30 characters");
       }
     });
 })
@@ -54,7 +55,7 @@ logInBtn.addEventListener("click", () => {
     if (response.status == 200) {
       window.location = "/sessions";
     } else {
-      alert("Username doesn't existed");
+      alert("User doesn't exist or wrong password");
     }
   })
 })
