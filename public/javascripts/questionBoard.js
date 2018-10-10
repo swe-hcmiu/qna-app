@@ -4,12 +4,11 @@ const questionForm = document.getElementsByClassName("questionForm")[0];
 const urlSegments = window.location.pathname.split('/');
 const sessionId = urlSegments[urlSegments.length-1];
 const submitBtn = document.getElementById("submitBtn");
+const newestTab = document.getElementById("newest-tab")
 let likeList = [];
-let questionList = {
-	newest: [],
-	top10: [],
-	answered: [],
-};
+let listOfNewestQuestions;
+let listOfTopFavoriteQuestions;
+let listOfAnsweredQuestions;
 let sessionData = null;
 let roleData = null;
 
@@ -37,8 +36,15 @@ submitBtn.addEventListener("click", function() {
     document.getElementById("content-ask").value = '';
   })
   .catch(function (error) {
-		alert("Title and content must be more than 6 characters.");
+		if(error.response.status === 422) {
+			alert("Title and content must be more than 6 characters.");
+		}
   });
+})
+
+newestTab.addEventListener("click", async function() {
+	await render();
+	checkNewest();
 })
 
 function init() { // Get session data
@@ -46,15 +52,27 @@ function init() { // Get session data
 	axios.get(url)
 	.then((response)=> {
     sessionData = response.data.session;
-		questionList = response.data.listOfQuestions;
     roleData = response.data.role;
+		listOfNewestQuestions = response.data.listOfNewestQuestions;
+		listOfTopFavoriteQuestions = response.data.listOfTopFavoriteQuestions;
+		listOfAnsweredQuestions = response.data.listOfAnsweredQuestions;
 		sessionName = roleData==="EDITOR" ? sessionData.SessionName+' <a href="/sessions/'+sessionId+'/editors"><i class="fas fa-edit text-white"></i></a>': sessionData.SessionName;
 		document.getElementById("session-name").innerHTML= sessionName;
 		if(sessionData.SessionType === "NEEDS_VERIFICATION" && roleData === "EDITOR") {
 			document.getElementById("myTab").innerHTML='<li class="nav-item"><a class="nav-link" id="pending-tab" data-toggle="tab" href="#pending" role="pending" aria-controls="pending" aria-selected="true">Pending</a></li>'+document.getElementById("myTab").innerHTML;
 		}
-		render();
+		renderLocal();
 	})
+}
+
+async function renderLocal() {
+	const likesUrl='/api/sessions/'+sessionId+'/users/vote';
+	const likesPromise = axios(likesUrl);
+	const likeList = await likesPromise;
+
+	renderHTML(listOfNewestQuestions, likeList.data.listOfVotedQuestions, 'newest');
+	renderHTML(listOfTopFavoriteQuestions, likeList.data.listOfVotedQuestions, 'top10');
+	renderHTML(listOfAnsweredQuestions, likeList.data.listOfVotedQuestions, 'answered');
 }
 
 async function render() {
@@ -67,10 +85,14 @@ async function render() {
 	const answeredPromise = axios(answeredUrl);
 	const likesPromise = axios(likesUrl);
 
-	const [newstList, favoriteList, answeredList, likeList] = await axios.all([newestPromise, favoritePromise, answeredPromise, likesPromise])
-	renderHTML(newstList.data, likeList.data.listOfVotedQuestions, 'newest');
-	renderHTML(favoriteList.data, likeList.data.listOfVotedQuestions, 'top10');
-	renderHTML(answeredList.data, likeList.data.listOfVotedQuestions, 'answered');
+	const [newstList, favoriteList, answeredList, likeList] = await axios.all([newestPromise, favoritePromise, answeredPromise, likesPromise]);
+	listOfNewestQuestions = newstList.data;
+	listOfTopFavoriteQuestions = favoriteList.data;
+	listOfAnsweredQuestions = answeredList.data;
+	renderLocal();
+	// renderHTML(newstList.data, likeList.data.listOfVotedQuestions, 'newest');
+	// renderHTML(favoriteList.data, likeList.data.listOfVotedQuestions, 'top10');
+	// renderHTML(answeredList.data, likeList.data.listOfVotedQuestions, 'answered');
 	if (roleData === "EDITOR") {
 		const pendingUrl = '/api/sessions/'+sessionId+'/questions/pending';
 		const pendingList = await axios(pendingUrl);
@@ -79,9 +101,9 @@ async function render() {
 }
 
 function renderHTML(questionData, likeData, position) {
-	if(position === "answered") {
-		console.log(questionData);
-	}
+	// if(position === "answered") {
+	// 	console.log(questionData);
+	// }
 	likeData = likeData.map(like => like.QuestionId);
   let htmlString='';
 	questionData.forEach(question => {
@@ -121,6 +143,29 @@ function createHtmlForPost(post, isLiked, position) {
 	      }
     </div>`
   return postString;
+}
+
+function checkNewest() {
+	const newestUrl='/api/sessions/'+sessionId+'/questions/newest';
+	axios(newestUrl)
+		.then(res => {
+			const position = res.data.findIndex((q)=> (q.QuestionId === listOfNewestQuestions[0].QuestionId));
+			if (position>0) {
+				document.getElementById("newest-tab").innerHTML = `Newest <span style="background-color:red">${position}</span>`;
+			}
+			else {
+				document.getElementById("newest-tab").innerHTML = `Newest`;
+			}
+		});
+}
+
+function refreshTop10() {
+	const favoriteUrl='/api/sessions/'+sessionId+'/questions/top';
+	axios(favoriteUrl)
+		.then(res => {
+			listOfTopFavoriteQuestions = res.data;
+			renderLocal();
+		})
 }
 
 async function handleVote(e) {
@@ -172,4 +217,5 @@ function handlePost(e) {
 
 init();
 
-setInterval(render, 15000);
+setInterval(checkNewest, 3000);
+setInterval(refreshTop10, 3000);
