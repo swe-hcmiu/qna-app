@@ -9,6 +9,7 @@ let likeList = [];
 let listOfNewestQuestions;
 let listOfTopFavoriteQuestions;
 let listOfAnsweredQuestions;
+let listOfPendingQuestions;
 let sessionData = null;
 let roleData = null;
 
@@ -60,6 +61,12 @@ function init() { // Get session data
 		document.getElementById("session-name").innerHTML= sessionName;
 		if(sessionData.SessionType === "NEEDS_VERIFICATION" && roleData === "EDITOR") {
 			document.getElementById("myTab").innerHTML='<li class="nav-item"><a class="nav-link" id="pending-tab" data-toggle="tab" href="#pending" role="pending" aria-controls="pending" aria-selected="true">Pending</a></li>'+document.getElementById("myTab").innerHTML;
+			document.getElementById("pending-tab").addEventListener("click", async function() {
+				await render();
+				checkPending();
+			});
+			listOfPendingQuestions=response.data.listOfPendingQuestions;
+			setInterval(checkPending, 3000);
 		}
 		renderLocal();
 	})
@@ -73,6 +80,9 @@ async function renderLocal() {
 	renderHTML(listOfNewestQuestions, likeList.data.listOfVotedQuestions, 'newest');
 	renderHTML(listOfTopFavoriteQuestions, likeList.data.listOfVotedQuestions, 'top10');
 	renderHTML(listOfAnsweredQuestions, likeList.data.listOfVotedQuestions, 'answered');
+	if(sessionData.SessionType === "NEEDS_VERIFICATION" && roleData === "EDITOR") {
+		renderHTML(listOfPendingQuestions, likeData.data.listOfVotedQuestions, 'pending');
+	}
 }
 
 async function render() {
@@ -149,14 +159,30 @@ function checkNewest() {
 	const newestUrl='/api/sessions/'+sessionId+'/questions/newest';
 	axios(newestUrl)
 		.then(res => {
-			const position = res.data.findIndex((q)=> (q.QuestionId === listOfNewestQuestions[0].QuestionId));
+			const position = listOfNewestQuestions.length ? res.data.findIndex((q)=> (q.QuestionId === listOfNewestQuestions[0].QuestionId)) : res.data.length;
 			if (position>0) {
 				document.getElementById("newest-tab").innerHTML = `Newest <span style="background-color:red">${position}</span>`;
 			}
 			else {
 				document.getElementById("newest-tab").innerHTML = `Newest`;
 			}
-		});
+		}
+	);
+}
+
+function checkPending() {
+	const pendingUrl='/api/sessions/'+sessionId+'/questions/pending';
+	axios(pendingUrl)
+		.then(res => {
+			const position = listOfPendingQuestions.length ? res.data.findIndex((q)=> (q.QuestionId === listOfPendingQuestions[0].QuestionId)) : res.data.length;
+			if (position>0) {
+				document.getElementById("pending-tab").innerHTML = `Pending <span style="background-color:red">${position}</span>`;
+			}
+			else {
+				document.getElementById("pending-tab").innerHTML = `Pending`;
+			}
+		}
+	);
 }
 
 function refreshTop10() {
@@ -210,9 +236,9 @@ function handlePost(e) {
 	axios.put(url, {
 		Status: status
 	}).then((response) => {
-    console.log(response);
+    // console.log(response);
+		render();
   })
-  render();
 }
 
 init();
