@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css?family=Dancing+Script');
+
+body {
+  height: 100%;
+  font-family: Arial, sans-serif;
+  color: #FFF;
+  background-color: #EEEEEE;
+}
+
+nav {
+  background-color: #2F3239;
+  color: #FFFFFF;
+}
+
+nav .title {
+  color: #FFF;
+  font-family: 'Dancing Script', cursive;
+  font-size: 24px;
+}
+
+nav .title:hover {
+  background-color: #2F3239;
+}
+
+nav a {
+  color: #FFF;
+  transition: 200ms;
+}
+
+nav a:hover {
+  color: #FFF;
+  background-color: #FF7361;
+  border-radius: 5px;
+}
+
+.sessionList {
+  background-color: #FEFEFE;
+  border-radius: 5px;
+}
+
+.sessionList h2 {
+  color: black;
+  font-weight: 700;
+}
+
+.sessionList ul {
+  border-radius: 5px;
+}
+
+.sessionList a {
+  background-color: #EEE;
+  color: #000;
+  display: block;
+  margin: 0 auto;
+  padding: 10px 2px;
+  width: 75%;
+  min-height: 50px;
+  transition: 200ms;
+}
+
+.sessionList ul li:first-child a {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.sessionList ul li:last-child a {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.sessionList a:hover {
+  background-color: #FF7361;
+  color: white;
+  text-decoration: none;
+  transform: 200ms;
+}
+
+.sessionForm {
+  background-color: #FEFEFE;
+  border-radius: 5px;
+  color: #000;
+}
+
+.createSession {
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+
+.createSession h2 {
+  text-align: center;
+}
+
+.createSession .btn {
+  margin: 10px auto;
+}
+
+
+
+.createSession #nameSession {
+  border: #BFBFBF 1px solid;
+}

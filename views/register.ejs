@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title> Register </title>
+	<link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+	<% include template/header.ejs %>
+	<form method="post" action="/users/register">
+		
+		<div class="form-group">
+			<label style = 'float: left;margin-right: 1px'>First Name</label>
+			<input type="text" class="form-control" id = "firstname" name="FirstName" style = 'float: left;margin-right: 4px'><div id = "message" style='margin:0px; height: 1em'></div> 
+		</div>
+
+		<div class="form-group">
+			<label style = 'float: left;margin-right: 1px;clear:left'>Last Name</label>
+			<input type="text" class="form-control" id = "lastname" name="LastName" style = 'float: left;margin-right: 4px'><div id = "message" style='margin:0px; height: 1em'></div> 
+		</div>
+
+		<div class="form-group">
+			<label style = 'float: left;margin-right: 1px;clear:left'>Username</label>
+			<input type="text" class="form-control" id = "username" name="UserName" style = 'float: left;margin-right: 4px'><div id = "message" style='margin:0px; height: 1em'></div> 
+		</div>
+
+		<div class="form-group" style = 'clear:left'>
+			<label>Password</label>
+			<input type="password" class="form-control" name="UserPass">
+		</div>
+
+		<button type="submit" class="btn btn-default">Register</button>
+	</form>
+	
+	<% if (errors) { 
+		errors.forEach(function(item) { %>
+		<p><%= item.msg %></p>
+	<% })
+	}%>
+
+	<script
+	  src="https://code.jquery.com/jquery-3.3.1.js"
+	  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+	  crossorigin="anonymous"></script>
+	
+	<script src='/javascripts/script.js'> </script>
+	 
+</body>
+</html>

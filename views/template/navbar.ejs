@@ -1,0 +1,31 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <span class="navbar-brand title" href="#">QnA App</span>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link text-white" href="/sessions">Session</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav ml-auto">
+      <% if(user) { %>
+        <li class="nav-item ">
+          <a class="nav-link text-white" href="/users"><%= user.DisplayName %></a>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link text-white" href="/users/logout"><i class="fas fa-sign-out-alt"></i> Log out</a>
+        </li>
+      <% } else { %>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="/users/login"><i class="fas fa-user"></i> Log In</a>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link text-white" href="/users/login"><i class="fas fa-sign-in-alt"></i> Sign up</a>
+        </li>
+      <% } %>
+    </ul>
+  </div>
+</nav>
