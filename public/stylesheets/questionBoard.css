@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css?family=Dancing+Script');
+
+body {
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background: #EEEEEE !important;
+}
+
+nav {
+  background-color: #2F3239;
+  color: #FFFFFF;
+}
+
+nav .title {
+  color: #FFF;
+  font-family: 'Dancing Script', cursive;
+  font-size: 24px;
+}
+
+nav .title:hover {
+  background-color: #2F3239;
+}
+
+nav a {
+  color: #FFF;
+}
+
+nav a:hover {
+  color: #FFF;
+  background-color: #FF7361;
+  border-radius: 5px;
+}
+
+.session-name {
+  font-size: 30px;
+  color: #FFF;
+  background-color: inherit;
+}
+
+.session-name #session-name {
+  background-color: #FF7361;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.questionForm {
+  color: #2F3239;
+  background-color: #FEFEFE;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.questionForm input {
+  border: #BFBFBF 1px solid;
+}
+
+.questionForm textarea  {
+  border: #BFBFBF 1px solid;
+}
+
+.submitBtn {
+  background-color: #FF7361 !important;
+  color: #FEFEFE;
+  border-radius: 10px;
+}
+
+.nav a {
+  color: #FFF;
+  background-color: #D8D8D8;
+}
+
+.nav a + a:hover {
+  color: #FFF;
+  background-color: #D8D8D8;
+}
+
+ul .active {
+  color: #FFF !important;
+  background-color: #FF7361 !important;
+}
+
+.question {
+  background-color: #FFFFFF;
+}
+
+.question i {
+  font-size: 35px;
+}
+.question .question-main-info {
+  border-bottom: 1px #D8D8D8 solid;
+}
+
+.question .question-info .question-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2F3239;
+}
+
+.question .question-info .question-content {
+  color: #4d525a;
+  font-size: 20px;
+}
+
+.question .question-likeCount {
+  border-right: 1px #D8D8D8 solid;
+}
+
+.question .question-likeCount .number,.author {
+  font-weight: 600;
+}
+
+.undisplay {
+  display: none;
+}
+
+.editor {
+  background-color: yellow;
+  border-radius: 5px;
+  color: #707885;
+  font-size: 10px;
+  box-shadow: 0px 0px 5px #707885;
+  min-width:70px;
+  max-height:30px;
+}
+
+.question .fas {
+  color: #FF7361;
+}
