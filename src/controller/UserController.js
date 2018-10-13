@@ -1,6 +1,7 @@
 const UserService = require('../services/UserService');
 const validateUserHandler = require('../validator/user');
 
+
 exports.user_register_get = async (req, res) => {
   res.render('register', { errors: null });
 };
@@ -45,7 +46,27 @@ exports.user_login_get = async (req, res) => {
 };
 
 exports.user_login_post = async (req, res) => {
-  res.redirect('/sessions');
+  // res.redirect('/sessions');
+  try {
+    const {username, password} = req.body;
+    const user = {
+      UserName: username,
+      UserPass: password,
+    };
+    // console.log(user);
+    await UserService.authenticateQnAUser(user)
+      .then(result => {
+        // console.log('result', result);
+        if (result) {
+          res.status(200).json(result);
+        } else res.status(401).json(result);
+      })
+      .catch ((err) => {
+        console.log(err);
+      });
+  } catch (err) {
+      next(err);
+  }
 };
 
 exports.user_logout_get = async (req, res) => {

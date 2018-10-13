@@ -165,7 +165,7 @@ exports.sessionId_questionId_get = async (req, res, next) => {
     const validateObj = {
       sessionId,
       questionId,
-    }
+    };
     await ValidateSessionHandler.validateGetSpecificQuestion(validateObj);
     const userId = UserService.getUserId(req.user);
 

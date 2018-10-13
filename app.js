@@ -44,12 +44,18 @@ app.use(session({
   resave: true,
 }));
 
-// Passport init
-app.use(passport.initialize());
-app.use(passport.session());
+// // Passport init
+// app.use(passport.initialize());
+// app.use(passport.session());
 
-// Connect Flash
-app.use(flash());
+// // Connect Flash
+ app.use(flash());
+
+// passport middleware
+app.use(passport.initialize());
+
+// passport config
+require('./src/config/passport-config')(passport);
 
 app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg');
@@ -107,8 +113,8 @@ app.use((err, req, res) => {
   res.render('error');
 });
 
-const server = app.listen(process.env.PORT || 3000, () => {
-  console.log(`Node.js listening on ${process.env.PORT || 3000} ...`);
+const server = app.listen(process.env.PORT || 80, () => {
+  console.log(`Node.js listening on ${process.env.PORT || 80} ...`);
 });
 
 module.exports = app;
