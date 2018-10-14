@@ -2,15 +2,15 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const morgan = require('morgan');
+// const morgan = require('morgan');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
 const expressValidator = require('express-validator');
 const bodyParser = require('body-parser');
 
-const passportConfig = require('./src/config/passport-config');
-const mysqlConfig = require('./src/config/mysql-config');
+// const passportConfig = require('./src/config/passport-config');
+// const mysqlConfig = require('./src/config/mysql-config');
 const winstonConfig = require('./src/config/winston-config');
 
 const indexRouter = require('./routes/index');
@@ -49,7 +49,7 @@ app.use(session({
 // app.use(passport.session());
 
 // // Connect Flash
- app.use(flash());
+app.use(flash());
 
 // passport middleware
 app.use(passport.initialize());

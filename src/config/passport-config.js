@@ -1,10 +1,9 @@
 const passport = require('passport');
 const JwtStrategy = require('passport-jwt').Strategy;
-const ExtractJwt = require('passport-jwt').ExtractJwt;
+const { ExtractJwt } = require('passport-jwt');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const LocalStrategy = require('passport-local').Strategy;
 const UserService = require('../services/UserService');
-const keys = require('./keys')
+const keys = require('./keys');
 
 const opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
@@ -40,21 +39,20 @@ passport.use(new GoogleStrategy({
 //   },
 // ));
 
-module.exports = passport => {
+module.exports = (passport) => {
   passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
-  //console.log(jwt_payload);
-  UserService.getUserById(jwt_payload.id)
-    .then(user => {
-      if (user) {
-        return done(null, user);
-      }
-      return done(null, false);
-    })
-    .catch(err => console.log(err));
-
+    // console.log('payload', jwt_payload);
+    UserService.getUserById(jwt_payload.id)
+      .then((user) => {
+        // console.log('user: ', user);
+        if (user) {
+          return done(null, user);
+        }
+        return done(null, false);
+      })
+      .catch(err => console.log(err));
   }));
-}
-
+};
 
 
 // passport.serializeUser((user, done) => {

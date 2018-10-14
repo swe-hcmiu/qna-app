@@ -1,6 +1,6 @@
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const keys = require('../config/keys');
-const jwt = require('jsonwebtoken');
 
 module.exports = {
   getUserId(user) {
@@ -40,35 +40,33 @@ module.exports = {
 
   async authenticateQnAUser(user) {
     try {
-      
       const userReturn = await User.getQnAUserByUserName(user.UserName);
       // console.log('user from service:', user);
       if (!userReturn) return { user: false, message: 'Unknown User' };
 
       const isMatch = await User.comparePasswordQnAUser(user.UserPass, userReturn.UserPass);
-      if (isMatch ) {
-       
+      if (isMatch) {
         // result object
         // let result;
         // const id = this.getUserId(user);
         // Create jwt payload
         const payload = {
-          // id,
-          role: null, 
+          id: userReturn.UserId,
+          role: null,
           name: user.UserName,
         };
-              
+
         // token
         const token = jwt.sign(payload, keys.secretOrKey, {
-          expiresIn: '1h'
+          expiresIn: '1h',
         });
-        
+
         return {
           success: true,
-          token: 'Bearer ' + token,
+          token: `Bearer ${token}`,
         };
       }
-    return { success: false, message: 'Invalid password' };
+      return { success: false, message: 'Invalid password' };
     } catch (err) {
       throw err;
     }
