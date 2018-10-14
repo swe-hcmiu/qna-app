@@ -1,8 +1,6 @@
 const bcrypt = require('bcryptjs');
 const preparedStatements = require('./preparedStatements');
 const mysqlConfig = require('../config/mysql-config');
-// const keys = require('../config/keys');
-// const jwt = require('jsonwebtoken');
 
 module.exports = {
   async createUser(user) {
@@ -196,7 +194,6 @@ module.exports = {
   },
 
   async comparePasswordQnAUser(candidatePassword, hash) {
-    // console.log('compare:', candidatePassword, hash);
     function comparing() {
       return new Promise((resolve, reject) => {
         bcrypt.compare(candidatePassword, hash, (err, isMatch) => {

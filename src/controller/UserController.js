@@ -48,20 +48,14 @@ exports.user_login_get = async (req, res) => {
 };
 
 exports.user_login_post = async (req, res, next) => {
-  // res.redirect('/sessions');
   try {
     const { username, password } = req.body;
     const user = {
       UserName: username,
       UserPass: password,
     };
-    // console.log(user);
     await UserService.authenticateQnAUser(user)
       .then((result) => {
-        // console.log('result', result);
-        // if (result.success) {
-        //   res.status(200).json(result);
-        // } else res.status(401).json(result);
         if (result.success) {         
           const payload = {
             id: result.id,

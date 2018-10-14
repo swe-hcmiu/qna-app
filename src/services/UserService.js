@@ -44,11 +44,6 @@ module.exports = {
 
       const isMatch = await User.comparePasswordQnAUser(user.UserPass, userReturn.UserPass);
       if (isMatch) {
-        // const payload = {
-        //   id: userReturn.UserId,
-        //   role: null,
-        //   name: user.UserName,
-        // };
         return { success: true, id: userReturn.UserId };
       }
       return { success: false };
