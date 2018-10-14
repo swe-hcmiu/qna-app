@@ -49,7 +49,7 @@ ORDER BY UpdateTime DESC`;
 module.exports.selectPendingQuestions = `SELECT * FROM questions WHERE SessionId = ? AND Status = "PENDING" ORDER BY 
 UpdateTime DESC`;
 
-module.exports.updateQuestionStatus = 'UPDATE ?? SET ?? = ?, UpdateTime = CURRENT_TIMESTAMP() WHERE ?? = ?';
+module.exports.updateStatus = 'UPDATE ?? SET ?? = ?, UpdateTime = CURRENT_TIMESTAMP() WHERE ?? = ?';
 
 module.exports.selectListOfEditors = `select roles.UserId, users.DisplayName from roles, users where roles.SessionId = ? 
 and users.UserId = roles.UserId`;

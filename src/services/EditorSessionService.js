@@ -88,4 +88,12 @@ module.exports = {
       throw err;
     }
   },
+
+  async updateSessionStatus(sessionId, status) {
+    try {
+      await Session.updateSessionStatus(sessionId, status);
+    } catch (err) {
+      throw err;
+    }
+  },
 };

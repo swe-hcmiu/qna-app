@@ -259,4 +259,20 @@ module.exports = {
       throw err;
     }
   },
+
+  async validateChangeSessionStatus(data) {
+    try {
+      await this.validateSession(data.sessionId);
+      await this.validateEditorRole(data.sessionId, data.user);
+
+      const listStatus = ['OPENING', 'CLOSED'];
+      if (!listStatus.includes(data.status)) {
+        const err = new Error('Invalid input');
+        err.description = { status: 'session status must be opening or closed' };
+        throw err;
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
 };
