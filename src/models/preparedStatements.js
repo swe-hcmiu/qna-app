@@ -37,19 +37,19 @@ module.exports.deleteUsersInVotingTableOfSession = 'DELETE FROM users WHERE Prov
 
 module.exports.deleteUsersInQuestionsTableOfSession = 'DELETE FROM users WHERE Provider = ? AND UserId IN (SELECT DISTINCT UserId FROM questions WHERE SessionId = ?)';
 
-module.exports.selectNewestQuestions = `SELECT * FROM (SELECT UserId, DisplayName FROM users) as users, questions WHERE users.UserId = questions.UserId AND SessionId = ? AND Status = "UNANSWERED" 
+module.exports.selectNewestQuestions = `SELECT users.DisplayName, questions.* FROM users, questions WHERE users.UserId = questions.UserId AND SessionId = ? AND Status = "UNANSWERED" 
 ORDER BY UpdateTime DESC`;
 
-module.exports.selectTopFavoriteQuestions = `SELECT * FROM (SELECT UserId, DisplayName FROM users) as users, questions WHERE users.UserId = questions.UserId AND SessionId = ? AND Status = "UNANSWERED" 
+module.exports.selectTopFavoriteQuestions = `SELECT users.DisplayName, questions.* FROM users, questions WHERE users.UserId = questions.UserId AND SessionId = ? AND Status = "UNANSWERED" 
 ORDER BY VoteByEditor DESC, VoteByUser DESC`;
 
-module.exports.selectAnsweredQuestions = `SELECT * FROM (SELECT UserId, DisplayName FROM users) as users, questions WHERE users.UserId = questions.UserId AND SessionId = ? AND Status = "ANSWERED" 
+module.exports.selectAnsweredQuestions = `SELECT users.DisplayName, questions.* FROM users, questions WHERE users.UserId = questions.UserId AND SessionId = ? AND Status = "ANSWERED" 
 ORDER BY UpdateTime DESC`;
 
-module.exports.selectPendingQuestions = `SELECT * FROM (SELECT UserId, DisplayName FROM users) as users, questions WHERE users.UserId = questions.UserId AND SessionId = ? AND Status = "PENDING" ORDER BY 
+module.exports.selectPendingQuestions = `SELECT users.DisplayName, questions.* FROM users, questions WHERE users.UserId = questions.UserId AND SessionId = ? AND Status = "PENDING" ORDER BY 
 UpdateTime DESC`;
 
-module.exports.selectQuestionWithId = 'SELECT * FROM (SELECT UserId, DisplayName FROM users) as users, questions WHERE users.UserId = questions.UserId AND QuestionId = ?';
+module.exports.selectQuestionWithId = 'SELECT users.DisplayName, questions.* FROM users, questions WHERE users.UserId = questions.UserId AND QuestionId = ?';
 
 module.exports.updateQuestionStatus = 'UPDATE ?? SET ?? = ?, UpdateTime = CURRENT_TIMESTAMP() WHERE ?? = ?';
 
