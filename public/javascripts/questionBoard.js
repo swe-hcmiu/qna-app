@@ -243,5 +243,24 @@ function handlePost(e) {
 
 init();
 
-setInterval(checkNewest, 3000);
-setInterval(refreshTop10, 3000);
+// setInterval(checkNewest, 3000);
+// setInterval(refreshTop10, 3000);
+
+// socket io part
+const socket = io('/session');
+
+socket.on('connect', () => {
+  const data = {
+    token: localStorage.getItem('token'),
+    sessionId,
+  }
+  socket.emit('join_room', data);
+});
+
+socket.on('new_user_entered', (user) => {
+  alert(`user ${user.userId} has been entered the room`);
+});
+
+socket.on('error', (err) => {
+  alert(err);
+});
