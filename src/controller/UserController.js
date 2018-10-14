@@ -1,5 +1,8 @@
+const jwt = require('jsonwebtoken');
 const UserService = require('../services/UserService');
 const validateUserHandler = require('../validator/user');
+const keys = require('../config/keys');
+
 
 exports.user_register_get = async (req, res) => {
   res.render('register', { errors: null });
@@ -44,8 +47,39 @@ exports.user_login_get = async (req, res) => {
   res.render('login');
 };
 
-exports.user_login_post = async (req, res) => {
-  res.redirect('/sessions');
+exports.user_login_post = async (req, res, next) => {
+  // res.redirect('/sessions');
+  try {
+    const { username, password } = req.body;
+    const user = {
+      UserName: username,
+      UserPass: password,
+    };
+    // console.log(user);
+    const result = await UserService.authenticateQnAUser(user);
+    if (result.success) {
+      const payload = {
+        userId: result.id,
+      };
+      console.log(payload);
+      // token
+      const token = jwt.sign(payload, keys.secretOrKey, {
+        expiresIn: '7d',
+      });
+
+      return res.status(200).json({
+        success: true,
+        token,
+      });
+    }
+    const err = new Error('Not Found');
+    err.httpCode = 404;
+    err.description = 'Invalid username or password';
+    throw err;
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
 };
 
 exports.user_logout_get = async (req, res) => {

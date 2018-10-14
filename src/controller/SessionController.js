@@ -26,9 +26,7 @@ exports.session_post = async (req, res, next) => {
     const session = { sessionName, sessionType };
 
     const sessionId = await EditorSessionService.createSession(userId, session);
-    // const returnObj = { sessionId };
-    // res.send(returnObj);
-    res.redirect(`/sessions/${sessionId}`);
+    res.send({ sessionId });
   } catch (err) {
     next(err);
   }
@@ -165,7 +163,7 @@ exports.sessionId_questionId_get = async (req, res, next) => {
     const validateObj = {
       sessionId,
       questionId,
-    }
+    };
     await ValidateSessionHandler.validateGetSpecificQuestion(validateObj);
     const userId = UserService.getUserId(req.user);
 

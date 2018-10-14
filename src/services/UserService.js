@@ -42,8 +42,10 @@ module.exports = {
       if (!userReturn) return { user: false, message: 'Unknown User' };
 
       const isMatch = await User.comparePasswordQnAUser(user.UserPass, userReturn.UserPass);
-      if (isMatch) return { user: userReturn, message: 'Login successfully' };
-      return { user: false, message: 'Invalid password' };
+      if (isMatch) {
+        return { success: true, id: userReturn.UserId };
+      }
+      return { success: false };
     } catch (err) {
       throw err;
     }
