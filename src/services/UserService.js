@@ -1,6 +1,4 @@
-const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const keys = require('../config/keys');
 
 module.exports = {
   getUserId(user) {
@@ -46,27 +44,14 @@ module.exports = {
 
       const isMatch = await User.comparePasswordQnAUser(user.UserPass, userReturn.UserPass);
       if (isMatch) {
-        // result object
-        // let result;
-        // const id = this.getUserId(user);
-        // Create jwt payload
-        const payload = {
-          id: userReturn.UserId,
-          role: null,
-          name: user.UserName,
-        };
-
-        // token
-        const token = jwt.sign(payload, keys.secretOrKey, {
-          expiresIn: '1h',
-        });
-
-        return {
-          success: true,
-          token: `Bearer ${token}`,
-        };
+        // const payload = {
+        //   id: userReturn.UserId,
+        //   role: null,
+        //   name: user.UserName,
+        // };
+        return { success: true, id: userReturn.UserId };
       }
-      return { success: false, message: 'Invalid password' };
+      return { success: false };
     } catch (err) {
       throw err;
     }

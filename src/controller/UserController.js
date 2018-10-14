@@ -1,5 +1,7 @@
+const jwt = require('jsonwebtoken');
 const UserService = require('../services/UserService');
 const validateUserHandler = require('../validator/user');
+const keys = require('../config/keys');
 
 
 exports.user_register_get = async (req, res) => {
@@ -57,9 +59,30 @@ exports.user_login_post = async (req, res, next) => {
     await UserService.authenticateQnAUser(user)
       .then((result) => {
         // console.log('result', result);
-        if (result.success) {
-          res.status(200).json(result);
-        } else res.status(401).json(result);
+        // if (result.success) {
+        //   res.status(200).json(result);
+        // } else res.status(401).json(result);
+        if (result.success) {         
+          const payload = {
+            id: result.id,
+            role: null,
+            name: user.UserName,
+          };
+          console.log(payload);
+          // token
+          const token = jwt.sign(payload, keys.secretOrKey, {
+            expiresIn: '1h',
+          });
+
+          return res.status(200).json({
+            success: true,
+            token: `Bearer ${token}`,
+          });
+        }
+        return res.status(422).json({
+          success: false,
+          msg: '"invalid password',
+        });
       })
       .catch((err) => {
         console.log(err);
