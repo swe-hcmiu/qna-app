@@ -23,28 +23,10 @@ passport.use(new GoogleStrategy({
     });
 }));
 
-// passport.use(new LocalStrategy(
-//   (username, password, done) => {
-//     const user = {
-//       UserName: username,
-//       UserPass: password,
-//     };
-//     UserService.authenticateQnAUser(user)
-//       .then((result) => {
-//         done(null, result.user, result.message);
-//       })
-//       .catch((err) => {
-//         done(err);
-//       });
-//   },
-// ));
-
 module.exports = (passport) => {
   passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
-    // console.log('payload', jwt_payload);
-    UserService.getUserById(jwt_payload.id)
+    UserService.getUserById(jwt_payload.userId)
       .then((user) => {
-        // console.log('user: ', user);
         if (user) {
           return done(null, user);
         }
@@ -53,18 +35,3 @@ module.exports = (passport) => {
       .catch(err => console.log(err));
   }));
 };
-
-
-// passport.serializeUser((user, done) => {
-//   done(null, user.UserId);
-// });
-
-// passport.deserializeUser((id, done) => {
-//   UserService.getUserById(id)
-//     .then((user) => {
-//       done(null, user);
-//     })
-//     .catch((err) => {
-//       done(err, null);
-//     });
-// });

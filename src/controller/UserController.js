@@ -56,38 +56,28 @@ exports.user_login_post = async (req, res, next) => {
       UserPass: password,
     };
     // console.log(user);
-    await UserService.authenticateQnAUser(user)
-      .then((result) => {
-        // console.log('result', result);
-        // if (result.success) {
-        //   res.status(200).json(result);
-        // } else res.status(401).json(result);
-        if (result.success) {         
-          const payload = {
-            id: result.id,
-            role: null,
-            name: user.UserName,
-          };
-          console.log(payload);
-          // token
-          const token = jwt.sign(payload, keys.secretOrKey, {
-            expiresIn: '1h',
-          });
-
-          return res.status(200).json({
-            success: true,
-            token: `Bearer ${token}`,
-          });
-        }
-        return res.status(422).json({
-          success: false,
-          msg: '"invalid password',
-        });
-      })
-      .catch((err) => {
-        console.log(err);
+    const result = await UserService.authenticateQnAUser(user);
+    if (result.success) {
+      const payload = {
+        userId: result.id,
+      };
+      console.log(payload);
+      // token
+      const token = jwt.sign(payload, keys.secretOrKey, {
+        expiresIn: '7d',
       });
+
+      return res.status(200).json({
+        success: true,
+        token,
+      });
+    }
+    const err = new Error('Not Found');
+    err.httpCode = 404;
+    err.description = 'Invalid username or password';
+    throw err;
   } catch (err) {
+    console.log(err);
     next(err);
   }
 };
