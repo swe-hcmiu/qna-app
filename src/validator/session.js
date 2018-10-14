@@ -259,4 +259,30 @@ module.exports = {
       throw err;
     }
   },
+
+  async validateUserAddComment(data) {
+    try {
+      await this.validateGetSpecificQuestion(data);
+      if(!isEmpty(data.parentId)) {
+        try {
+          this.validateGetSpecificQuestion({sessionId: data.sessionId, questionId: data.parentId}); 
+        } catch (err) {
+          err.description = { parentId: err.description };
+          throw err;
+        }
+      }
+
+      const description = [];
+      if (!Validator.isLength(data.content, { min: 1, max: 200 })) {
+        description.push({ content: 'content must between 1 and 200 characters' });
+      }
+      if (!isEmpty(description)) {
+        const err = new Error('Invalid input');
+        err.description = description;
+        throw err;
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
 };

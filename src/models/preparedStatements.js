@@ -53,3 +53,11 @@ module.exports.updateQuestionStatus = 'UPDATE ?? SET ?? = ?, UpdateTime = CURREN
 
 module.exports.selectListOfEditors = `select roles.UserId, users.DisplayName from roles, users where roles.SessionId = ? 
 and users.UserId = roles.UserId`;
+
+module.exports.selectCmt = `SELECT * FROM comments WHERE CommentId = ?`;
+
+module.exports.selectCmtFromQuestion = `SELECT * FROM comments WHERE QuestionId = ?`;
+
+module.exports.selectCmtFromCmt = `SELECT * FROM comments WHERE ParentCommentId = ?`;
+
+module.exports.deleteCmt = `DELETE FROM comments WHERE CommentId = ?`;

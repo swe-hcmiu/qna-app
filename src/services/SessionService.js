@@ -167,4 +167,18 @@ module.exports = {
       throw err;
     }
   },
+
+  async addCommentByRole(sessionId, questionId, userId, parentId, content) {
+    try {
+      const result = await UserService.getRoleOfUserInSession(userId, sessionId);
+      const role = result.Role;
+
+      const service = this.getServiceByRole(role);
+      // userId = await UserService.validateUserId(userId);
+      const commentId = await service.addComment(questionId, userId, parentId, content);
+      return commentId;
+    } catch (err) {
+      throw err;
+    }
+  },
 };

@@ -375,4 +375,20 @@ module.exports = {
       throw err;
     }
   },
+
+  async addComment(newComment) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        const result = await connection.query(preparedStatements.insertQuery, ['comments', newComment]);
+        return result.insertId;
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
 };

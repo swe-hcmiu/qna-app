@@ -56,4 +56,16 @@ module.exports = {
       throw err;
     }
   },
+
+  async addComment(QuestionId, UserId, ParentId, Content) {
+    try {
+      const commentObj = {
+        QuestionId, UserId, ParentId, Content
+      };
+      const commentId = await Session.addComment(commentObj);
+      return commentId;
+    } catch (err) {
+      throw err;
+    }
+  },
 };

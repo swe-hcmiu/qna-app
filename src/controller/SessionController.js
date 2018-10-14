@@ -330,3 +330,26 @@ exports.sessionId_editor_permission_delete = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.sessionId_questionId_comment_post = async (req, res, next) => {
+  const { content, parentId } = req.body;
+  const { sessionId, questionId } = req.params;
+  const validateObj = {
+    content,
+    sessionId,
+    questionId,
+    parentId,
+  };
+  try {
+    await ValidateSessionHandler.validateUserAddComment(validateObj);
+
+    const rawUserId = UserService.getUserId(req.user);
+    const userId = await UserService.validateUserId(rawUserId);
+    await createAnonymousSession(req, userId);
+    const commentId = await SessionService.addCommentByRole(questionId, userId, parentId, content);
+    const returnObj = { commentId };
+    res.send(returnObj);
+  } catch (err) {
+    next(err);
+  }
+};
