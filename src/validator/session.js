@@ -99,6 +99,15 @@ module.exports = {
     }
   },
 
+  async validateGetInvalidQuestions(data) {
+    try {
+      await this.validateSession(data.sessionId);
+      await this.validateEditorRole(data.sessionId, data.user);
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async validateUserAddQuestions(data) {
     try {
       await this.validateSession(data.sessionId);

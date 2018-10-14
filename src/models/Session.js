@@ -186,6 +186,22 @@ module.exports = {
     }
   },
 
+  async getInvalidQuestionsOfSession(sessionId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        const listOfInvalidQuestions = await connection.query(preparedStatements.selectInvalidQuestions, [sessionId]);
+        return listOfInvalidQuestions;
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async getPendingQuestionsOfSession(sessionId) {
     try {
       const connection = await mysqlConfig.pool.getConnection();

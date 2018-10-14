@@ -115,6 +115,22 @@ exports.sessionId_question_pending = async (req, res, next) => {
   }
 };
 
+exports.sessionId_question_invalid = async (req, res, next) => {
+  try {
+    const { sessionId } = req.params;
+    const validateObj = {
+      sessionId,
+      user: req.user,
+    };
+    await ValidateSessionHandler.validateGetInvalidQuestions(validateObj);
+
+    const listOfInvalidQuestions = await EditorSessionService.getInvalidQuestionsOfSession(sessionId);
+    res.send(listOfInvalidQuestions);
+  } catch (err) {
+    next(err);
+  }
+};
+
 async function createAnonymousSession(req, userId) {
   try {
     if (!req.user) {
@@ -165,7 +181,7 @@ exports.sessionId_questionId_get = async (req, res, next) => {
     const validateObj = {
       sessionId,
       questionId,
-    }
+    };
     await ValidateSessionHandler.validateGetSpecificQuestion(validateObj);
     const userId = UserService.getUserId(req.user);
 
