@@ -70,8 +70,7 @@ CREATE TABLE IF NOT EXISTS `qasys2`.`sessions` (
   `SessionId` INT(11) NOT NULL AUTO_INCREMENT,
   `SessionName` VARCHAR(50) NULL DEFAULT NULL,
   `SessionType` ENUM('DEFAULT', 'NEEDS_VERIFICATION') NULL DEFAULT NULL,
-  PRIMARY KEY (`SessionId`),
-  UNIQUE INDEX `SessionName` (`SessionName` ASC, `SessionType` ASC))
+  PRIMARY KEY (`SessionId`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8;
