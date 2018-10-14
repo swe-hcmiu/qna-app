@@ -56,7 +56,7 @@ exports.user_login_post = async (req, res, next) => {
     };
     await UserService.authenticateQnAUser(user)
       .then((result) => {
-        if (result.success) {         
+        if (result.success) {
           const payload = {
             id: result.id,
             role: null,
