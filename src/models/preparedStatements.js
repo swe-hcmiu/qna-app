@@ -56,5 +56,7 @@ module.exports.selectQuestionWithId = 'SELECT users.DisplayName, questions.* FRO
 
 module.exports.updateQuestionStatus = 'UPDATE ?? SET ?? = ?, UpdateTime = CURRENT_TIMESTAMP() WHERE ?? = ?';
 
+module.exports.updateStatus = 'UPDATE ?? SET ?? = ?, UpdateTime = CURRENT_TIMESTAMP() WHERE ?? = ?';
+
 module.exports.selectListOfEditors = `select roles.UserId, users.DisplayName from roles, users where roles.SessionId = ? 
 and users.UserId = roles.UserId`;

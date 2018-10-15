@@ -80,6 +80,22 @@ module.exports = {
     }
   },
 
+  async updateSessionStatus(sessionId, status) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        await connection.query(preparedStatements.updateStatus, ['sessions', 'SessionStatus', status,
+          'sessionId', sessionId]);
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async assignRole(roleObject, connection) {
     try {
       const result = await connection.query(preparedStatements.insertQuery, ['roles', roleObject]);
@@ -326,7 +342,7 @@ module.exports = {
     try {
       const connection = await mysqlConfig.pool.getConnection();
       try {
-        await connection.query(preparedStatements.updateQuestionStatus, ['questions', 'Status', status,
+        await connection.query(preparedStatements.updateStatus, ['questions', 'Status', status,
           'QuestionId', questionId]);
       } catch (err) {
         throw err;
