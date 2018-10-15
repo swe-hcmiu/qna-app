@@ -222,8 +222,7 @@ module.exports = {
     try {
       const connection = await mysqlConfig.pool.getConnection();
       try {
-        const result = await connection.query(preparedStatements.selectAllQuery,
-          ['questions', 'QuestionId', questionId]);
+        const result = await connection.query(preparedStatements.selectQuestionWithId, questionId);
         return result[0];
       } catch (err) {
         throw err;
