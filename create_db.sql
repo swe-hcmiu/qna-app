@@ -148,6 +148,32 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 
+-- -----------------------------------------------------
+-- Table `qasys2`.`comments`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `qasys2`.`comments` (
+  `CommentId` INT(11) NOT NULL AUTO_INCREMENT,
+  `QuestionId` INT(11) NOT NULL,
+  `UserId` INT(11) NOT NULL,
+  `ParentId` VARCHAR(45) NULL DEFAULT NULL,
+  `Content` MEDIUMTEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`CommentId`),
+  INDEX `comments_fk_idx` (`QuestionId` ASC),
+  INDEX `comments_users_fk_idx` (`UserId` ASC),
+  CONSTRAINT `comments_questions_fk`
+    FOREIGN KEY (`QuestionId`)
+    REFERENCES `qasys2`.`questions` (`QuestionId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `comments_users_fk`
+    FOREIGN KEY (`UserId`)
+    REFERENCES `qasys2`.`qnausers` (`UserId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

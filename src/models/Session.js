@@ -391,4 +391,20 @@ module.exports = {
       throw err;
     }
   },
+
+  async getCommentsOfQuestion(questionId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        const result = await connection.query(preparedStatements.selectCmtFromQuestion, [questionId]);
+        return result;
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
 };

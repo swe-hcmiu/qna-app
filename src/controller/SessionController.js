@@ -165,7 +165,7 @@ exports.sessionId_questionId_get = async (req, res, next) => {
     const validateObj = {
       sessionId,
       questionId,
-    }
+    };
     await ValidateSessionHandler.validateGetSpecificQuestion(validateObj);
     const userId = UserService.getUserId(req.user);
 
@@ -346,9 +346,26 @@ exports.sessionId_questionId_comment_post = async (req, res, next) => {
     const rawUserId = UserService.getUserId(req.user);
     const userId = await UserService.validateUserId(rawUserId);
     await createAnonymousSession(req, userId);
-    const commentId = await SessionService.addCommentByRole(questionId, userId, parentId, content);
+    const commentId = await SessionService.addCommentByRole(sessionId, questionId, userId, parentId, content);
     const returnObj = { commentId };
     res.send(returnObj);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.sessionId_questionId_comment_get = async (req, res, next) => {
+  try {
+    const { sessionId, questionId } = req.params;
+    const validateObj = {
+      sessionId,
+      questionId,
+    };
+    await ValidateSessionHandler.validateGetSpecificQuestion(validateObj);
+    const userId = UserService.getUserId(req.user);
+
+    const listOfComments = await SessionService.getCommentsOfQuestionByRole(sessionId, questionId, userId);
+    res.send(listOfComments);
   } catch (err) {
     next(err);
   }

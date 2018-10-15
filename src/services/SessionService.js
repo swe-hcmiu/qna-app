@@ -181,4 +181,18 @@ module.exports = {
       throw err;
     }
   },
+
+  async getCommentsOfQuestionByRole(sessionId, questionId, userId, parentId, content) {
+    try {
+      const result = await UserService.getRoleOfUserInSession(userId, sessionId);
+      const role = result.Role;
+
+      const service = this.getServiceByRole(role);
+      // userId = await UserService.validateUserId(userId);
+      const listOfComments = await service.getCommentsOfQuestion(questionId, userId, parentId, content);
+      return listOfComments;
+    } catch (err) {
+      throw err;
+    }
+  },
 };

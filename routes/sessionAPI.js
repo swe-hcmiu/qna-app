@@ -28,4 +28,7 @@ router.delete('/:sessionId/editors/permissions', SessionController.sessionId_edi
 
 router.get('/:sessionId/users/vote', SessionController.sessionId_user_vote);
 
+router.get('/:sessionId/questions/:questionId/comments', SessionController.sessionId_questionId_comment_get);
+router.post('/:sessionId/questions/:questionId/comments', SessionController.sessionId_questionId_comment_post);
+
 module.exports = router;

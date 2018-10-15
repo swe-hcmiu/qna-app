@@ -60,7 +60,7 @@ module.exports = {
   async addComment(QuestionId, UserId, ParentId, Content) {
     try {
       const commentObj = {
-        QuestionId, UserId, ParentId, Content
+        QuestionId, UserId, ParentId, Content,
       };
       const commentId = await Session.addComment(commentObj);
       return commentId;
