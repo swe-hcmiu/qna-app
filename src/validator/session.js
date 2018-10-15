@@ -178,7 +178,7 @@ module.exports = {
       }
 
       const question = await this.validateQuestionBelongToSession(data.questionId, data.sessionId);
-      if (question.Status === 'PENDING' && data.role === 'USER') {
+      if ((question.Status === 'PENDING' || question.Status === 'INVALID') && data.role === 'USER') {
         const err = new Error('Authorization required');
         err.description = { user: 'user must be editor of this session' };
         throw err;
