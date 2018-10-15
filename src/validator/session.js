@@ -99,6 +99,15 @@ module.exports = {
     }
   },
 
+  async validateGetInvalidQuestions(data) {
+    try {
+      await this.validateSession(data.sessionId);
+      await this.validateEditorRole(data.sessionId, data.user);
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async validateUserAddQuestions(data) {
     try {
       await this.validateSession(data.sessionId);
@@ -219,10 +228,10 @@ module.exports = {
         throw err;
       }
 
-      const listStatus = ['UNANSWERED', 'ANSWERED', 'PENDING'];
+      const listStatus = ['UNANSWERED', 'ANSWERED', 'PENDING', 'INVALID'];
       if (!listStatus.includes(data.status)) {
         const err = new Error('Invalid input');
-        err.description = { status: 'question status must be unanswered, answered or pending' };
+        err.description = { status: 'question status must be unanswered, answered, pending, or invalid' };
         throw err;
       }
     } catch (err) {

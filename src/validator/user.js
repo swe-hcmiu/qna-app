@@ -42,5 +42,5 @@ module.exports = {
       err.description = { user: 'user must login' };
       throw err;
     }
-  }
-}
+  },
+};

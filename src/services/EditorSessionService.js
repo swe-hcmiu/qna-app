@@ -88,4 +88,13 @@ module.exports = {
       throw err;
     }
   },
+
+  async getInvalidQuestionsOfSession(sessionId) {
+    try {
+      const listOfInvalidQuestions = await Session.getInvalidQuestionsOfSession(sessionId);
+      return listOfInvalidQuestions;
+    } catch (err) {
+      throw err;
+    }
+  },
 };
