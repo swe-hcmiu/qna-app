@@ -273,6 +273,7 @@ socket.on('question_top10_changed', (data) => {
   alert('Top-10 list changed');
 });
 
-socket.on('error', (err) => {
+socket.on('exception', (err) => {
   alert(err);
+  console.log(err);
 });

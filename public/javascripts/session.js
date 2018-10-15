@@ -41,6 +41,6 @@ socket.on('new_session_created', (session) => {
   alert(`session ${session.sessionName} has been created`);
 });
 
-socket.on('error', (err) => {
+socket.on('exception', (err) => {
   alert(err);
 });

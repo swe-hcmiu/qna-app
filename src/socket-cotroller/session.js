@@ -63,7 +63,7 @@ module.exports = (io) => {
 
         sessionChannel.emit('new_session_created', session);
       } catch (err) {
-        socket.emit('error', err);
+        socket.emit('exception', err);
       }
     });
 
@@ -75,7 +75,7 @@ module.exports = (io) => {
           socket.to(`room_${data.sessionId}`).emit('new_user_entered', user);
         });
       } catch (err) {
-        socket.emit('error', err);
+        socket.emit('exception', err);
       }
     });
 
@@ -83,7 +83,7 @@ module.exports = (io) => {
       const rooms = Object.keys(socket.rooms);
       if (rooms.length > 1) {
         socket.leave(rooms[1], (err) => {
-          if (err) return socket.emit('error', err);
+          if (err) return socket.emit('exception', err);
           return socket.to(rooms[1]).emit('user_leave_room');
         });
       }
@@ -110,7 +110,7 @@ module.exports = (io) => {
           listOfFavoriteQuestions,
         });
       } catch (err) {
-        socket.emit('error', err);
+        socket.emit('exception', err);
       }
     });
 
@@ -135,7 +135,17 @@ module.exports = (io) => {
           listOfFavoriteQuestions,
         });
       } catch (err) {
-        socket.emit('error', err);
+        switch (err.code) {
+          case 'ER_DUP_ENTRY': {
+            err.httpCode = 409;
+            err.description = 'user already voted this question';
+            break;
+          }
+          default: {
+            break;
+          }
+        }
+        socket.emit('exception', err);
       }
     });
 
@@ -153,7 +163,7 @@ module.exports = (io) => {
         await SessionService.cancelVoteByRole(sessionId, data.questionId, user.userId, role);
 
         const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
-        
+
         sessionChannel.to(room).emit('new_vote_deleted', {
           questionId: data.questionId,
         });
@@ -161,7 +171,7 @@ module.exports = (io) => {
           listOfFavoriteQuestions,
         });
       } catch (err) {
-        socket.emit('error', err);
+        socket.emit('exception', err);
       }
     });
 
@@ -187,7 +197,7 @@ module.exports = (io) => {
           listOfFavoriteQuestions,
         });
       } catch (err) {
-        socket.emit('error', err);
+        socket.emit('exception', err);
       }
     });
   });
