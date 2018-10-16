@@ -188,6 +188,9 @@ socket.on('connect', () => {
     sessionId,
   };
   socket.emit('join_room', data);
+  socket.emit('get_room_data', data, (roomData) => {
+    console.log(roomData);
+  });
 });
 
 socket.on('receive_token', (token) => {

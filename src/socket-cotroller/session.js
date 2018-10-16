@@ -47,6 +47,16 @@ module.exports = (io) => {
   const sessionChannel = io.of('/session');
 
   sessionChannel.on('connection', (socket) => {
+    socket.on('get_session_list', async (data, callback) => {
+      try {
+        await processUserInfo(data, socket);
+        const listOfSessions = await SessionService.getListOfSessions();
+        callback(listOfSessions);
+      } catch (err) {
+        socket.emit('exception', err);
+      }
+    });
+
     socket.on('create_session', async (data) => {
       try {
         const user = await processUserInfo(data, socket);
@@ -86,6 +96,18 @@ module.exports = (io) => {
           if (err) return socket.emit('exception', err);
           return socket.to(rooms[1]).emit('user_leave_room');
         });
+      }
+    });
+
+    socket.on('get_room_data', async (data, callback) => {
+      try {
+        const user = await processUserInfo(data, socket);
+        const { sessionId } = data;
+        await ValidateSessionHandler.validateSession(sessionId);
+        const roomData = await SessionService.getInfoSessionByRole(sessionId, user.userId);
+        callback(roomData);
+      } catch (err) {
+        socket.emit('exception', err);
       }
     });
 
