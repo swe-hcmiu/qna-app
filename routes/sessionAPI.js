@@ -10,6 +10,8 @@ router.post('/', passport.authenticate('jwt', { session: false }), SessionContro
 router.get('/:sessionId', passport.authenticate('jwt', { session: false }), SessionController.sessionId_get);
 router.delete('/:sessionId', passport.authenticate('jwt', { session: false }), SessionController.sessionId_delete);
 
+router.put('/:sessionId/status', SessionController.sessionId_status_put);
+
 router.get('/:sessionId/questions/newest', SessionController.sessionId_question_newest);
 router.get('/:sessionId/questions/top', SessionController.sessionId_question_top);
 router.get('/:sessionId/questions/answered', SessionController.sessionId_question_answered);
