@@ -93,9 +93,10 @@ app.use('/auth', authRouter);
 app.use('/sessions', sessionRouter);
 app.use('/api/sessions', sessionAPIRouter);
 
-app.use(ErrorController);
-
 app.use(winstonConfig.errorFileLogger);
+
+// all error controllers/handlers must be added below this line
+app.use(ErrorController);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
