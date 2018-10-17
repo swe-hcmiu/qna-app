@@ -427,12 +427,25 @@ module.exports = {
     try {
       const connection = await mysqlConfig.pool.getConnection();
       try {
-        const result = await connection.query(preparedStatements.selectCmtFromQuestion, [questionId]);
+        const result = await connection.query(preparedStatements.selectAllQuery, ['comments', 'questionId', questionId]);
         return result;
       } catch (err) {
         throw err;
       } finally {
         await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async deleteComment(commentId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        await connection.query(preparedStatements.deleteQuery, ['comments', 'CommentId', commentId]);
+      } catch (err) {
+        throw err;
       }
     } catch (err) {
       throw err;

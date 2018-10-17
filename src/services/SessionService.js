@@ -178,7 +178,7 @@ module.exports = {
       throw err;
     }
   },
-
+  /*
   async addCommentByRole(sessionId, questionId, userId, parentId, content) {
     try {
       const result = await UserService.getRoleOfUserInSession(userId, sessionId);
@@ -202,6 +202,44 @@ module.exports = {
       // userId = await UserService.validateUserId(userId);
       const listOfComments = await service.getCommentsOfQuestion(questionId, userId, parentId, content);
       return listOfComments;
+    } catch (err) {
+      throw err;
+    }
+  },
+  */
+
+  async addComment(QuestionId, UserId, ParentId, Content) {
+    try {
+      const commentObj = {
+        QuestionId,
+        UserId,
+        ParentId,
+        Content,
+      };
+      const commentId = await Session.addComment(commentObj);
+      return commentId;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async getCommentsOfQuestion(questionId) {
+    try {
+      const listOfComments = await Session.getCommentsOfQuestion(questionId);
+      return listOfComments;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async deleteCommentByRole(sessionId, userId, commentId) {
+    try {
+      const result = await UserService.getRoleOfUserInSession(userId, sessionId);
+      const role = result.Role;
+
+      const service = this.getServiceByRole(role);
+      // userId = await UserService.validateUserId(userId);
+      await service.deleteComment(commentId);
     } catch (err) {
       throw err;
     }

@@ -109,7 +109,7 @@ module.exports = {
       throw err;
     }
   },
-
+  /*
   async addComment(QuestionId, UserId, ParentId, Content) {
     try {
       const commentObj = {
@@ -129,6 +129,15 @@ module.exports = {
     try {
       const listOfComments = await Session.getCommentsOfQuestion(questionId);
       return listOfComments;
+    } catch (err) {
+      throw err;
+    }
+  },
+*/
+
+  async deleteComment(commentId) {
+    try {
+      await Session.deleteComment(commentId);
     } catch (err) {
       throw err;
     }
