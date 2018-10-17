@@ -58,6 +58,8 @@ module.exports = {
       try {
         const listOfPendingQuestions = await service.getPendingQuestionsOfSession(sessionId);
         returnObj.listOfPendingQuestions = listOfPendingQuestions;
+        const listOfInvalidQuestions = await service.getInvalidQuestionsOfSession(sessionId);
+        returnObj.listOfInvalidQuestions = listOfInvalidQuestions;
       } catch (err) {
         // continue regardless error
       }
@@ -90,6 +92,15 @@ module.exports = {
     try {
       const listOfAnsweredQuestions = await Session.getAnsweredQuestionsOfSession(sessionId);
       return listOfAnsweredQuestions;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async getInvalidQuestiosOfSession(sessionId) {
+    try {
+      const listOfInvalidQuestions = await Session.getInvalidQuestionsOfSession(sessionId);
+      return listOfInvalidQuestions;
     } catch (err) {
       throw err;
     }

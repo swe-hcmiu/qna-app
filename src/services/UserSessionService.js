@@ -30,7 +30,7 @@ module.exports = {
   async getQuestion(questionId) {
     try {
       const question = await Session.getQuestion(questionId);
-      if (question.Status !== 'PENDING') return question;
+      if (question.Status !== 'PENDING' && question.Status !== 'INVALID') return question;
 
       const err = new Error('Authorization required');
       err.description = { user: 'user must be editor of this session' };

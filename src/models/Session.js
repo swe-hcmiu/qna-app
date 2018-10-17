@@ -80,6 +80,22 @@ module.exports = {
     }
   },
 
+  async updateSessionStatus(sessionId, status) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        await connection.query(preparedStatements.updateStatus, ['sessions', 'SessionStatus', status,
+          'sessionId', sessionId]);
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async assignRole(roleObject, connection) {
     try {
       const result = await connection.query(preparedStatements.insertQuery, ['roles', roleObject]);
@@ -186,6 +202,22 @@ module.exports = {
     }
   },
 
+  async getInvalidQuestionsOfSession(sessionId) {
+    try {
+      const connection = await mysqlConfig.pool.getConnection();
+      try {
+        const listOfInvalidQuestions = await connection.query(preparedStatements.selectInvalidQuestions, [sessionId]);
+        return listOfInvalidQuestions;
+      } catch (err) {
+        throw err;
+      } finally {
+        await connection.release();
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async getPendingQuestionsOfSession(sessionId) {
     try {
       const connection = await mysqlConfig.pool.getConnection();
@@ -206,8 +238,7 @@ module.exports = {
     try {
       const connection = await mysqlConfig.pool.getConnection();
       try {
-        const result = await connection.query(preparedStatements.selectAllQuery,
-          ['questions', 'QuestionId', questionId]);
+        const result = await connection.query(preparedStatements.selectQuestionWithId, questionId);
         return result[0];
       } catch (err) {
         throw err;
@@ -311,7 +342,7 @@ module.exports = {
     try {
       const connection = await mysqlConfig.pool.getConnection();
       try {
-        await connection.query(preparedStatements.updateQuestionStatus, ['questions', 'Status', status,
+        await connection.query(preparedStatements.updateStatus, ['questions', 'Status', status,
           'QuestionId', questionId]);
       } catch (err) {
         throw err;

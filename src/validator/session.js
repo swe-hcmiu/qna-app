@@ -99,6 +99,15 @@ module.exports = {
     }
   },
 
+  async validateGetInvalidQuestions(data) {
+    try {
+      await this.validateSession(data.sessionId);
+      await this.validateEditorRole(data.sessionId, data.user);
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async validateUserAddQuestions(data) {
     try {
       await this.validateSession(data.sessionId);
@@ -169,7 +178,7 @@ module.exports = {
       }
 
       const question = await this.validateQuestionBelongToSession(data.questionId, data.sessionId);
-      if (question.Status === 'PENDING' && data.role === 'USER') {
+      if ((question.Status === 'PENDING' || question.Status === 'INVALID') && data.role === 'USER') {
         const err = new Error('Authorization required');
         err.description = { user: 'user must be editor of this session' };
         throw err;
@@ -219,10 +228,10 @@ module.exports = {
         throw err;
       }
 
-      const listStatus = ['UNANSWERED', 'ANSWERED', 'PENDING'];
+      const listStatus = ['UNANSWERED', 'ANSWERED', 'PENDING', 'INVALID'];
       if (!listStatus.includes(data.status)) {
         const err = new Error('Invalid input');
-        err.description = { status: 'question status must be unanswered, answered or pending' };
+        err.description = { status: 'question status must be unanswered, answered, pending, or invalid' };
         throw err;
       }
     } catch (err) {
@@ -263,9 +272,9 @@ module.exports = {
   async validateUserAddComment(data) {
     try {
       await this.validateGetSpecificQuestion(data);
-      if(!isEmpty(data.parentId)) {
+      if (!isEmpty(data.parentId)) {
         try {
-          this.validateGetSpecificQuestion({sessionId: data.sessionId, questionId: data.parentId}); 
+          this.validateGetSpecificQuestion({ sessionId: data.sessionId, questionId: data.parentId });
         } catch (err) {
           err.description = { parentId: err.description };
           throw err;
@@ -279,6 +288,22 @@ module.exports = {
       if (!isEmpty(description)) {
         const err = new Error('Invalid input');
         err.description = description;
+        throw err;
+      }
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async validateChangeSessionStatus(data) {
+    try {
+      await this.validateSession(data.sessionId);
+      await this.validateEditorRole(data.sessionId, data.user);
+
+      const listStatus = ['OPENING', 'CLOSED'];
+      if (!listStatus.includes(data.status)) {
+        const err = new Error('Invalid input');
+        err.description = { status: 'session status must be opening or closed' };
         throw err;
       }
     } catch (err) {

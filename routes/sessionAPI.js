@@ -9,6 +9,8 @@ router.post('/', SessionController.session_post);
 router.get('/:sessionId', SessionController.sessionId_get);
 router.delete('/:sessionId', SessionController.sessionId_delete);
 
+router.put('/:sessionId/status', SessionController.sessionId_status_put);
+
 router.get('/:sessionId/questions/newest', SessionController.sessionId_question_newest);
 router.get('/:sessionId/questions/top', SessionController.sessionId_question_top);
 router.get('/:sessionId/questions/answered', SessionController.sessionId_question_answered);

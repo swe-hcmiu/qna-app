@@ -63,6 +63,25 @@ exports.sessionId_delete = async (req, res, next) => {
   }
 };
 
+exports.sessionId_status_put = async (req, res, next) => {
+  try {
+    const { sessionId } = req.params;
+    const status = req.body.Status;
+    const validateObj = {
+      sessionId,
+      user: req.user,
+      status,
+    };
+    await ValidateSessionHandler.validateChangeSessionStatus(validateObj);
+
+    await EditorSessionService.updateSessionStatus(sessionId, status);
+    res.sendStatus(200);
+  } catch (err) {
+    next(err);
+  }
+};
+
+
 exports.sessionId_question_newest = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
@@ -110,6 +129,22 @@ exports.sessionId_question_pending = async (req, res, next) => {
 
     const listOfPendingQuestions = await EditorSessionService.getPendingQuestionsOfSession(sessionId);
     res.send(listOfPendingQuestions);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.sessionId_question_invalid = async (req, res, next) => {
+  try {
+    const { sessionId } = req.params;
+    const validateObj = {
+      sessionId,
+      user: req.user,
+    };
+    await ValidateSessionHandler.validateGetInvalidQuestions(validateObj);
+
+    const listOfInvalidQuestions = await EditorSessionService.getInvalidQuestionsOfSession(sessionId);
+    res.send(listOfInvalidQuestions);
   } catch (err) {
     next(err);
   }

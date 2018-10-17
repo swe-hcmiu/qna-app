@@ -14,7 +14,11 @@ module.exports = {
     try {
       const Status = 'UNANSWERED';
       const questionObj = {
-        SessionId, UserId, Title, Content, Status,
+        SessionId,
+        UserId,
+        Title,
+        Content,
+        Status,
       };
       const questionId = await Session.addQuestion(questionObj);
       return questionId;
@@ -89,10 +93,30 @@ module.exports = {
     }
   },
 
+  async getInvalidQuestionsOfSession(sessionId) {
+    try {
+      const listOfInvalidQuestions = await Session.getInvalidQuestionsOfSession(sessionId);
+      return listOfInvalidQuestions;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async updateSessionStatus(sessionId, status) {
+    try {
+      await Session.updateSessionStatus(sessionId, status);
+    } catch (err) {
+      throw err;
+    }
+  },
+
   async addComment(QuestionId, UserId, ParentId, Content) {
     try {
       const commentObj = {
-        QuestionId, UserId, ParentId, Content,
+        QuestionId,
+        UserId,
+        ParentId,
+        Content,
       };
       const commentId = await Session.addComment(commentObj);
       return commentId;
