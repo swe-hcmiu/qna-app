@@ -48,7 +48,6 @@ exports.user_login_get = async (req, res) => {
 };
 
 exports.user_login_post = async (req, res, next) => {
-  // res.redirect('/sessions');
   try {
     const { username, password } = req.body;
     const user = {
