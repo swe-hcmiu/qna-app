@@ -188,6 +188,9 @@ socket.on('connect', () => {
     sessionId,
   };
   socket.emit('join_room', data);
+  socket.emit('get_room_data', data, (roomData) => {
+    console.log(roomData);
+  });
 });
 
 socket.on('receive_token', (token) => {
@@ -273,6 +276,7 @@ socket.on('question_top10_changed', (data) => {
   alert('Top-10 list changed');
 });
 
-socket.on('error', (err) => {
+socket.on('exception', (err) => {
   alert(err);
+  console.log(err);
 });

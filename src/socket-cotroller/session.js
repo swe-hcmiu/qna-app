@@ -47,6 +47,16 @@ module.exports = (io) => {
   const sessionChannel = io.of('/session');
 
   sessionChannel.on('connection', (socket) => {
+    socket.on('get_session_list', async (data, callback) => {
+      try {
+        await processUserInfo(data, socket);
+        const listOfSessions = await SessionService.getListOfSessions();
+        callback(listOfSessions);
+      } catch (err) {
+        socket.emit('exception', err);
+      }
+    });
+
     socket.on('create_session', async (data) => {
       try {
         const user = await processUserInfo(data, socket);
@@ -63,7 +73,7 @@ module.exports = (io) => {
 
         sessionChannel.emit('new_session_created', session);
       } catch (err) {
-        socket.emit('error', err);
+        socket.emit('exception', err);
       }
     });
 
@@ -75,7 +85,7 @@ module.exports = (io) => {
           socket.to(`room_${data.sessionId}`).emit('new_user_entered', user);
         });
       } catch (err) {
-        socket.emit('error', err);
+        socket.emit('exception', err);
       }
     });
 
@@ -83,9 +93,21 @@ module.exports = (io) => {
       const rooms = Object.keys(socket.rooms);
       if (rooms.length > 1) {
         socket.leave(rooms[1], (err) => {
-          if (err) return socket.emit('error', err);
+          if (err) return socket.emit('exception', err);
           return socket.to(rooms[1]).emit('user_leave_room');
         });
+      }
+    });
+
+    socket.on('get_room_data', async (data, callback) => {
+      try {
+        const user = await processUserInfo(data, socket);
+        const { sessionId } = data;
+        await ValidateSessionHandler.validateSession(sessionId);
+        const roomData = await SessionService.getInfoSessionByRole(sessionId, user.userId);
+        callback(roomData);
+      } catch (err) {
+        socket.emit('exception', err);
       }
     });
 
@@ -110,7 +132,7 @@ module.exports = (io) => {
           listOfFavoriteQuestions,
         });
       } catch (err) {
-        socket.emit('error', err);
+        socket.emit('exception', err);
       }
     });
 
@@ -135,7 +157,17 @@ module.exports = (io) => {
           listOfFavoriteQuestions,
         });
       } catch (err) {
-        socket.emit('error', err);
+        switch (err.code) {
+          case 'ER_DUP_ENTRY': {
+            err.httpCode = 409;
+            err.description = 'user already voted this question';
+            break;
+          }
+          default: {
+            break;
+          }
+        }
+        socket.emit('exception', err);
       }
     });
 
@@ -153,7 +185,7 @@ module.exports = (io) => {
         await SessionService.cancelVoteByRole(sessionId, data.questionId, user.userId, role);
 
         const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
-        
+
         sessionChannel.to(room).emit('new_vote_deleted', {
           questionId: data.questionId,
         });
@@ -161,7 +193,7 @@ module.exports = (io) => {
           listOfFavoriteQuestions,
         });
       } catch (err) {
-        socket.emit('error', err);
+        socket.emit('exception', err);
       }
     });
 
@@ -187,7 +219,7 @@ module.exports = (io) => {
           listOfFavoriteQuestions,
         });
       } catch (err) {
-        socket.emit('error', err);
+        socket.emit('exception', err);
       }
     });
   });

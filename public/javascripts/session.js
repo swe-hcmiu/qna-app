@@ -1,23 +1,20 @@
-function getSession() {
-  fetch('/api/sessions')
-  .then(response => response.json())
-  .then(response => {
-    var HTMLString = '';
-    response.forEach(session => {
-      HTMLString += `<li><a href="/sessions/${session.SessionId}">${session.SessionName}</a></li>`
-    });
-    document.getElementById("sessionList").innerHTML = HTMLString;
-  })
-  .catch((err) => {console.log(err)})
-}
-
-getSession();
-
-// socket io part
-
 const socket = io('/session');
 
+socket.on('connect', () => {
+  const data = {
+    token: localStorage.getItem('token'),
+  };
+  socket.emit('get_session_list', data, (listOfSession) => {
+    let HTMLString = '';
+    listOfSession.forEach((session) => {
+      HTMLString += `<li><a href="/sessions/${session.SessionId}">${session.SessionName}</a></li>`;
+    });
+    document.getElementById("sessionList").innerHTML = HTMLString;
+  });
+});
+
 const submitButton = document.getElementById('submit-button');
+
 submitButton.addEventListener('click', () => {
   const sessionName = document.getElementById('nameSession').value;
   let sessionType;
@@ -41,6 +38,6 @@ socket.on('new_session_created', (session) => {
   alert(`session ${session.sessionName} has been created`);
 });
 
-socket.on('error', (err) => {
+socket.on('exception', (err) => {
   alert(err);
 });
