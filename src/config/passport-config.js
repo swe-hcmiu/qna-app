@@ -25,10 +25,8 @@ passport.use(new GoogleStrategy({
 
 module.exports = (passport) => {
   passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
-    // console.log('payload', jwt_payload);
-    UserService.getUserById(jwt_payload.id)
+    UserService.getUserById(jwt_payload.userId)
       .then((user) => {
-        // console.log('user: ', user);
         if (user) {
           return done(null, user);
         }

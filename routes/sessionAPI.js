@@ -7,7 +7,7 @@ const SessionController = require('../src/controller/SessionController');
 router.get('/', SessionController.session_get);
 router.post('/', passport.authenticate('jwt', { session: false }), SessionController.session_post);
 
-router.get('/:sessionId', SessionController.sessionId_get);
+router.get('/:sessionId', passport.authenticate('jwt', { session: false }), SessionController.sessionId_get);
 router.delete('/:sessionId', passport.authenticate('jwt', { session: false }), SessionController.sessionId_delete);
 
 router.get('/:sessionId/questions/newest', SessionController.sessionId_question_newest);

@@ -1,7 +1,9 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const passport = require('passport');
+const keys = require('../src/config/keys');
 
 const router = express.Router();
-const passport = require('passport');
 
 router.get('/google', passport.authenticate('google', {
   scope: ['profile',
@@ -9,9 +11,19 @@ router.get('/google', passport.authenticate('google', {
 }));
 
 router.get('/google/callback',
-  passport.authenticate('google', { failureRedirect: '/users/login' }),
+  passport.authenticate('google', { failureRedirect: '/users/login', session: false }),
   (req, res) => {
-    res.redirect('/sessions');
+    const payload = {
+      userId: req.user.UserId,
+    };
+    const token = jwt.sign(payload, keys.secretOrKey, {
+      expiresIn: '7d',
+    });
+    res.send({
+      success: true,
+      token,
+    });
+    //res.redirect('/sessions');
   });
 
 module.exports = router;

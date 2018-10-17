@@ -113,8 +113,11 @@ app.use((err, req, res) => {
   res.render('error');
 });
 
-const server = app.listen(process.env.PORT || 80, () => {
-  console.log(`Node.js listening on ${process.env.PORT || 80} ...`);
+const server = app.listen(process.env.PORT || 3000, () => {
+  console.log(`Node.js listening on ${process.env.PORT || 3000} ...`);
 });
+
+const io = require('socket.io')(server);
+const sessionChannel = require('./src/socket-cotroller/session')(io);
 
 module.exports = app;
