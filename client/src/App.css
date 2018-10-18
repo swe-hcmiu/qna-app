@@ -50,8 +50,8 @@ form {
 
 .textbox {
   outline: 0;
-  height: 62px;
-  width: 444px;
+  height: 72px;
+  width: 744px;
   line-height: 42px;
   padding: 0 16px;
   background-color: rgba(255, 255, 255, 0.8);
@@ -72,8 +72,8 @@ form {
   background: none;
   background-color: rgba(38, 50, 56, 0.8);
   float: center;
-  height: 62px;
-  width: 62px;
+  height: 72px;
+  width: 244px;
   text-align: center;
   line-height: 42px;
   border: 0;

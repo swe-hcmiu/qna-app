@@ -6,6 +6,7 @@ import Login from './components/authenticate/Login';
 import Register from './components/authenticate/Register';
 import Session from './components/session/Session';
 import './App.css';
+
 class App extends Component {
   render() {
     return (
