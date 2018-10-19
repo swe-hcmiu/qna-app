@@ -117,7 +117,7 @@ function createHtmlForPost(post, isLiked, position) {
         </div>
         <div class="question-personal-info mt-1 d-flex">
           <p class="question-likeCount mb-1 px-2"><span class="number">${post.VoteByUser}</span> votes</p>
-          <p class="question-author mb-1 pl-2">written by <span class="author">Username ${post.UserId}</span></p>
+          <p class="question-author mb-1 pl-2">written by <span class="author">UserName ${post.UserId}</span></p>
 		      ${(roleData === "USER") ?
       '' :
       `<div class="ml-auto mb-1">

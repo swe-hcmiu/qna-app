@@ -161,11 +161,11 @@ module.exports = {
     }
   },
 
-  async getQnAUserByUserName(username) {
+  async getQnAUserByUserName(UserName) {
     try {
       const connection = await mysqlConfig.pool.getConnection();
       try {
-        const result = await connection.query(preparedStatements.selectAllQuery, ['qnausers', 'UserName', username]);
+        const result = await connection.query(preparedStatements.selectAllQuery, ['qnausers', 'UserName', UserName]);
         return result[0];
       } catch (err) {
         throw err;

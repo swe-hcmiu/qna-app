@@ -1,6 +1,6 @@
 $(document).ready(function () {
   var x_timer;
-  $("#username").keyup(function (e) {
+  $("#UserName").keyup(function (e) {
     clearTimeout(x_timer);
     var user = { UserName: $(this).val() };
     var userString = JSON.stringify(user);
@@ -18,11 +18,11 @@ $(document).ready(function () {
       .done(function (data) {
         console.log(data.status);
         if (data.status == "Available") {
-          $('#message').html('<p>You can use this username</p>');
+          $('#message').html('<p>You can use this UserName</p>');
         }
 
         else {
-          $('#message').html('<p>Username already exists </p>');
+          $('#message').html('<p>UserName already exists </p>');
         }
       });
   }
