@@ -41,8 +41,8 @@ signUpBtn.addEventListener("click", () => {
 logInBtn.addEventListener("click", () => {
   const url = "/users/login";
   const data = {
-    UserName: document.getElementById("UserName").value,
-    Password: document.getElementById("Password").value
+    username: document.getElementById("username").value,
+    password: document.getElementById("password").value
   };
   // fetch(url, {
   //   method: 'POST',
@@ -56,7 +56,7 @@ logInBtn.addEventListener("click", () => {
   //     localStorage.setItem('token', response.data.token);
   //     window.location = "/sessions";
   //   } else {
-  //     alert("User doesn't exist or wrong Password");
+  //     alert("User doesn't exist or wrong password");
   //   }
   // })
   axios.post(url, data)
@@ -66,7 +66,7 @@ logInBtn.addEventListener("click", () => {
         localStorage.setItem('token', response.data.token);
         window.location = "/sessions";
       } else {
-        alert("User doesn't exist or wrong Password");
+        alert("User doesn't exist or wrong password");
       }
     })
 })

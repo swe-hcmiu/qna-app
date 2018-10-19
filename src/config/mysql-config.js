@@ -4,7 +4,7 @@ module.exports = {
   pool: mysql.createPool({
     host: 'localhost',
     user: 'root',
-    Password: '',
+    password: '',
     database: 'qasys2',
     connectionLimit: 10,
   }),

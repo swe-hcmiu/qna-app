@@ -84,14 +84,6 @@ app.use(expressValidator({
   },
 }));
 
-// enble CRORS
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
-
-
 app.use(winstonConfig.consoleLogger, winstonConfig.infoFileLogger);
 
 app.use('/', indexRouter);
@@ -121,8 +113,8 @@ app.use((err, req, res) => {
   res.render('error');
 });
 
-const server = app.listen(process.env.PORT || 5000, () => {
-  console.log(`Node.js listening on ${process.env.PORT || 5000} ...`);
+const server = app.listen(process.env.PORT || 3000, () => {
+  console.log(`Node.js listening on ${process.env.PORT || 3000} ...`);
 });
 
 const io = require('socket.io')(server);

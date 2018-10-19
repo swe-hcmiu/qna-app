@@ -308,7 +308,7 @@
 							"key": "connect.sid"
 						}
 					],
-					"body": "{\"errors\":{\"description\":[{\"FirstName\":\"first name must between 2 and 30 characters\"},{\"LastName\":\"last name must between 2 and 30 characters\"},{\"UserName\":\"user name must between 2 and 30 characters\"},{\"UserPass\":\"Password must between 2 and 30 characters\"}]}}"
+					"body": "{\"errors\":{\"description\":[{\"FirstName\":\"first name must between 2 and 30 characters\"},{\"LastName\":\"last name must between 2 and 30 characters\"},{\"UserName\":\"user name must between 2 and 30 characters\"},{\"UserPass\":\"password must between 2 and 30 characters\"}]}}"
 				}
 			]
 		},
@@ -461,7 +461,7 @@
 							"key": "connect.sid"
 						}
 					],
-					"body": "{\"errors\":{\"description\":\"UserName already exists\"}}"
+					"body": "{\"errors\":{\"description\":\"Username already exists\"}}"
 				}
 			]
 		},
@@ -479,12 +479,12 @@
 					"mode": "urlencoded",
 					"urlencoded": [
 						{
-							"key": "UserName",
+							"key": "username",
 							"value": "duyphan",
 							"type": "text"
 						},
 						{
-							"key": "Password",
+							"key": "password",
 							"value": "123",
 							"type": "text"
 						}
@@ -519,12 +519,12 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "UserName",
+									"key": "username",
 									"value": "duyphan",
 									"type": "text"
 								},
 								{
-									"key": "Password",
+									"key": "password",
 									"value": "123",
 									"type": "text"
 								}
@@ -612,12 +612,12 @@
 					"mode": "urlencoded",
 					"urlencoded": [
 						{
-							"key": "UserName",
+							"key": "username",
 							"value": "duyphan",
 							"type": "text"
 						},
 						{
-							"key": "Password",
+							"key": "password",
 							"value": "123456",
 							"type": "text"
 						}
@@ -652,12 +652,12 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "UserName",
+									"key": "username",
 									"value": "duyphan",
 									"type": "text"
 								},
 								{
-									"key": "Password",
+									"key": "password",
 									"value": "123456",
 									"type": "text"
 								}
@@ -699,7 +699,7 @@
 						},
 						{
 							"key": "WWW-Authenticate",
-							"value": "Invalid Password",
+							"value": "Invalid password",
 							"name": "WWW-Authenticate",
 							"description": "Indicates the authentication scheme that should be used to access the requested entity."
 						},
@@ -902,13 +902,13 @@
 									"type": "text"
 								},
 								{
-									"key": "UserName",
+									"key": "username",
 									"value": "duyphan",
 									"type": "text",
 									"disabled": true
 								},
 								{
-									"key": "Password",
+									"key": "password",
 									"value": "123",
 									"type": "text",
 									"disabled": true
@@ -3867,12 +3867,12 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "UserName",
+									"key": "username",
 									"value": "duyphan",
 									"type": "text"
 								},
 								{
-									"key": "Password",
+									"key": "password",
 									"value": "123",
 									"type": "text"
 								}
@@ -3991,12 +3991,12 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "UserName",
+									"key": "username",
 									"value": "duyphan",
 									"type": "text"
 								},
 								{
-									"key": "Password",
+									"key": "password",
 									"value": "123",
 									"type": "text"
 								}
@@ -4115,12 +4115,12 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "UserName",
+									"key": "username",
 									"value": "duyphan",
 									"type": "text"
 								},
 								{
-									"key": "Password",
+									"key": "password",
 									"value": "123",
 									"type": "text"
 								}
@@ -4210,12 +4210,12 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "UserName",
+									"key": "username",
 									"value": "duyphan",
 									"type": "text"
 								},
 								{
-									"key": "Password",
+									"key": "password",
 									"value": "123",
 									"type": "text"
 								}
@@ -4334,12 +4334,12 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "UserName",
+									"key": "username",
 									"value": "duyphan",
 									"type": "text"
 								},
 								{
-									"key": "Password",
+									"key": "password",
 									"value": "123",
 									"type": "text"
 								}
@@ -4429,12 +4429,12 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "UserName",
+									"key": "username",
 									"value": "duyphan",
 									"type": "text"
 								},
 								{
-									"key": "Password",
+									"key": "password",
 									"value": "123",
 									"type": "text"
 								}
@@ -6365,12 +6365,12 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "UserName",
+									"key": "username",
 									"value": "duyphan",
 									"type": "text"
 								},
 								{
-									"key": "Password",
+									"key": "password",
 									"value": "123",
 									"type": "text"
 								}
@@ -6489,12 +6489,12 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "UserName",
+									"key": "username",
 									"value": "duyphan",
 									"type": "text"
 								},
 								{
-									"key": "Password",
+									"key": "password",
 									"value": "123",
 									"type": "text"
 								}
@@ -6613,12 +6613,12 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "UserName",
+									"key": "username",
 									"value": "duyphan",
 									"type": "text"
 								},
 								{
-									"key": "Password",
+									"key": "password",
 									"value": "123",
 									"type": "text"
 								}

@@ -32,7 +32,7 @@ exports.user_register_post = async (req, res, next) => {
     switch (err.code) {
       case 'ER_DUP_ENTRY': {
         err.httpCode = 409;
-        err.description = 'UserName already exists';
+        err.description = 'Username already exists';
         break;
       }
       default: {
@@ -49,10 +49,10 @@ exports.user_login_get = async (req, res) => {
 
 exports.user_login_post = async (req, res, next) => {
   try {
-    const { UserName, Password } = req.body;
+    const { username, password } = req.body;
     const user = {
-      UserName: UserName,
-      UserPass: Password,
+      UserName: username,
+      UserPass: password,
     };
     // console.log(user);
     const result = await UserService.authenticateQnAUser(user);
@@ -73,7 +73,7 @@ exports.user_login_post = async (req, res, next) => {
     }
     const err = new Error('Not Found');
     err.httpCode = 404;
-    err.description = 'Invalid UserName or Password';
+    err.description = 'Invalid username or password';
     throw err;
   } catch (err) {
     console.log(err);
