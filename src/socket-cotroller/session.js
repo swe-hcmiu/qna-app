@@ -107,7 +107,9 @@ module.exports = (io) => {
         const user = await processUserInfo(data, socket);
         const { sessionId } = data;
         await ValidateSessionHandler.validateSession(sessionId);
-        const roomData = await SessionService.getInfoSessionByRole(sessionId, user.UserId);
+        let roomData = await SessionService.getInfoSessionByRole(sessionId, user.UserId);
+        const listOfVotedQuestions = await SessionService.getListOfVotedQuestions(sessionId, user.UserId);
+        roomData = Object.assign(roomData, listOfVotedQuestions);
         callback(roomData);
       } catch (err) {
         socket.emit('exception', err);
