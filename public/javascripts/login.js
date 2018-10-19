@@ -64,6 +64,8 @@ logInBtn.addEventListener("click", () => {
       console.log(response);
       if (response.status == 200) {
         localStorage.setItem('token', response.data.token);
+        const tokens = response.data.token.split('.');
+        console.log(atob(tokens[1]));
         window.location = "/sessions";
       } else {
         alert("User doesn't exist or wrong password");

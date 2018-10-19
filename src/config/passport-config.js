@@ -13,19 +13,22 @@ passport.use(new GoogleStrategy({
   clientID: '481461792112-5kkhv66re36p7jmvs74hbmnbu1ndgnn2.apps.googleusercontent.com',
   clientSecret: 'GdnR4VbS7a5vOWLAyDaLQC5v',
   callbackURL: '/auth/google/callback',
-}, (accessToken, refreshToken, profile, cb) => {
-  UserService.authenticateGoogleUser(profile)
-    .then((result) => {
-      cb(null, result);
-    })
-    .catch((err) => {
-      cb(err);
-    });
+}, async (accessToken, refreshToken, profile, cb) => {
+  try {
+    const responseGoogle = await UserService.authenticateGoogleUser(profile);
+    const googleUser = JSON.parse(JSON.stringify(responseGoogle));
+    const responseGeneral = await UserService.getUserById(googleUser.UserId);
+    const generalUser = JSON.parse(JSON.stringify(responseGeneral));
+    const user = Object.assign(googleUser, generalUser);
+    cb(null, user);
+  } catch (err) {
+    cb(err);
+  }
 }));
 
 module.exports = (passport) => {
   passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
-    UserService.getUserById(jwt_payload.userId)
+    UserService.getUserById(jwt_payload.UserId)
       .then((user) => {
         if (user) {
           return done(null, user);
