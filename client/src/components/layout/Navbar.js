@@ -1,9 +1,14 @@
-import React, { Component, } from 'react'
+import React, { Component, } from 'react';
+import Login from '../authenticate/Login';
+
+import Register from '../authenticate/Register';
+
 import { Link } from 'react-router-dom';
 class Navbar extends Component {
   render() {
     return (
-      <nav className="navbar navbar-expand-sm navbar-dark bg-dark mb-4">
+      <div>
+      <nav className="navbar navbar-expand-sm navbar-dark bg-dark fixed-top myNavbar">
       <div className="container">
         <Link className="navbar-brand" to="/">
           QnA
@@ -28,20 +33,24 @@ class Navbar extends Component {
           </ul>
 
           <ul className="navbar-nav ml-auto">
+            
             <li className="nav-item">
-              <Link className="nav-link" to="/register">
-                Sign Up
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/login">
+              <button className="btn btn-dark" data-toggle="modal" data-target="#loginModal">
                 Login
-              </Link>
+              </button>
             </li>
+            <li className="nav-item">
+            <button className="btn btn-info" data-toggle="modal" data-target="#registerModal">
+                Sign Up
+              </button>
+            </li> 
           </ul>
         </div>
       </div>
     </nav>
+      <Login />
+      <Register />
+    </div>
     )
   }
 }

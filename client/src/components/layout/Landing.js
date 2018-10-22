@@ -1,30 +1,42 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import MediaQuery from 'react-responsive';
 
 class Landing extends Component {
   render() {
     return (
       <div className="landing">
-        <div className="dark-overlay landing-inner text-light">
-          <div className="container">
-            <div className="row">
-              <div className="col-md-12 text-center">
-                <h1 className="display-3 mb-4">Question And Anwser</h1>
+        <div className="curtain"></div>
+        <div className="landing-content">
+          <h1 className="title">Questions and Answers</h1>
+          <form className="search">
+
+            <MediaQuery query="(max-device-width: 768px)">
+            <input
+                type="text"
+                className="form-control"
+                placeholder="Search for sessions"
                 
-                <input className="textbox col align-self-center" type="text" placeholder="Find Your Session" />
-                <input title="Search" value="" type="submit" className="button"/>
-               
-                <hr /> 
-                <Link to="/register" className="btn btn-lg btn-info mr-3">
-                  Sign Up
-                </Link>
-                <Link to="/login" className="btn btn-lg btn-light">
-                  Login
-              </Link>
-              </div>
+              />
+              
+              <button className="btn mx-auto search-button" type="submit">Search</button>
+            </MediaQuery>
+
+            <MediaQuery query="(min-device-width: 768px)">
+            <div className="input-group mb-3">
+              
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search for sessions"
+              />
+              <button className="btn search-button" type="submit">Search</button>
             </div>
-          </div>
+            </MediaQuery>
+
+          </form>
+
         </div>
+        
       </div>
     );
   }

@@ -1,0 +1,65 @@
+@import '../layouts/_navbar.scss';
+@import '../component/_inputNao.scss';
+.landing {
+    position: relative;
+    background: url('../img/blackboard-background.jpg') no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    //  margin-top: -24px;
+    //  margin-bottom: -50px;
+    .landing-content{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        .title{
+            color: white;
+            text-align:  center;
+            font-size: $font-title;
+            margin-bottom: 25px ;
+        }
+
+        .search{
+            text-align: center;
+            &>div{
+                height: 3rem;
+               input{
+                   height: inherit;
+               }
+            }
+
+            input{
+                &:focus{
+                    border: unset;
+                    box-shadow: unset;
+                }
+            }
+
+            .search-button{
+                background-color: $search-color;
+                color: white;
+                
+                border: 1px $search-color solid; 
+               
+                @media screen and (min-width: $medium-screen) {
+                    border-radius: 0 5px 5px 0;
+                    padding: 0 50px;
+                }
+                @media screen and (max-width: $medium-screen) {
+                    border-radius: 5px;
+                    margin-top: 15px;
+                    padding: 5px 50px;
+
+                }
+
+                &:hover{
+                    background-color: $search-hover-color;
+                }
+
+
+            }
+        }
+    }
+    
+}
