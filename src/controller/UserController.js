@@ -16,7 +16,7 @@ exports.user_register_post = async (req, res, next) => {
       UserName: req.body.UserName,
       UserPass: req.body.UserPass,
     };
-    validateUserHandler.validateRegisterInput(validateObj);
+    await validateUserHandler.validateRegisterInput(validateObj);
 
     const newUser = {
       DisplayName: `${req.body.FirstName} ${req.body.LastName}`,
