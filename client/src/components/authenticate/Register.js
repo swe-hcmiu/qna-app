@@ -19,7 +19,7 @@ class Register extends Component {
   }
 
   onChange(event) {
-    this.setState({ [event.target.name]: event.target.value});
+    this.setState({ [event.target.name]: event.target.value });
   }
 
   onSubmit(event) {
@@ -34,12 +34,15 @@ class Register extends Component {
     axios
       .post('http://localhost:5000/users/register', newUser)
       .then(res => console.log(res.data))
-      .catch(err => this.setState({ errors: err.response }));
+      .catch(err => {
+        this.setState({ errors: err.response.data.errors })
+      });
   }
 
   render() {
 
-    const errors = {};
+    const { errors } = this.state;
+    console.log(errors.description);
     
     return (
       <div className="register">
@@ -51,10 +54,7 @@ class Register extends Component {
                 Create QnA Account
               </p>
               
-
               <form noValidate onSubmit={this.onSubmit}>
-
-               
                 <div className="form-group">
                   <input
                     type="text"
@@ -66,12 +66,11 @@ class Register extends Component {
                     value={this.state.FirstName}
                     onChange={this.onChange}
                   />
-                  {errors.FirstName && (
-                    <div className="invalid-feedback">{errors.FirstName}</div>
+                  {errors.description && (
+                    <div className="invalid-feedback">{errors.description.FirstName}</div>
                   )}
-                </div>
+                </div>    
 
-              
                 <div className="form-group">
                   <input
                     type="text"
@@ -83,23 +82,24 @@ class Register extends Component {
                     value={this.state.LastName}
                     onChange={this.onChange}
                   />
-                  {errors.LastName && (
-                    <div className="invalid-feedback">{errors.LastName}</div>
+                  {errors.description && (
+                    <div className="invalid">{errors.description.LastName}</div>
                   )}
                 </div>
+
                 <div className="form-group">
                   <input
                     type="text"
                     className={classnames('form-control form-control-lg', {
-                      'is-invalid': errors.UserName
+                      'is-invalid': errors.description
                     })}
                     placeholder="User Name"
                     name="UserName"
                     value={this.state.UserName}
                     onChange={this.onChange}
                   />
-                  {errors.UserName && (
-                    <div className="invalid-feedback">{errors.UserName}</div>
+                  {errors.description && (
+                    <div className="invalid">{errors.description.UserName}</div>
                   )}
                 </div>
           
@@ -110,15 +110,14 @@ class Register extends Component {
                       'is-invalid': errors.UserPass
                     })}
                     placeholder="Password"
-                    name="Password"
+                    name="UserPass"
                     value={this.state.UserPass}
                     onChange={this.onChange}
                   />
-                  {errors.Password && (
-                    <div className="invalid-feedback">{errors.UserPass}</div>
+                   {errors.description && (
+                    <div className="invalid-feedback">{errors.description.UserName}</div>
                   )}
                 </div>
-
                 <input type="submit" className="btn btn-info btn-block mt-4" />
               </form>
             </div>
