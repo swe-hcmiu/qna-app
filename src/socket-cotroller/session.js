@@ -157,6 +157,7 @@ module.exports = (io) => {
         const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
         sessionChannel.to(room).emit('new_vote_created', {
           questionId: data.questionId,
+          role,
         });
         sessionChannel.to(room).emit('question_top10_changed', {
           listOfFavoriteQuestions,
@@ -193,6 +194,7 @@ module.exports = (io) => {
 
         sessionChannel.to(room).emit('new_vote_deleted', {
           questionId: data.questionId,
+          role,
         });
         sessionChannel.to(room).emit('question_top10_changed', {
           listOfFavoriteQuestions,
