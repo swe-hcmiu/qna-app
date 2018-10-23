@@ -26,7 +26,7 @@ module.exports = {
         Provider: 'anonymous',
       };
       const result = await this.createUser(user);
-      return result;
+      return result.insertId;
     } catch (err) {
       throw err;
     }

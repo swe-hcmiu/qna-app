@@ -2,15 +2,15 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const morgan = require('morgan');
+// const morgan = require('morgan');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
 const expressValidator = require('express-validator');
 const bodyParser = require('body-parser');
 
-const passportConfig = require('./src/config/passport-config');
-const mysqlConfig = require('./src/config/mysql-config');
+// const passportConfig = require('./src/config/passport-config');
+// const mysqlConfig = require('./src/config/mysql-config');
 const winstonConfig = require('./src/config/winston-config');
 
 const indexRouter = require('./routes/index');
@@ -44,12 +44,18 @@ app.use(session({
   resave: true,
 }));
 
-// Passport init
-app.use(passport.initialize());
-app.use(passport.session());
+// // Passport init
+// app.use(passport.initialize());
+// app.use(passport.session());
 
-// Connect Flash
+// // Connect Flash
 app.use(flash());
+
+// passport middleware
+app.use(passport.initialize());
+
+// passport config
+require('./src/config/passport-config')(passport);
 
 app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg');
@@ -87,9 +93,10 @@ app.use('/auth', authRouter);
 app.use('/sessions', sessionRouter);
 app.use('/api/sessions', sessionAPIRouter);
 
-app.use(ErrorController);
-
 app.use(winstonConfig.errorFileLogger);
+
+// all error controllers/handlers must be added below this line
+app.use(ErrorController);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -110,5 +117,8 @@ app.use((err, req, res) => {
 const server = app.listen(process.env.PORT || 3000, () => {
   console.log(`Node.js listening on ${process.env.PORT || 3000} ...`);
 });
+
+const io = require('socket.io')(server);
+const sessionChannel = require('./src/socket-cotroller/session')(io);
 
 module.exports = app;

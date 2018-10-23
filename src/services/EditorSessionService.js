@@ -88,4 +88,21 @@ module.exports = {
       throw err;
     }
   },
+
+  async getInvalidQuestionsOfSession(sessionId) {
+    try {
+      const listOfInvalidQuestions = await Session.getInvalidQuestionsOfSession(sessionId);
+      return listOfInvalidQuestions;
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  async updateSessionStatus(sessionId, status) {
+    try {
+      await Session.updateSessionStatus(sessionId, status);
+    } catch (err) {
+      throw err;
+    }
+  },
 };

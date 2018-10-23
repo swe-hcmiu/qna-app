@@ -23,6 +23,7 @@ function getResponseError(err) {
 }
 
 module.exports = async (err, req, res, next) => {
+  console.log(err);
   let errTmp = err;
   if (!errTmp.httpCode) errTmp = getResponseError(errTmp);
 

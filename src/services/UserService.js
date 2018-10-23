@@ -21,8 +21,8 @@ module.exports = {
 
   async createAnonymousUser() {
     try {
-      const userId = await User.createAnonymousUser();
-      return userId;
+      const user = await User.createAnonymousUser();
+      return user;
     } catch (err) {
       throw err;
     }
@@ -42,8 +42,10 @@ module.exports = {
       if (!userReturn) return { user: false, message: 'Unknown User' };
 
       const isMatch = await User.comparePasswordQnAUser(user.UserPass, userReturn.UserPass);
-      if (isMatch) return { user: userReturn, message: 'Login successfully' };
-      return { user: false, message: 'Invalid password' };
+      if (isMatch) {
+        return { success: true, user: userReturn };
+      }
+      return { success: false };
     } catch (err) {
       throw err;
     }

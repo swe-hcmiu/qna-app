@@ -44,18 +44,31 @@ logInBtn.addEventListener("click", () => {
     username: document.getElementById("username").value,
     password: document.getElementById("password").value
   };
-  fetch(url, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-    },
-    body: JSON.stringify(data)
-  }).then((response) => {
-    console.log(response);
-    if (response.status == 200) {
-      window.location = "/sessions";
-    } else {
-      alert("User doesn't exist or wrong password");
-    }
-  })
+  // fetch(url, {
+  //   method: 'POST',
+  //   headers: {
+  //     "Content-Type": "application/json; charset=utf-8",
+  //   },
+  //   body: JSON.stringify(data)
+  // }).then((response) => {
+  //   console.log(response);
+  //   if (response.status == 200) {
+  //     localStorage.setItem('token', response.data.token);
+  //     window.location = "/sessions";
+  //   } else {
+  //     alert("User doesn't exist or wrong password");
+  //   }
+  // })
+  axios.post(url, data)
+    .then((response) => {
+      console.log(response);
+      if (response.status == 200) {
+        localStorage.setItem('token', response.data.token);
+        const tokens = response.data.token.split('.');
+        console.log(atob(tokens[1]));
+        window.location = "/sessions";
+      } else {
+        alert("User doesn't exist or wrong password");
+      }
+    })
 })
