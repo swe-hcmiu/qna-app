@@ -6,10 +6,11 @@ const sessionId = urlSegments[urlSegments.length - 1];
 const submitBtn = document.getElementById("submitBtn");
 const newestTab = document.getElementById("newest-tab")
 let likeList = [];
-let listOfNewestQuestions;
-let listOfTopFavoriteQuestions;
-let listOfAnsweredQuestions;
-let listOfPendingQuestions;
+let listOfNewestQuestions=[];
+let listOfTopFavoriteQuestions=[];
+let listOfAnsweredQuestions=[];
+let listOfPendingQuestions=[];
+let listOfWaitingQuestions=[];
 let sessionData = null;
 let roleData = null;
 
@@ -24,14 +25,18 @@ askBtn.addEventListener("click", () => {
 });
 
 newestTab.addEventListener("click", async function () {
+  newestTab.innerHTML=`Newest`;
+  listOfWaitingQuestions=[];
   await render();
   checkNewest();
 })
 
 function init() { // Get session data
+  initNotification();
   const url = "/api/sessions/" + sessionId;
   axios.get(url, { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`} })
     .then((response) => {
+      // console.log(response);
       sessionData = response.data.session;
       roleData = response.data.role;
       listOfNewestQuestions = response.data.listOfNewestQuestions;
@@ -48,18 +53,37 @@ function init() { // Get session data
         listOfPendingQuestions = response.data.listOfPendingQuestions;
         setInterval(checkPending, 3000);
       }
-      renderLocal();
+      // renderLocal();
     })
 }
 
-async function renderLocal() {
-  const likesUrl = '/api/sessions/' + sessionId + '/users/vote';
-  const likesPromise = axios(likesUrl);
-  const likeList = await likesPromise;
+// enable Notification on browser
+function initNotification() {
+  if (window.Notification) {
+    Notification.requestPermission((permission) => {
+      if(permission==="granted") {
+        notificationEnable = true;
+      } else {
+        // alert("Not supported");
+      }
+    })
+  }
+}
 
-  renderHTML(listOfNewestQuestions, likeList.data.listOfVotedQuestions, 'newest');
-  renderHTML(listOfTopFavoriteQuestions, likeList.data.listOfVotedQuestions, 'top10');
-  renderHTML(listOfAnsweredQuestions, likeList.data.listOfVotedQuestions, 'answered');
+function showNotification(title, body) {
+  if(notificationEnable) {
+    let notification = new Notification(title, { body });
+
+    setTimeout(()=> {notification.close()}, 3000);
+  } else {
+    alert(title, body);
+  }
+}
+
+async function renderLocal() {
+  renderHTML(listOfNewestQuestions, listOfVotedQuestions, 'newest');
+  renderHTML(listOfTopFavoriteQuestions, listOfVotedQuestions, 'top10');
+  renderHTML(listOfAnsweredQuestions, listOfVotedQuestions, 'answered');
   if (sessionData.SessionType === "NEEDS_VERIFICATION" && roleData === "EDITOR") {
     renderHTML(listOfPendingQuestions, likeData.data.listOfVotedQuestions, 'pending');
   }
@@ -91,9 +115,6 @@ async function render() {
 }
 
 function renderHTML(questionData, likeData, position) {
-  // if(position === "answered") {
-  // 	console.log(questionData);
-  // }
   likeData = likeData.map(like => like.QuestionId);
   let htmlString = '';
   questionData.forEach(question => {
@@ -176,9 +197,6 @@ function refreshTop10() {
 
 init();
 
-// setInterval(checkNewest, 3000);
-// setInterval(refreshTop10, 3000);
-
 // socket io part
 const socket = io('/session');
 
@@ -189,7 +207,9 @@ socket.on('connect', () => {
   };
   socket.emit('join_room', data);
   socket.emit('get_room_data', data, (roomData) => {
-    console.log(roomData);
+    // console.log(roomData);
+    listOfVotedQuestions = roomData.listOfVotedQuestions;
+    renderLocal();
   });
 });
 
@@ -198,11 +218,11 @@ socket.on('receive_token', (token) => {
 });
 
 socket.on('new_user_entered', (user) => {
-  alert(`A user has entered the room`);
+  showNotification("New user have entered.",'');
 });
 
 socket.on('user_leave_room', () => {
-  alert(`A user has left the room`);
+  showNotification("New user have entered.", '');
 });
 
 submitBtn.addEventListener('click', () => {
@@ -212,10 +232,15 @@ submitBtn.addEventListener('click', () => {
     token: localStorage.getItem('token'),
   };
   socket.emit('create_question', data);
+  document.getElementById('title-ask').value = '',
+  document.getElementById('content-ask').value = '';
 });
 
 socket.on('new_question_created', (question) => {
-  alert(`New question ${question.title}`);
+  showNotification(`New question: ${question.title}`, `${question.content}`);
+  listOfWaitingQuestions.unshift(question);
+  newestTab.innerHTML=`Newest <span style='background-color:red; width: 10px'>${listOfWaitingQuestions.length}<span>`
+  console.log(listOfWaitingQuestions);
 });
 
 function handleVote(e) {
@@ -228,6 +253,8 @@ function handleVote(e) {
 
 function votePost(e) {
   const questionId = e.parentElement.parentElement.id;
+  listOfVotedQuestions.push({QuestionId: Number(questionId)});
+  renderLocal();
   const data = {
     questionId,
     token: localStorage.getItem('token'),
@@ -237,19 +264,55 @@ function votePost(e) {
 
 function unvotePost(e) {
   const questionId = e.parentElement.parentElement.id;
+  listOfVotedQuestions = listOfVotedQuestions.filter((q)=> q.QuestionId !== Number(questionId));
   const data = {
     questionId,
     token: localStorage.getItem('token'),
   };
+  renderLocal();
   socket.emit('cancle_vote', data);
 }
 
-socket.on('new_vote_created', (question) => {
-  alert(`Question ${question.questionId} + 1 vote`);
+socket.on('new_vote_created', async (question) => {
+  // console.log(question);
+  const role = question.role;
+  function increaseVote(q) {
+    if(q.QuestionId === Number(question.questionId)) {
+      // console.log(q);
+      if(role==="USER") {
+        q.VoteByUser++;
+      } else {
+        q.VoteByEditor++;
+      }
+    }
+    return q;
+  }
+  // console.log(listOfNewestQuestions);
+  listOfNewestQuestions.map(increaseVote);
+  listOfTopFavoriteQuestions.map(increaseVote);
+  renderLocal();
+  // alert(`Question ${question.questionId} + 1 vote`);
 });
 
 socket.on('new_vote_deleted', (question) => {
-  alert(`Question ${question.questionId} - 1 vote`);
+  // console.log(question);
+  const role = question.role;
+  function decreaseVote(q) {
+    if(q.QuestionId === Number(question.questionId)) {
+      // console.log(q);
+      if(role==="USER") {
+        q.VoteByUser--;
+      } else {
+        q.VoteByEditor--;
+      }
+    }
+    return q;
+  }
+  // console.log(listOfNewestQuestions);
+  listOfNewestQuestions.map(decreaseVote);
+  listOfTopFavoriteQuestions.map(decreaseVote);
+  renderLocal();
+  // alert(`Question ${question.questionId} - 1 vote`);
 });
 
 function handlePost(e) {
@@ -261,7 +324,7 @@ function handlePost(e) {
     status = "UNANSWERED";
   }
   const data = {
-    questionId, 
+    questionId,
     status,
     token: localStorage.getItem('token'),
   };
@@ -269,11 +332,28 @@ function handlePost(e) {
 }
 
 socket.on('question_status_changed', (data) => {
-  alert(`Question ${data.questionId}: ${data.status}`);
+  console.log(data);
+  if(data.status === "ANSWERED") {
+    console.log(listOfNewestQuestions);
+    console.log(listOfAnsweredQuestions);
+    question = listOfNewestQuestions.find((q) => q.QuestionId === Number(data.questionId));
+    question.Status = "ANSWERED";
+    listOfNewestQuestions = listOfNewestQuestions.filter(q => q.QuestionId !== Number(data.questionId));
+    listOfAnsweredQuestions.unshift(question);
+    console.log(question);
+    console.log(listOfNewestQuestions);
+    console.log(listOfAnsweredQuestions);
+
+    renderLocal();
+  }
+  // alert(`Question ${data.questionId}: ${data.status}`);
 })
 
 socket.on('question_top10_changed', (data) => {
-  alert('Top-10 list changed');
+  // console.log(data);
+  listOfTopFavoriteQuestions = data.listOfFavoriteQuestions;
+  renderLocal();
+  // alert('Top-10 list changed');
 });
 
 socket.on('exception', (err) => {
