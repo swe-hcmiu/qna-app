@@ -13,9 +13,8 @@ router.get('/google', passport.authenticate('google', {
 router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/users/login', session: false }),
   (req, res) => {
-    const payload = {
-      userId: req.user.UserId,
-    };
+    const payload = req.user;
+    console.log(payload);
     const token = jwt.sign(payload, keys.secretOrKey, {
       expiresIn: '7d',
     });
@@ -23,7 +22,6 @@ router.get('/google/callback',
       success: true,
       token,
     });
-    //res.redirect('/sessions');
   });
 
 module.exports = router;

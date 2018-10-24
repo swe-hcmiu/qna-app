@@ -84,6 +84,12 @@ app.use(expressValidator({
   },
 }));
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 app.use(winstonConfig.consoleLogger, winstonConfig.infoFileLogger);
 
 app.use('/', indexRouter);
@@ -93,9 +99,10 @@ app.use('/auth', authRouter);
 app.use('/sessions', sessionRouter);
 app.use('/api/sessions', sessionAPIRouter);
 
-app.use(ErrorController);
-
 app.use(winstonConfig.errorFileLogger);
+
+// all error controllers/handlers must be added below this line
+app.use(ErrorController);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -113,8 +120,8 @@ app.use((err, req, res) => {
   res.render('error');
 });
 
-const server = app.listen(process.env.PORT || 3000, () => {
-  console.log(`Node.js listening on ${process.env.PORT || 3000} ...`);
+const server = app.listen(process.env.PORT || 5000, () => {
+  console.log(`Node.js listening on ${process.env.PORT || 5000} ...`);
 });
 
 const io = require('socket.io')(server);

@@ -16,7 +16,7 @@ exports.user_register_post = async (req, res, next) => {
       UserName: req.body.UserName,
       UserPass: req.body.UserPass,
     };
-    validateUserHandler.validateRegisterInput(validateObj);
+    await validateUserHandler.validateRegisterInput(validateObj);
 
     const newUser = {
       DisplayName: `${req.body.FirstName} ${req.body.LastName}`,
@@ -54,14 +54,16 @@ exports.user_login_post = async (req, res, next) => {
       UserName: username,
       UserPass: password,
     };
-    // console.log(user);
-    const result = await UserService.authenticateQnAUser(user);
-    if (result.success) {
-      const payload = {
-        userId: result.id,
-      };
-      console.log(payload);
-      // token
+
+    const responseQnA = await UserService.authenticateQnAUser(user);
+    const qnaUser = JSON.parse(JSON.stringify(responseQnA.user));
+    delete qnaUser.UserPass;
+
+    if (responseQnA.success) {
+      const responseGeneral = await UserService.getUserById(qnaUser.UserId);
+      const generalUser = JSON.parse(JSON.stringify(responseGeneral));
+      const payload = Object.assign(qnaUser, generalUser);
+
       const token = jwt.sign(payload, keys.secretOrKey, {
         expiresIn: '7d',
       });
@@ -76,7 +78,6 @@ exports.user_login_post = async (req, res, next) => {
     err.description = 'Invalid username or password';
     throw err;
   } catch (err) {
-    console.log(err);
     next(err);
   }
 };

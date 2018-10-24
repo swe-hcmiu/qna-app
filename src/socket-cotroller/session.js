@@ -20,7 +20,9 @@ async function processUserInfo(data, socket) {
     user = await getUserInfo(data.token);
   } catch (err) {
     const userId = await UserService.createAnonymousUser();
-    const payload = { userId };
+    const responseUser = await UserService.getUserById(userId);
+    user = JSON.parse(JSON.stringify(responseUser));
+    const payload = user;
     const newToken = jwt.sign(payload, keys.secretOrKey, {
       expiresIn: '7d',
     });
@@ -68,11 +70,12 @@ module.exports = (io) => {
           sessionType: data.sessionType,
         };
 
-        const sessionId = await EditorSessionService.createSession(user.userId, session);
+        const sessionId = await EditorSessionService.createSession(user.UserId, session);
         session = Object.assign(session, sessionId);
 
         sessionChannel.emit('new_session_created', session);
       } catch (err) {
+        console.log(err);
         socket.emit('exception', err);
       }
     });
@@ -104,7 +107,9 @@ module.exports = (io) => {
         const user = await processUserInfo(data, socket);
         const { sessionId } = data;
         await ValidateSessionHandler.validateSession(sessionId);
-        const roomData = await SessionService.getInfoSessionByRole(sessionId, user.userId);
+        let roomData = await SessionService.getInfoSessionByRole(sessionId, user.UserId);
+        const listOfVotedQuestions = await SessionService.getListOfVotedQuestions(sessionId, user.UserId);
+        roomData = Object.assign(roomData, listOfVotedQuestions);
         callback(roomData);
       } catch (err) {
         socket.emit('exception', err);
@@ -124,7 +129,7 @@ module.exports = (io) => {
           title: data.title,
           content: data.content,
         };
-        const questionId = await SessionService.addQuestionByRole(sessionId, user.userId, question);
+        const questionId = await SessionService.addQuestionByRole(sessionId, user.UserId, question);
         const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
         question = Object.assign(question, questionId);
         sessionChannel.to(room).emit('new_question_created', question);
@@ -142,16 +147,17 @@ module.exports = (io) => {
         const roomInfo = getRoomInfo(socket);
         const { room } = roomInfo;
         const { sessionId } = roomInfo;
-        const roleObj = await UserService.getRoleOfUserInSession(user.userId, sessionId);
+        const roleObj = await UserService.getRoleOfUserInSession(user.UserId, sessionId);
         const role = roleObj.Role;
         const validateObj = Object.assign(data, { sessionId, role });
 
         await ValidateSessionHandler.validateUserVoteQuestions(validateObj);
-        await SessionService.addVoteByRole(sessionId, data.questionId, user.userId, role);
+        await SessionService.addVoteByRole(sessionId, data.questionId, user.UserId, role);
 
         const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
         sessionChannel.to(room).emit('new_vote_created', {
           questionId: data.questionId,
+          role,
         });
         sessionChannel.to(room).emit('question_top10_changed', {
           listOfFavoriteQuestions,
@@ -177,17 +183,18 @@ module.exports = (io) => {
         const roomInfo = getRoomInfo(socket);
         const { room } = roomInfo;
         const { sessionId } = roomInfo;
-        const roleObj = await UserService.getRoleOfUserInSession(user.userId, sessionId);
+        const roleObj = await UserService.getRoleOfUserInSession(user.UserId, sessionId);
         const role = roleObj.Role;
         const validateObj = Object.assign(data, { sessionId });
 
         await ValidateSessionHandler.validateUserCancleVoteQuestions(validateObj);
-        await SessionService.cancelVoteByRole(sessionId, data.questionId, user.userId, role);
+        await SessionService.cancelVoteByRole(sessionId, data.questionId, user.UserId, role);
 
         const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
 
         sessionChannel.to(room).emit('new_vote_deleted', {
           questionId: data.questionId,
+          role,
         });
         sessionChannel.to(room).emit('question_top10_changed', {
           listOfFavoriteQuestions,
@@ -203,7 +210,7 @@ module.exports = (io) => {
         const roomInfo = getRoomInfo(socket);
         const { room } = roomInfo;
         const { sessionId } = roomInfo;
-        const roleObj = await UserService.getRoleOfUserInSession(user.userId, sessionId);
+        const roleObj = await UserService.getRoleOfUserInSession(user.UserId, sessionId);
         const role = roleObj.Role;
         const validateObj = Object.assign(data, { sessionId, role });
 

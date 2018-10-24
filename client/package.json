@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "node-sass": "^4.9.4",
+    "axios": "^0.18.0",
+    "classnames": "^2.2.6",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-responsive": "^5.0.0",
