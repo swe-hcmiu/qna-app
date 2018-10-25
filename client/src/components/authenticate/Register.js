@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Line from './WavingLine'
-import classnames from 'classnames';
+// import classnames from 'classnames';
 import axios from 'axios';
 
 class Register extends Component {
@@ -14,7 +14,7 @@ class Register extends Component {
       UserName: '',
       errors: {}
     }
-    
+
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
@@ -31,6 +31,9 @@ class Register extends Component {
       UserPass: this.state.UserPass,
       UserName: this.state.UserName,
     };
+    console.log('-------------------------------');
+    
+    console.log('new user', newUser);
     
     axios
       .post('http://localhost:5000/users/register', newUser)
@@ -42,14 +45,16 @@ class Register extends Component {
 
   render() {
 
-    const { errors } = this.state;
-    console.log(errors.description);
+    // const { errors } = this.state;
+    // console.log(errors.description);
+    console.log(this.state);
     
+
     return (
       <div>
-         <div className="modal fade" id="registerModal">
+        <div className="modal fade" id="registerModal">
           <div className="modal-dialog">
-            <div className="modal-content">
+            <form className="modal-content" onSubmit={this.onSubmit}>
               {/* Modal Header */}
               <div className="modal-header">
                 <h4 className="modal-title">Sign Up</h4>
@@ -59,20 +64,48 @@ class Register extends Component {
               </div>
               {/* Modal body */}
               <div className="modal-body">
-              <div class="input input--nao">
-                  <input class="input__field input__field--nao" placeholder="Username" type="text" id="username" />
+                <div className="input input--nao">
+                  <input 
+                    className="input__field input__field--nao" 
+                    placeholder="First Name" 
+                    type="text" 
+                    value={this.state.FirstName}
+                    onChange={this.onChange}
+                    name="FirstName"
+                  />
                   <Line />
                 </div>
-                <div class="input input--nao">
-                  <input class="input__field input__field--nao" placeholder="Email" type="email" id="email" />
+                <div className="input input--nao">
+                  <input 
+                    className="input__field input__field--nao" 
+                    placeholder="Last Name" 
+                    type="text"
+                    value={this.state.LastName}
+                    onChange={this.onChange} 
+                    name="LastName" 
+                  />
                   <Line />
                 </div>
-                <div class="input input--nao">
-                  <input class="input__field input__field--nao" placeholder="Password" type="password" id="password" />
+                <div className="input input--nao">
+                  <input 
+                    className="input__field input__field--nao" 
+                    placeholder="User Name" 
+                    type="UserName" 
+                    value={this.state.UserName}
+                    onChange={this.onChange}
+                    name="UserName" 
+                  />
                   <Line />
                 </div>
-                <div class="input input--nao">
-                  <input class="input__field input__field--nao" placeholder="Confirm Password" type="password" />
+                <div className="input input--nao">
+                  <input 
+                    className="input__field input__field--nao" 
+                    placeholder="Password" 
+                    type="password" 
+                    value={this.state.UserPass}
+                    onChange={this.onChange}
+                    name="UserPass"
+                  />
                   <Line />
                 </div>
               </div>
@@ -85,15 +118,13 @@ class Register extends Component {
                 >
                   Close
                 </button>
-                <button
-                  type="button"
+                <input
+                  type="submit"
                   className="btn btn-success"
-                  data-dismiss="modal"
-                >
-                  Sign Up
-                </button>
+                > 
+                </input>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>

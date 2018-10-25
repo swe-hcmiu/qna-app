@@ -1,13 +1,13 @@
-@import 'Base/_reset.scss';
+@import './base/_reset.scss';
 
 
-@import 'Abstract/_variable.scss';
-@import 'Base/_normalize.scss';
-@import 'Abstract/_extend.scss';
-@import 'Abstract/_mixin.scss';
-@import 'Abstract/_placeholder.scss';
-@import 'Abstract/_function.scss';
-@import 'Abstract/_animation.scss';
+@import './abstract/_variable.scss';
+@import './base/_normalize.scss';
+@import './abstract/_extend.scss';
+@import './abstract/_mixin.scss';
+@import './abstract/_placeholder.scss';
+@import './abstract/_function.scss';
+@import './abstract/_animation.scss';
 
 @import 'component/_curtain.scss';
 

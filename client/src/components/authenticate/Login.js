@@ -6,7 +6,7 @@ class Login extends Component {
       <div>
         <div className="modal fade" id="loginModal">
           <div className="modal-dialog">
-            <div className="modal-content">
+            <form className="modal-content">
               {/* Modal Header */}
               <div className="modal-header">
                 <h4 className="modal-title">Login</h4>
@@ -16,13 +16,22 @@ class Login extends Component {
               </div>
               {/* Modal body */}
               <div className="modal-body">
-                <div class="input input--nao">
-                  <input class="input__field input__field--nao" placeholder="Username" type="text" id="username" />
+                <div className="input input--nao">
+                  <input className="input__field input__field--nao" 
+                    placeholder="Username" 
+                    type="text" 
+                    name="UserName" 
+                  />
                    <Line />
                 </div>
                 
-                <div class="input input--nao">
-                  <input class="input__field input__field--nao" placeholder="Password" type="password" id="password" />
+                <div className="input input--nao">
+                  <input 
+                    className="input__field input__field--nao" 
+                    placeholder="Password" 
+                    type="password" 
+                    name="UserPass" 
+                  />
                   <Line />
                 </div>
                 
@@ -44,7 +53,7 @@ class Login extends Component {
                   Login
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
