@@ -86,7 +86,7 @@ class Register extends Component {
                   />
                   <Line /> 
                 </div>   
-                {errors.FirstName && (<small className="text-center text-danger"><br />{errors.FirstName}</small>)}
+                {errors.FirstName && (<small className="text-capitalize text-sm-center text-danger"><br />{errors.FirstName}</small>)}
                 <div className="input input--nao">
                   <input 
                     className="input__field input__field--nao" 
@@ -98,7 +98,7 @@ class Register extends Component {
                   />
                    <Line /> 
                 </div>   
-                {errors.LastName && (<small className="text-center text-danger"><br />{errors.LastName}</small>)}
+                {errors.LastName && (<small className="text-capitalize text-center text-danger"><br />{errors.LastName}</small>)}
                 
                 <div className="input input--nao">
                   <input 
@@ -110,8 +110,8 @@ class Register extends Component {
                     name="UserName" 
                   /> 
                    <Line />  
-                </div>   
-                {errors.UserName && (<small className="text-center text-danger"><br />{errors.UserName}</small>)}
+                </div>
+                {errors.UserName && (<small className="text-capitalize text-danger"><br />{errors.UserName}</small>)}
                 <div className="input input--nao">
                   <input 
                     className="input__field input__field--nao" 
@@ -123,7 +123,7 @@ class Register extends Component {
                   />
                   <Line /> 
                 </div>   
-                {errors.UserPass && (<small className="text-center text-danger"><br />{errors.UserPass}</small>)}
+                {errors.UserPass && (<small className="text-capitalize text-danger"><br />{errors.UserPass}</small>)}
               </div>
               {/* Modal footer */}
               <div className="modal-footer">
