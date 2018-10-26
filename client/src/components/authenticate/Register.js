@@ -31,25 +31,36 @@ class Register extends Component {
       UserPass: this.state.UserPass,
       UserName: this.state.UserName,
     };
-    console.log('-------------------------------');
+    // console.log('-------------------------------');
     
-    console.log('new user', newUser);
+    // console.log('new user', newUser);
     
     axios
       .post('http://localhost:5000/users/register', newUser)
       .then(res => console.log(res.data))
       .catch(err => {
-        this.setState({ errors: err.response.data.errors })
+        let tempErr = Object.values(err.response.data.errors.description);
+        var resObject = tempErr.reduce((res, cur) => {
+          for(let key in cur) {
+            if(cur.hasOwnProperty(key)) {
+              res[key] = cur[key];
+            }
+          }
+          return res;
+        }, {});
+        // console.log('first Name', resObject.FirstName);
+        
+        this.setState({ errors: resObject })
       });
   }
 
   render() {
 
-    // const { errors } = this.state;
-    // console.log(errors.description);
-    console.log(this.state);
+    const { errors } = this.state;
+    // console.log(errors);
+    // console.log(this.state);
     
-
+    
     return (
       <div>
         <div className="modal fade" id="registerModal">
@@ -73,8 +84,9 @@ class Register extends Component {
                     onChange={this.onChange}
                     name="FirstName"
                   />
-                  <Line />
-                </div>
+                  <Line /> 
+                </div>   
+                {errors.FirstName && (<small className="text-center text-danger"><br />{errors.FirstName}</small>)}
                 <div className="input input--nao">
                   <input 
                     className="input__field input__field--nao" 
@@ -84,8 +96,10 @@ class Register extends Component {
                     onChange={this.onChange} 
                     name="LastName" 
                   />
-                  <Line />
-                </div>
+                   <Line /> 
+                </div>   
+                {errors.LastName && (<small className="text-center text-danger"><br />{errors.LastName}</small>)}
+                
                 <div className="input input--nao">
                   <input 
                     className="input__field input__field--nao" 
@@ -94,9 +108,10 @@ class Register extends Component {
                     value={this.state.UserName}
                     onChange={this.onChange}
                     name="UserName" 
-                  />
-                  <Line />
-                </div>
+                  /> 
+                   <Line />  
+                </div>   
+                {errors.UserName && (<small className="text-center text-danger"><br />{errors.UserName}</small>)}
                 <div className="input input--nao">
                   <input 
                     className="input__field input__field--nao" 
@@ -106,8 +121,9 @@ class Register extends Component {
                     onChange={this.onChange}
                     name="UserPass"
                   />
-                  <Line />
-                </div>
+                  <Line /> 
+                </div>   
+                {errors.UserPass && (<small className="text-center text-danger"><br />{errors.UserPass}</small>)}
               </div>
               {/* Modal footer */}
               <div className="modal-footer">
@@ -124,6 +140,7 @@ class Register extends Component {
                 > 
                 </input>
               </div>
+              
             </form>
           </div>
         </div>
