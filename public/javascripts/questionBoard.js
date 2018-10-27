@@ -237,6 +237,7 @@ submitBtn.addEventListener('click', () => {
 });
 
 socket.on('new_question_created', (question) => {
+  console.log(question);
   showNotification(`New question: ${question.title}`, `${question.content}`);
   listOfWaitingQuestions.unshift(question);
   newestTab.innerHTML=`Newest <span style='background-color:red; width: 10px'>${listOfWaitingQuestions.length}<span>`
@@ -273,8 +274,8 @@ function unvotePost(e) {
   socket.emit('cancle_vote', data);
 }
 
-socket.on('new_vote_created', async (question) => {
-  // console.log(question);
+socket.on('new_vote_created', async (data) => {
+  console.log(data);
   const role = question.role;
   function increaseVote(q) {
     if(q.QuestionId === Number(question.questionId)) {
@@ -294,8 +295,8 @@ socket.on('new_vote_created', async (question) => {
   // alert(`Question ${question.questionId} + 1 vote`);
 });
 
-socket.on('new_vote_deleted', (question) => {
-  // console.log(question);
+socket.on('new_vote_deleted', (data) => {
+  console.log(data);
   const role = question.role;
   function decreaseVote(q) {
     if(q.QuestionId === Number(question.questionId)) {
@@ -334,15 +335,15 @@ function handlePost(e) {
 socket.on('question_status_changed', (data) => {
   console.log(data);
   if(data.status === "ANSWERED") {
-    console.log(listOfNewestQuestions);
-    console.log(listOfAnsweredQuestions);
+    // console.log(listOfNewestQuestions);
+    // console.log(listOfAnsweredQuestions);
     question = listOfNewestQuestions.find((q) => q.QuestionId === Number(data.questionId));
     question.Status = "ANSWERED";
     listOfNewestQuestions = listOfNewestQuestions.filter(q => q.QuestionId !== Number(data.questionId));
     listOfAnsweredQuestions.unshift(question);
-    console.log(question);
-    console.log(listOfNewestQuestions);
-    console.log(listOfAnsweredQuestions);
+    // console.log(question);
+    // console.log(listOfNewestQuestions);
+    // console.log(listOfAnsweredQuestions);
 
     renderLocal();
   }
@@ -350,7 +351,7 @@ socket.on('question_status_changed', (data) => {
 })
 
 socket.on('question_top10_changed', (data) => {
-  // console.log(data);
+  console.log(data);
   listOfTopFavoriteQuestions = data.listOfFavoriteQuestions;
   renderLocal();
   // alert('Top-10 list changed');

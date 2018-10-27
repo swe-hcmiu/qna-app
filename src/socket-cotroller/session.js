@@ -75,7 +75,6 @@ module.exports = (io) => {
 
         sessionChannel.emit('new_session_created', session);
       } catch (err) {
-        console.log(err);
         socket.emit('exception', err);
       }
     });
@@ -83,9 +82,16 @@ module.exports = (io) => {
     socket.on('join_room', async (data) => {
       try {
         const user = await processUserInfo(data, socket);
+        const { sessionId } = data;
         await ValidateSessionHandler.validateSession(data.sessionId);
+
+        const roleObj = await UserService.getRoleOfUserInSession(user.UserId, sessionId);
+        const role = roleObj.Role;
+
         socket.join(`room_${data.sessionId}`, () => {
           socket.to(`room_${data.sessionId}`).emit('new_user_entered', user);
+          if (role === 'EDITOR') socket.role = 'EDITOR';
+          else socket.role = 'USER';
         });
       } catch (err) {
         socket.emit('exception', err);
@@ -125,17 +131,30 @@ module.exports = (io) => {
         const validateObj = Object.assign(data, { sessionId });
         await ValidateSessionHandler.validateUserAddQuestions(validateObj);
 
-        let question = {
+        const question = {
           title: data.title,
           content: data.content,
         };
         const questionId = await SessionService.addQuestionByRole(sessionId, user.UserId, question);
-        const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
-        question = Object.assign(question, questionId);
-        sessionChannel.to(room).emit('new_question_created', question);
-        sessionChannel.to(room).emit('question_top10_changed', {
-          listOfFavoriteQuestions,
-        });
+        console.log(questionId);
+        const questionReturned = await SessionService.getQuestion(questionId);
+
+        if (questionReturned.Status === 'UNANSWERED' || questionReturned.Status === 'ANSWERED') {
+          sessionChannel.to(room).emit('new_question_created', questionReturned);
+          const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
+          sessionChannel.to(room).emit('question_top10_changed', {
+            listOfFavoriteQuestions,
+          });
+        } else {
+          sessionChannel.adapter.clients([`room_${data.sessionId}`], (err, clients) => {
+            if (err) throw err;
+            clients.forEach((client) => {
+              if (sessionChannel.connected[client].role === 'EDITOR') {
+                sessionChannel.connected[client].emit('new_question_created', questionReturned);
+              }
+            });
+          });
+        }
       } catch (err) {
         socket.emit('exception', err);
       }
@@ -154,14 +173,30 @@ module.exports = (io) => {
         await ValidateSessionHandler.validateUserVoteQuestions(validateObj);
         await SessionService.addVoteByRole(sessionId, data.questionId, user.UserId, role);
 
-        const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
-        sessionChannel.to(room).emit('new_vote_created', {
-          questionId: data.questionId,
-          role,
-        });
-        sessionChannel.to(room).emit('question_top10_changed', {
-          listOfFavoriteQuestions,
-        });
+        const questionReturned = await SessionService.getQuestion(data.questionId);
+
+        if (questionReturned.Status === 'UNANSWERED' || questionReturned.Status === 'ANSWERED') {
+          const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
+          sessionChannel.to(room).emit('new_vote_created', {
+            question: questionReturned,
+            role,
+          });
+          sessionChannel.to(room).emit('question_top10_changed', {
+            listOfFavoriteQuestions,
+          });
+        } else {
+          sessionChannel.adapter.clients([`room_${data.sessionId}`], (err, clients) => {
+            if (err) throw err;
+            clients.forEach((client) => {
+              if (sessionChannel.connected[client].role === 'EDITOR') {
+                sessionChannel.connected[client].emit('new_vote_created', {
+                  question: questionReturned,
+                  role,
+                });
+              }
+            });
+          });
+        }
       } catch (err) {
         switch (err.code) {
           case 'ER_DUP_ENTRY': {
@@ -190,15 +225,30 @@ module.exports = (io) => {
         await ValidateSessionHandler.validateUserCancleVoteQuestions(validateObj);
         await SessionService.cancelVoteByRole(sessionId, data.questionId, user.UserId, role);
 
-        const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
+        const questionReturned = await SessionService.getQuestion(data.questionId);
 
-        sessionChannel.to(room).emit('new_vote_deleted', {
-          questionId: data.questionId,
-          role,
-        });
-        sessionChannel.to(room).emit('question_top10_changed', {
-          listOfFavoriteQuestions,
-        });
+        if (questionReturned.Status === 'UNANSWERED' || questionReturned.Status === 'ANSWERED') {
+          const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
+          sessionChannel.to(room).emit('new_vote_deleted', {
+            question: questionReturned,
+            role,
+          });
+          sessionChannel.to(room).emit('question_top10_changed', {
+            listOfFavoriteQuestions,
+          });
+        } else {
+          sessionChannel.adapter.clients([`room_${data.sessionId}`], (err, clients) => {
+            if (err) throw err;
+            clients.forEach((client) => {
+              if (sessionChannel.connected[client].role === 'EDITOR') {
+                sessionChannel.connected[client].emit('new_vote_deleted', {
+                  question: questionReturned,
+                  role,
+                });
+              }
+            });
+          });
+        }
       } catch (err) {
         socket.emit('exception', err);
       }
@@ -217,14 +267,31 @@ module.exports = (io) => {
         await ValidateSessionHandler.validateChangeQuestionStatus(validateObj);
         await EditorSessionService.updateQuestionStatus(data.questionId, data.status);
 
-        const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
-        sessionChannel.to(room).emit('question_status_changed', {
-          questionId: data.questionId,
-          status: data.status,
-        });
-        sessionChannel.to(room).emit('question_top10_changed', {
-          listOfFavoriteQuestions,
-        });
+        const questionReturned = await SessionService.getQuestion(data.questionId);
+
+        if (questionReturned.Status === 'UNANSWERED' || questionReturned.Status === 'ANSWERED') {
+          const listOfFavoriteQuestions = await SessionService.getTopFavoriteQuestionsOfSession(sessionId);
+          sessionChannel.to(room).emit('question_status_changed', {
+            question: questionReturned,
+            status: data.status,
+          });
+          sessionChannel.to(room).emit('question_top10_changed', {
+            listOfFavoriteQuestions,
+          });
+        }
+        else {
+          sessionChannel.adapter.clients([`room_${data.sessionId}`], (err, clients) => {
+            if (err) throw err;
+            clients.forEach((client) => {
+              if (sessionChannel.connected[client].role === 'EDITOR') {
+                sessionChannel.connected[client].emit('question_status_changed', {
+                  question: questionReturned,
+                  status: data.status,
+                });
+              }
+            });
+          });
+        }
       } catch (err) {
         socket.emit('exception', err);
       }

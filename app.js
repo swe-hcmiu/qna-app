@@ -119,6 +119,9 @@ const server = app.listen(process.env.PORT || 3000, () => {
 });
 
 const io = require('socket.io')(server);
+const redisSocket = require('socket.io-redis');
+
+io.adapter(redisSocket({ host: 'localhost', port: 6379 }));
 const sessionChannel = require('./src/socket-cotroller/session')(io);
 
 module.exports = app;

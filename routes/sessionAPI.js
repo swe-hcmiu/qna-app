@@ -20,7 +20,7 @@ router.post('/:sessionId/questions/', passport.authenticate('jwt', { session: fa
 
 router.get('/:sessionId/questions/:questionId', SessionController.sessionId_questionId_get);
 
-router.put('/:sessionId/questions/:questionId/vote', SessionController.sessionId_questionId_vote_put);
+router.put('/:sessionId/questions/:questionId/vote', passport.authenticate('jwt', { session: false }), SessionController.sessionId_questionId_vote_put);
 router.delete('/:sessionId/questions/:questionId/vote', SessionController.sessionId_questionId_vote_delete);
 
 router.put('/:sessionId/questions/:questionId/status', SessionController.sessionId_questionId_status_put);
