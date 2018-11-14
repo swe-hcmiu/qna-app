@@ -12,99 +12,90 @@ const styles = theme => ({
     flexGrow: 1,
   },
   landing: {
-    position: 'relative',
     backgroundPosition: 'center',
     backgroundImage: `url(${Background})`,
     backgroundSize: 'cover',
     height: '100vh',
   },
+  layout: {
+    width: 'auto',
+    marginLeft: theme.spacing.unit * 3,
+    marginRight: theme.spacing.unit * 3,
+    [theme.breakpoints.up(1100 + theme.spacing.unit * 3 * 2)]: {
+      width: 1100,
+      marginLeft: 'auto',
+      marginRight: 'auto',
+    },
+  },
   Title: {
-    position: 'relative',
-    top: '200px',
-    justifyContent: 'center',
+    maxWidth: '600',
+    margin: '0 auto',
+    padding: `${theme.spacing.unit * 12}px 0 ${theme.spacing.unit * 8}px`,
   },
   search: {
-    position: 'absolute',
-    top: '350px',
-    left: '350px',
-    right: '350px',
+    position: 'relative', 
     borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.45),
     '&:hover': {
       backgroundColor: fade(theme.palette.common.white, 0.75),
     },
-    marginRight: theme.spacing.unit * 2,
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing.unit * 3,
-      width: 'auto',
-    },
+    marginLeft: '20%',
+    maxWidth: '600',
+    
   },
   searchIcon: {
     width: theme.spacing.unit * 9,
-    height: '100%',
+    top: theme.spacing.unit * 2,
     position: 'absolute',
     pointerEvents: 'none',
     display: 'flex',
-    alignItems: 'center',
+    align: 'center',
     justifyContent: 'center',
   },
   inputRoot: {
-    position: 'relative',
     color: 'inherit',
-    width: 'auto',
+    maxWidth: '600',
     height: 60,
     fontSize: 20,
   },
   inputInput: {
     position: 'absolute',
-    left: '-500px',
-    paddingTop: theme.spacing.unit,
-    paddingRight: theme.spacing.unit,
-    paddingBottom: theme.spacing.unit,
-    paddingLeft: theme.spacing.unit,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: 200,
-    },
+    padding: '70px',
+    maxWidth: '600',
   },
 });
 
 class Landing extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      
-    }
-  }
-
   render() {
+    
     const { classes } = this.props;
 
     return (
       <div className={classes.root}>
-          <div className={classes.landing}>
-            <Grid >
-              <Typography className={classes.Title} variant="h1" color="textPrimary" noWrap>
-                Question And Answers
-              </Typography>
-            </Grid>
-            <div className={classes.search}>
-              <div className={classes.searchIcon}>
-                <SearchIcon />
-              </div>
-              <InputBase
-                placeholder="Find Your Session..."
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput,
-                }}
-              />
-            </div>          
-          </div>
+      <div className={classes.landing}>      
+        <div className={classes.layout}>
+          <Typography className={classes.Title} variant="h2" align='center' color="textPrimary" >
+              Question And Answers
+            </Typography>
+            
+            <Grid item xs={10} justify ='center'>
+              <div className={classes.search}>
+                <div className={classes.searchIcon}>
+                  <SearchIcon />
+                </div>
+                <InputBase
+                  placeholder="Find Your Session..."
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                />
+              </div>       
+            </Grid>  
+        </div>
       </div>
+      </div>
+      
     );
   }
 }

@@ -21,13 +21,14 @@ const styles = theme => ({
   },
   appBar: {
     background: "#363D42",
+    position: 'relative',
   },
   menuButton: {
     marginLeft: -12,
     marginRight: 20,
   },
   button: {
-    marginRight: 15,
+    marginRight: 10,
   },
   title: {
     display: 'none',
