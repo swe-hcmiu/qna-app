@@ -97,6 +97,22 @@ class User extends Model {
       },
     };
   }
+
+  static async createUser(user) {
+
+  }
+
+  static async createQnAUser(user) {
+
+  }
+
+  static async createGoogleUser(user) {
+
+  }
+
+  static async comparePasswordQnAUser(candidatePassword, hash) {
+
+  }
 }
 
 class QnAUser extends Model {

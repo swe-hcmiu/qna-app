@@ -1,7 +1,7 @@
 exports.up = async (knex) => {
   await knex.schema.createTable('questions', (table) => {
     table.increments('question_id');
-    table.timestamps();
+    table.timestamps(true, true);
 
     table
       .integer('session_id')

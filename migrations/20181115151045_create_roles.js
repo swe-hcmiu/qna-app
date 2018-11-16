@@ -1,6 +1,6 @@
 exports.up = async (knex) => {
   await knex.schema.createTable('roles', (table) => {
-    table.timestamps();
+    table.timestamps(true, true);
 
     table
       .integer('user_id')

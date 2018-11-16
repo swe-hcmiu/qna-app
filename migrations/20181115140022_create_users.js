@@ -2,7 +2,7 @@ exports.up = async (knex) => {
   await knex.schema
     .createTable('users', (table) => {
       table.increments('user_id');
-      table.timestamps();
+      table.timestamps(true, true);
 
       table
         .string('display_name', 50)

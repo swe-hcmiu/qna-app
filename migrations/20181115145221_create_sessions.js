@@ -1,7 +1,7 @@
 exports.up = async (knex) => {
   await knex.schema.createTable('sessions', (table) => {
     table.increments('session_id');
-    table.timestamps();
+    table.timestamps(true, true);
 
     table
       .string('session_name', 70)
