@@ -1,10 +1,10 @@
 const { Model, knexSnakeCaseMappers } = require('objection');
 const Knex = require('knex');
-
 const knexConfig = require('../../knexfile');
 
-// const knex = Knex(Object.assign(knexConfig[process.env.NODE_ENV], knexSnakeCaseMappers()));
-const knex = Knex(Object.assign(knexConfig['development'], knexSnakeCaseMappers()));
+const environment = process.env.NODE_ENV || 'development';
+
+const knex = Knex(Object.assign(knexConfig[environment], knexSnakeCaseMappers()));
 
 // if (process.env.DEBUG) {
   knex.on('query', (queryData) => {
