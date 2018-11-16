@@ -14,6 +14,15 @@ const styles = theme => ({
   dialogTitle: {
     display: 'flex',
     justifyContent: 'center',
+  },
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+  },
+  dialogContent: {
+    display: 'flex',
+    flexFlow: 'column wrap',
+    justifyContent: 'center'
   }
 })
 
@@ -45,31 +54,37 @@ class RegisterDialog extends Component {
             aria-labelledby="Register"
           >
             <DialogTitle id="Sign Up" className={classes.dialogTitle}>Register</DialogTitle>
-            <DialogContent>
-              <TextField   
+            <DialogContent className={classes.dialogContent}>
+              <TextField
+                id="outlined-name"
+                label="First Name"
+                className={classes.textField}
                 margin='dense'
-                id='firstName'
-                label='First Name'
-                fullWidth
-              />
-              <TextField   
-                margin='dense'
-                id='lastName'
-                label='Last Name'
-                fullWidth
+                variant="outlined"
               />
               <TextField
-                margin='dense'
-                id='userName'
-                label='User Name'
-                fullWidth
+                id="outlined-name"
+                label="Last Name"
+                className={classes.textField}
+                margin="dense"
+                variant="outlined"
+              />
+              <TextField
+                id="outlined-name"
+                label="Name"
+                className={classes.textField}
+                margin="dense"
+                variant="outlined"
               />
               <TextField   
-                margin='dense'
-                id='userPass'
-                label='Password'
-                type='password'
-                fullWidth
+                id="outlined-password-input"
+                label="Password"
+                className={classes.textField}
+                type="password"
+                autoComplete="current-password"
+                margin="dense"
+                variant="outlined"
+                
               />
               
            </DialogContent>

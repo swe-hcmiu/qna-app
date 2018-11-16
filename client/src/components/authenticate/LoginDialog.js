@@ -12,7 +12,15 @@ const styles = theme => ({
   root: {
     flexGrow: 1,
   },
-
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+  },
+  dialogContent: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexFlow: 'column wrap',
+  },
   dialogTitle: {
     display: 'flex',
     justifyContent: 'center',
@@ -42,22 +50,26 @@ class LoginDialog extends Component {
           <Dialog
             open={this.state.open}
             onClose={this.handleClose}
-            aria-labelledby="Login"
+            aria-labelledby='form-dialog-title'
           >
-            <DialogTitle id="Login" className={classes.dialogTitle}>Login</DialogTitle>
-            <DialogContent>
+            <DialogTitle className={classes.dialogTitle} color='primary'>Login</DialogTitle>
+            <DialogContent className={classes.dialogContent}>
               <TextField
-                margin='dense'
-                id='userName'
-                label='User Name'
-                fullWidth
+                id="outlined-name"
+                label="User Name"
+                className={classes.textField}
+                margin="dense"
+                variant="outlined"
               />
               <TextField   
-                margin='dense'
-                id='userName'
-                type='password'
-                label='Password'
-                fullWidth
+                id="outlined-password-input"
+                label="Password"
+                className={classes.textField}
+                type="password"
+                autoComplete="current-password"
+                margin="dense"
+                variant="outlined"
+                
               />
            </DialogContent>
            <DialogActions>
