@@ -33,6 +33,7 @@ const styles = theme => ({
     padding: `${theme.spacing.unit * 12}px 0 ${theme.spacing.unit * 8}px`,
   },
   search: {
+    display: 'flex',
     position: 'relative', 
     borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.45),
@@ -54,13 +55,13 @@ const styles = theme => ({
   },
   inputRoot: {
     color: 'inherit',
-    maxWidth: '600',
+    
     height: 60,
-    fontSize: 20,
+    fontSize: 15,
   },
   inputInput: {
     position: 'absolute',
-    padding: '70px',
+    padding: '50px',
     maxWidth: '600',
   },
 });
@@ -78,7 +79,7 @@ class Landing extends Component {
               Question And Answers
             </Typography>
             
-            <Grid item xs={10} justify ='center'>
+            <Grid item xs={10} >
               <div className={classes.search}>
                 <div className={classes.searchIcon}>
                   <SearchIcon />

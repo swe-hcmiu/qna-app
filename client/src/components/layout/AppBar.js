@@ -10,7 +10,9 @@ import { withStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { Button } from '@material-ui/core';
-import LoginIcon from '@material-ui/icons/AccountCircle'
+import LoginIcon from '@material-ui/icons/AccountCircle';
+import LoginDialog from '../authenticate/LoginDialog';
+import RegisterDialog from '../authenticate/RegisterDialog';
 
 const styles = theme => ({
   root: {
@@ -66,6 +68,10 @@ class AppBarComponent extends React.Component {
     this.handleMobileMenuClose();
   };
 
+  handleClose = () => {
+    this.setState({ anchorEl: null });
+  };
+
   handleMobileMenuOpen = event => {
     this.setState({ mobileMoreAnchorEl: event.currentTarget });
   };
@@ -92,13 +98,13 @@ class AppBarComponent extends React.Component {
           <IconButton color="primary">
             <LoginIcon />
           </IconButton>
-          <p>Login</p>
+          <LoginDialog />
         </MenuItem>
         <MenuItem>
           <IconButton color="primary">
-            <LoginIcon />
+            <LoginIcon onClick={this.handleMenuClose}/>
           </IconButton>
-          <p>Register</p>
+          <RegisterDialog style={{variant: 'text'}} />
         </MenuItem>
 
       </Menu>
@@ -117,8 +123,10 @@ class AppBarComponent extends React.Component {
 
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
-              <Button variant="contained" color="primary" className={classes.button}>Login</Button>
-              <Button variant="contained" color="primary">Sign Up</Button>
+              {/* <Button variant="contained" color="primary" className={classes.button}>Login</Button>
+              <Button variant="contained" color="primary">Sign Up</Button> */}
+              <LoginDialog />
+              <RegisterDialog style={{variant: 'contained'}} />
             </div>
             <div className={classes.sectionMobile}>
               <IconButton aria-haspopup="true" onClick={this.handleMobileMenuOpen} color="inherit">
