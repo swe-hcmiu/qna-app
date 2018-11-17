@@ -15,8 +15,9 @@ async function runTest() {
   // user.qnaUsers.userpass = '123';
 
   // await User.query().insertGraph(user);
-  const users = await User.query().where({ displayName: 'Todd Wilson Haydel' });
+  const users = await User.query().where({ displayName: 'Todd Haydel(Transaction Test)' });
   console.log(users);
 }
 
-runTest().then(() => { });
+// runTest().then(() => { });
+

@@ -49,6 +49,14 @@ class Session extends Model {
           to: 'questions.sessionId',
         },
       },
+      roles: {
+        relation: Model.HasManyRelation,
+        modelClass: Role,
+        join: {
+          from: 'sessions.sessionId',
+          to: 'roles.sessionId',
+        },
+      },
     };
   }
 }
