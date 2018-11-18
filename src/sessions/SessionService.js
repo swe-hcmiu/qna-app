@@ -1,18 +1,27 @@
+const { transaction } = require('objection');
+const _ = require('lodash');
+
 const { RoleService } = require('../roles/RoleService');
+const { Role } = require('../roles/Role');
+const { Session } = require('../sessions/Session');
 
 class SessionService {
   static async getSessionService(session, user) {
     this.session = session;
     this.user = user;
 
-    const roles = await session
-      .$relatedQuery('roles')
-      .where({
-        userId: this.user.userId,
-      });
-    if (roles) [this.role] = roles;
-    else this.role = RoleService.getUserRole(this.session, this.user);
-    this.roleStrategy(this.role);
+    try {
+      const roles = await session
+        .$relatedQuery('roles')
+        .where({
+          userId: this.user.userId,
+        });
+      if (roles) [this.role] = roles;
+      else this.role = RoleService.getUserRole(this.session, this.user);
+      this.roleStrategy(this.role);
+    } catch (err) {
+      throw err;
+    }
   }
 
   set roleStrategy(role) {
@@ -20,15 +29,52 @@ class SessionService {
   }
 
   static async createSession(session, user) {
+    try {
+      const inputSession = _.cloneDeep(session);
 
+      inputSession.roles = new Role();
+      inputSession.roles.role = 'editor';
+      inputSession.roles.userId = user.userId;
+
+      let recvSession;
+      await transaction(Session.knex(), async (trx) => {
+        recvSession = await Session
+          .query(trx)
+          .insertGraphAndFetch(inputSession);
+      });
+
+      return recvSession;
+    } catch (err) {
+      throw err;
+    }
   }
 
   static async getListOfOpeningSessions() {
+    try {
+      const listOfOpeningSessions = Session
+        .query()
+        .where({
+          sessionStatus: 'opening',
+        });
 
+      return listOfOpeningSessions;
+    } catch (err) {
+      throw err;
+    }
   }
 
   static async getListOfClosedSessions() {
+    try {
+      const listOfClosedSessions = Session
+        .query()
+        .where({
+          sessionStatus: 'closed',
+        });
 
+      return listOfClosedSessions;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async getNewestQuestionsOfSession() {

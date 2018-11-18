@@ -19,6 +19,7 @@
     "http-errors": "~1.6.2",
     "knex": "^0.15.2",
     "knex-migrate": "^1.7.0",
+    "lodash": "^4.17.11",
     "mocha": "^5.2.0",
     "morgan": "~1.9.0",
     "mysql": "^2.16.0",

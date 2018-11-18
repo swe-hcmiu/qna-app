@@ -32,8 +32,8 @@ describe('Unit Testing for User', function () {
         result = await UserService.createUser(user);
       });
 
-      it('check user has been created in database', function () {
-        const users = User.query().where(result);
+      it('check user has been created in database', async function () {
+        const users = await User.query().where(result);
         const userDb = users[0];
         assert.deepEqual(userDb, result, 'user should have been created in database');
       });
@@ -81,18 +81,14 @@ describe('Unit Testing for User', function () {
         [result, passwordHash] = await Promise.all([UserService.createQnAUser(user), hashing(user.qnaUsers.userpass)]);
       });
 
-      it('check user and qna user have been created in database', function () {
-        const users = User.query().where(result);
+      it('check user and qna user have been created in database', async function () {
+        const users = await User.query().where(result).eager('qnaUsers');
         const userDb = users[0];
         assert.deepEqual(userDb, result, 'user and qna user should have been created in database');
       });
 
-      it('return QnAUser model object after successfully creating user', async function () {
+      it('return QnAUser model object after successfully creating user', function () {
         assert.isObject(result, 'user model must be an object');
-      });
-
-      it('check input object included in return object', function () {
-        assert.include(result, user, 'returned object must include input object');
       });
 
       it('check input object username equals returned object username', function () {
@@ -137,7 +133,7 @@ describe('Unit Testing for User', function () {
 
           await UserService.createQnAUser(user);
         } catch (err) {
-          console.log(err);
+          // do nothing
         }
       });
 
@@ -158,13 +154,13 @@ describe('Unit Testing for User', function () {
         user.provider = 'google';
 
         user.googleUsers = new GoogleUser();
-        user.email = 'phuongduyphan@gmail.com';
+        user.googleUsers.email = 'phuongduyphan@gmail.com';
 
         result = await UserService.createGoogleUser(user);
       });
 
-      it('check user and google user have been created in database', function () {
-        const users = User.query().where(result);
+      it('check user and google user have been created in database', async function () {
+        const users = await User.query().where(result).eager('googleUsers');
         const userDb = users[0];
         assert.deepEqual(userDb, result, 'user and google user should have been created in database');
       });
@@ -173,8 +169,10 @@ describe('Unit Testing for User', function () {
         assert.isObject(result, 'user model must be an object');
       });
 
-      it('check input object included in return object', function () {
-        assert.deepInclude(result, user, 'returned object must include input object');
+      it('check input object properties equal return object properties', function () {
+        assert.equal(result.displayName, user.displayName, 'displayName must be the same');
+        assert.equal(result.provider, user.provider, 'provider must be the same');
+        assert.equal(result.googleUsers.email, user.googleUsers.email, 'email must be the same');
       });
 
       it('check returned object properties', function () {
@@ -201,7 +199,7 @@ describe('Unit Testing for User', function () {
 
           await UserService.createGoogleUser(user);
         } catch (err) {
-          throw console.log(err);
+          // do nothing
         }
       });
 
@@ -225,7 +223,7 @@ describe('Unit Testing for User', function () {
 
       it('compare password and hash', async function () {
         const hash = await hashing('123');
-        const isMatch = await User.comparePasswordQnAUser('123', hash);
+        const isMatch = await UserService.comparePasswordQnAUser('123', hash);
         assert.exists(isMatch, 'password should equal password\'s hash');
       })
     });

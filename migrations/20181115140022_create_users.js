@@ -32,7 +32,7 @@ exports.up = async (knex) => {
         .inTable('users')
         .onDelete('CASCADE');
 
-      table.timestamps();
+      table.timestamps(true, true);
     })
     .createTable('googleusers', (table) => {
       table
@@ -49,7 +49,7 @@ exports.up = async (knex) => {
         .inTable('users')
         .onDelete('CASCADE');
 
-      table.timestamps();
+      table.timestamps(true, true);
     });
 };
 

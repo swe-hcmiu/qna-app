@@ -41,10 +41,10 @@ describe('Unit Testing for Session', function () {
         recvSession = await SessionService.createSession(session, recvUser);
       });
 
-      it('check session has been created in database', function () {
-        const sessions = Session.query().where(recvSession);
+      it('check session has been created in database', async function () {
+        const sessions = await Session.query().where(recvSession);
         const sessionDb = sessions[0];
-        assert.deepEqual(sessionDb, recvSession, 'session should have been created in database');
+        assert.deepInclude(recvSession, sessionDb, 'session should have been created in database');
       });
 
       it('return Session model object after successfully creating session', function () {
@@ -56,8 +56,8 @@ describe('Unit Testing for Session', function () {
       });
 
       it('check role of user in session', function () {
-        assert.equal(recvSession.roles.userId, recvUser.userId, 'different user id');
-        assert.equal(recvSession.roles.role, 'editor', 'role must be editor');
+        assert.equal(recvSession.roles[0].userId, recvUser.userId, 'different user id');
+        assert.equal(recvSession.roles[0].role, 'editor', 'role must be editor');
       });
     });
 
@@ -77,7 +77,7 @@ describe('Unit Testing for Session', function () {
 
           await SessionService.createSession(session, user);
         } catch (err) {
-          console.log(err);
+          // do nothing
         }
       });
 

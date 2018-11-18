@@ -4,6 +4,7 @@ const { Role } = require('./roles/Role');
 const { Voting } = require('./votings/Voting');
 const { User } = require('./users/User');
 const { QnAUser } = require('./users/User');
+const { assert } = require('chai');
 
 async function runTest() {
   // const user = new User();
@@ -15,16 +16,7 @@ async function runTest() {
   // user.qnaUsers.userpass = '123';
 
   // await User.query().insertGraph(user);
-  const session = new Session();
-  session.sessionId = 3;
-
-  const listOfEditorsDb = await session
-    .$relatedQuery('roleUsers')
-    .where({
-      role: 'editor',
-    });
-  console.log(listOfEditorsDb);
-}
+  
 
 runTest().then(() => { });
 
