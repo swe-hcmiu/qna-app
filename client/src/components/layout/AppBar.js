@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -9,7 +8,6 @@ import Menu from '@material-ui/core/Menu';
 import { withStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import { Button } from '@material-ui/core';
 import LoginIcon from '@material-ui/icons/AccountCircle';
 import LoginDialog from '../authenticate/LoginDialog';
 import RegisterDialog from '../authenticate/RegisterDialog';
@@ -81,33 +79,34 @@ class AppBarComponent extends React.Component {
   };
 
   render() {
-    const { anchorEl, mobileMoreAnchorEl } = this.state;
+    const { mobileMoreAnchorEl } = this.state;
     const { classes } = this.props;
-    const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
     const renderMobileMenu = (
-      <Menu
-        anchorEl={mobileMoreAnchorEl}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        open={isMobileMenuOpen}
-        onClose={this.handleMobileMenuClose}
-      >
-        <MenuItem>
-          <IconButton color="primary">
-            <LoginIcon />
-          </IconButton>
-          <LoginDialog />
-        </MenuItem>
-        <MenuItem>
-          <IconButton color="primary">
-            <LoginIcon onClick={this.handleMenuClose}/>
-          </IconButton>
-          <RegisterDialog style={{variant: 'text'}} />
-        </MenuItem>
+      <div>
+        <Menu
+          anchorEl={mobileMoreAnchorEl}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          open={isMobileMenuOpen}
+          onClose={this.handleMobileMenuClose}
+        >
+          <MenuItem>
+            <IconButton color="primary">
+              <LoginIcon />
+            </IconButton>
+            <LoginDialog />
+          </MenuItem>
+          <MenuItem>
+            <IconButton color="primary">
+              <LoginIcon onClick={this.handleMenuClose}/>
+            </IconButton>
+            <RegisterDialog style={{variant: 'text'}} />
+          </MenuItem>
 
-      </Menu>
+        </Menu>
+      </div>
     );
 
     return (
@@ -127,6 +126,7 @@ class AppBarComponent extends React.Component {
               <Button variant="contained" color="primary">Sign Up</Button> */}
               <LoginDialog />
               <RegisterDialog style={{variant: 'contained'}} />
+              
             </div>
             <div className={classes.sectionMobile}>
               <IconButton aria-haspopup="true" onClick={this.handleMobileMenuOpen} color="inherit">
@@ -141,8 +141,5 @@ class AppBarComponent extends React.Component {
   }
 }
 
-AppBar.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(AppBarComponent);

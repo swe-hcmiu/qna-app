@@ -54,23 +54,27 @@ class LoginDialog extends Component {
           >
             <DialogTitle className={classes.dialogTitle} color='primary'>Login</DialogTitle>
             <DialogContent className={classes.dialogContent}>
-              <TextField
-                id="outlined-name"
-                label="User Name"
-                className={classes.textField}
-                margin="dense"
-                variant="outlined"
-              />
-              <TextField   
-                id="outlined-password-input"
-                label="Password"
-                className={classes.textField}
-                type="password"
-                autoComplete="current-password"
-                margin="dense"
-                variant="outlined"
-                
-              />
+              
+                <TextField
+                  id="outlined-name"
+                  label="User Name"
+                  name="userName"
+                  className={classes.textField}
+                  margin="dense"
+                  variant="outlined"
+                />
+                <TextField   
+                  id="outlined-password-input"
+                  label="Password"
+                  name="password"
+                  className={classes.textField}
+                  type="password"
+                  autoComplete="current-password"
+                  margin="dense"
+                  variant="outlined"
+                />
+              
+              
            </DialogContent>
            <DialogActions>
              <Button onClick={this.handleClose} color='primary'>Cancel</Button>
