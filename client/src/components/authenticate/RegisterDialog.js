@@ -10,6 +10,7 @@ import FormControl from '@material-ui/core/FormControl';
 import { registerUser } from '../../redux/actions/authAction';
 import {connect} from 'react-redux';
 import PropsTypes from 'prop-types';
+import LoginDialog from './LoginDialog';
 
 const styles = theme => ({
   root: {
@@ -41,6 +42,7 @@ class RegisterDialog extends Component {
         userName: "",
         password: "",
         errors: "",
+        registerSuccess: false,
       };
       this.onChange = this.onChange.bind(this); 
     };
@@ -49,6 +51,11 @@ class RegisterDialog extends Component {
       if(nextProps.errors) {
         this.setState({errors: nextProps.errors});
       }
+      // check  is register success? then render an alert 
+      if(nextProps.auth.isRegisterSuccess){
+        // console.log('understand');
+        this.setState({registerSuccess: nextProps.auth.isRegisterSuccess});
+      }
     }
 
     handleOpen = () => {
@@ -56,31 +63,47 @@ class RegisterDialog extends Component {
     };
 
     handleClose = () => {
-      this.setState({ open: false });
+      this.setState({ open: false, registerSuccess: false });
     }
 
     onChange(e) {
-      console.log( `target name ${e.target.name} value  ${e.target.value}`);
+      // console.log( `target name ${e.target.name} value  ${e.target.value}`);
       this.setState({ [e.target.name]: e.target.value });
     }
   
     onsubmit = (event) => {
       event.preventDefault();
       const newUser = {
-        firstName: this.state.firstName,
-        lastName: this.state.lastName,
-        userName: this.state.userName,
-        password: this.state.password,
+        FirstName: this.state.firstName,
+        LastName: this.state.lastName,
+        UserName: this.state.userName,
+        UserPass: this.state.password,
       }
-      console.log(newUser);
+      // console.log(newUser);
+      
       this.props.registerUser(newUser);
+      
     }
 
     render () {
       const { errors } = this.state;
       const { style, classes } = this.props;
-      console.log(errors);
-      
+
+      const renderRegisterSuccess = (
+        <div>
+          <Dialog
+            open={this.state.registerSuccess}
+            onClose={this.handleClose}
+            aria-labelledby="Register"
+          >
+            <DialogTitle className={classes.dialogTitle}>Register Success !!!</DialogTitle>
+            <DialogActions>
+              <LoginDialog />
+              <Button onClick={this.handleClose} color='primary'>Ok</Button>            
+            </DialogActions>
+          </Dialog>
+        </div>
+      );
       return (
         <div>
           <Button onClick={this.handleOpen} variant={style.variant} color='primary'>Sign Up</Button>
@@ -145,9 +168,10 @@ class RegisterDialog extends Component {
            </DialogContent>
            <DialogActions>
              <Button onClick={this.handleClose} color='primary'>Cancel</Button>
-             <Button onClick={this.onsubmit} color='primary'>Login</Button>
+             <Button onClick={this.onsubmit} color='primary'>Submit</Button>
            </DialogActions>
           </Dialog>
+          {renderRegisterSuccess}
         </div>
       );
     }
@@ -156,13 +180,13 @@ class RegisterDialog extends Component {
 RegisterDialog.propTypes = {
   registerUser: PropsTypes.func.isRequired,
   auth: PropsTypes.object.isRequired,
+  errors: PropsTypes.object.isRequired,
 };
-
 
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
-  errors: state.errors
+  errors: state.errors,
 });
 
 // export default withStyles(styles)(RegisterDialog);

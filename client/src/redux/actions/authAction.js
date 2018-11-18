@@ -1,11 +1,19 @@
-import { GET_ERRORS } from "./type";
+import { GET_ERRORS, CREATE_ACCOUNT_SUCCESS } from "./type";
 import axios from 'axios';
 // Register
 export const registerUser = (userData) => (dispach) => {
   axios
     .post('http://localhost:5000/users/register', userData)
-    .then(res => console.log(res.data))
+    .then(res => {
+      dispach({
+        type: CREATE_ACCOUNT_SUCCESS,
+        payload: {
+          isRegisterSuccess: true,
+        },
+      });
+    })
     .catch(err => {
+      console.log(err);
       let tempErr = Object.values(err.response.data.errors.description);
       var resObject = tempErr.reduce((res, cur) => {
         for(let key in cur) {
