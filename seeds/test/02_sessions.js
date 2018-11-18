@@ -23,4 +23,18 @@ exports.seed = async function(knex, Promise) {
     session_type: 'default',
     session_status: 'opening'
   });
+
+  await knex('sessions').insert({
+    session_id: 4,
+    session_name: 'Database Lab Section',
+    session_type: 'needs_verification',
+    session_status: 'closed'
+  });
+
+  await knex('sessions').insert({
+    session_id: 5,
+    session_name: 'DarkNight Hackathon',
+    session_type: 'needs_verification',
+    session_status: 'closed'
+  });
 };

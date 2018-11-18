@@ -1,8 +1,4 @@
 class EditorStrategy {
-  async getSessionById(sessionId) {
-
-  }
-
   async getInvalidQuestiosOfSession(session) {
 
   }
@@ -12,10 +8,6 @@ class EditorStrategy {
   }
 
   async addQuestionToSession(question, session, user) {
-
-  }
-
-  async getQuestionOfSession(question, session) {
 
   }
 
@@ -31,11 +23,11 @@ class EditorStrategy {
 
   }
 
-  async addEditorToSession(session, editor, user) {
+  async addEditorToSession(editor, session, user) {
 
   }
 
-  async removeEditorFromSession(session, editor, user) {
+  async removeEditorFromSession(editor, session, user) {
 
   }
 }

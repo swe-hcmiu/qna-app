@@ -1,123 +1,117 @@
 const { RoleService } = require('../roles/RoleService');
 
 class SessionService {
-  roleStrategy;
+  static async getSessionService(session, user) {
+    this.session = session;
+    this.user = user;
+
+    const roles = await session
+      .$relatedQuery('roles')
+      .where({
+        userId: this.user.userId,
+      });
+    if (roles) [this.role] = roles;
+    else this.role = RoleService.getUserRole(this.session, this.user);
+    this.roleStrategy(this.role);
+  }
 
   set roleStrategy(role) {
     this.roleStrategy = RoleService.getStrategyByRole(role);
   }
 
-  async createSession(session, user) {
+  static async createSession(session, user) {
 
   }
 
-  async getListOfOpeningSessions() {
+  static async getListOfOpeningSessions() {
 
   }
 
-  async getListOfClosedSessions() {
+  static async getListOfClosedSessions() {
 
   }
 
-  async getSessionById(sessionId) {
+  async getNewestQuestionsOfSession() {
+
+  }
+
+  async getTopFavoriteQuestionsOfSession() {
+
+  }
+
+  async getAnsweredQuestionsOfSession() {
+
+  }
+
+  async getInvalidQuestiosOfSession() {
     try {
-      const session = await this.roleStrategy.getSessionById(sessionId);
-      return session;
-    } catch (err) {
-      throw err;
-    }
-  }
-
-  async getNewestQuestionsOfSession(session) {
-
-  }
-
-  async getTopFavoriteQuestionsOfSession(session) {
-
-  }
-
-  async getAnsweredQuestionsOfSession(session) {
-
-  }
-
-  async getInvalidQuestiosOfSession(session) {
-    try {
-      const listOfInvalidQuestions = await this.roleStrategy.getInvalidQuestiosOfSession(session);
+      const listOfInvalidQuestions = await this.roleStrategy.getInvalidQuestiosOfSession(this.session);
       return listOfInvalidQuestions;
     } catch (err) {
       throw err;
     }
   }
 
-  async getPendingQuestionsOfSession(session) {
+  async getPendingQuestionsOfSession() {
     try {
-      const listOfPendingQuestions = await this.roleStrategy.getPendingQuestionsOfSession(session);
+      const listOfPendingQuestions = await this.roleStrategy.getPendingQuestionsOfSession(this.session);
       return listOfPendingQuestions;
     } catch (err) {
       throw err;
     }
   }
 
-  async addQuestionToSession(question, session, user) {
+  async getListOfVotedQuestion() {
+
+  }
+
+  async getListOfEditors() {
+
+  }
+
+  async addQuestionToSession(question) {
     try {
-      await this.roleStrategy.addQuestionToSession(question, session, user);
+      await this.roleStrategy.addQuestionToSession(question, this.session, this.user);
     } catch (err) {
       throw err;
     }
   }
 
-  async getQuestionOfSession(question, session) {
+  async addVoteToQuestion(question) {
     try {
-      const recvQuestion = await this.roleStrategy.getQuestionOfSession(question, session);
-      return recvQuestion;
+      await this.roleStrategy.addVoteToQuestion(question, this.session, this.user);
     } catch (err) {
       throw err;
     }
   }
 
-  async addVoteToQuestion(question, session, user) {
+  async cancleVoteInQuestion(question) {
     try {
-      await this.roleStrategy.addVoteToQuestion(question, session, user);
+      await this.roleStrategy.cancleVoteInQuestion(question, this.session, this.user);
     } catch (err) {
       throw err;
     }
   }
 
-  async cancleVoteInQuestion(question, session, user) {
+  async updateQuestionStatus(question, status) {
     try {
-      await this.roleStrategy.cancleVoteInQuestion(question, session, user);
+      await this.roleStrategy.updateQuestionStatus(question, status, this.user);
     } catch (err) {
       throw err;
     }
   }
 
-  async getListOfVotedQuestion(session, user) {
-
-  }
-
-  async getListOfEditors(session) {
-
-  }
-
-  async updateQuestionStatus(question, status, user) {
+  async addEditorToSession(editor) {
     try {
-      await this.roleStrategy.updateQuestionStatus(question, status, user);
+      await this.roleStrategy.addEditorToSession(editor, this.session, this.user);
     } catch (err) {
       throw err;
     }
   }
 
-  async addEditorToSession(session, editor, user) {
+  async removeEditorFromSession(editor) {
     try {
-      await this.roleStrategy.addEditorToSession(session, editor, user);
-    } catch (err) {
-      throw err;
-    }
-  }
-
-  async removeEditorFromSession(session, editor, user) {
-    try {
-      await this.roleStrategy.removeEditorFromSession(session, editor, user);
+      await this.roleStrategy.removeEditorFromSession(editor, this.session, this.user);
     } catch (err) {
       throw err;
     }
