@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 // const morgan = require('morgan');
 const flash = require('connect-flash');
+const cors = require ('cors');
 const session = require('express-session');
 const passport = require('passport');
 const expressValidator = require('express-validator');
@@ -48,6 +49,9 @@ app.use(session({
 // app.use(passport.initialize());
 // app.use(passport.session());
 
+// cors
+app.use(cors());
+
 // // Connect Flash
 app.use(flash());
 
@@ -83,12 +87,6 @@ app.use(expressValidator({
     };
   },
 }));
-
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
 
 app.use(winstonConfig.consoleLogger, winstonConfig.infoFileLogger);
 

@@ -7,7 +7,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import withStyles from '@material-ui/core/styles/withStyles';
 import PropTypes from 'prop-types';
-
+import {connect} from 'react-redux';
+import {loginUser} from '../../redux/actions/authAction';
+import {withRouter} from 'react-router-dom';
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -32,8 +34,22 @@ class LoginDialog extends Component {
       super(props);
       this.state = {
         open: false,
+        errors: {},
+        userName: '',
+        password: '',
+      };
+    }
+
+    componentWillReceiveProps(nextProps) {
+      if(nextProps.auth.isAuthenticated) {
+        this.props.history.push('/session');
+      }
+
+      if(nextProps.errors) {
+        this.setState({errors: nextProps.errors});
       }
     }
+  
     handleClickOpen = () => {
       this.setState({ open: true });
     };
@@ -42,8 +58,22 @@ class LoginDialog extends Component {
       this.setState({ open: false });
     };
 
+    onChange = (event) => {
+      this.setState({ [event.target.name]: event.target.value });
+    }
+
+    onsubmit = () => {
+      const user = {
+        username: this.state.userName,
+        password: this.state.password,
+      };
+
+      this.props.loginUser(user);
+    }
+
     render() {
       const { classes } = this.props;
+      console.log(this.state);
       return (
         <div className={classes.root}>
           <Button onClick={this.handleClickOpen} color='primary'>Login</Button>
@@ -54,13 +84,14 @@ class LoginDialog extends Component {
           >
             <DialogTitle className={classes.dialogTitle} color='primary'>Login</DialogTitle>
             <DialogContent className={classes.dialogContent}>
-              
                 <TextField
                   id="outlined-name"
                   label="User Name"
                   name="userName"
                   className={classes.textField}
                   margin="dense"
+                  value={this.state.userName}
+                  onChange={this.onChange}
                   variant="outlined"
                 />
                 <TextField   
@@ -72,13 +103,15 @@ class LoginDialog extends Component {
                   autoComplete="current-password"
                   margin="dense"
                   variant="outlined"
+                  value={this.state.password}
+                  onChange={this.onChange}
                 />
               
               
            </DialogContent>
            <DialogActions>
              <Button onClick={this.handleClose} color='primary'>Cancel</Button>
-             <Button onClick={this.handleClose} color='primary'>Login</Button>
+             <Button onClick={this.onsubmit} color='primary'>Submit</Button>
            </DialogActions>
           </Dialog>
         </div>
@@ -88,7 +121,14 @@ class LoginDialog extends Component {
 
 LoginDialog.propTypes = {
   classes: PropTypes.object.isRequired,
+  logginUser: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired,
 };
 
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  errors: state.errors,
+})
 
-export default withStyles(styles)(LoginDialog);
+export default connect(mapStateToProps, {loginUser})(withRouter(withStyles(styles)(LoginDialog)));

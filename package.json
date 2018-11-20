@@ -95,6 +95,7 @@
     "cookie-signature": "^1.0.6",
     "copy-descriptor": "^0.1.1",
     "core-util-is": "^1.0.2",
+    "cors": "^2.8.5",
     "crc": "^3.4.4",
     "create-error-class": "^3.0.2",
     "create-react-app": "^2.0.4",

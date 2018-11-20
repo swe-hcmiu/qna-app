@@ -54,6 +54,8 @@ exports.user_login_post = async (req, res, next) => {
       UserName: username,
       UserPass: password,
     };
+    console.log(user);
+    
 
     const responseQnA = await UserService.authenticateQnAUser(user);
     const qnaUser = JSON.parse(JSON.stringify(responseQnA.user));

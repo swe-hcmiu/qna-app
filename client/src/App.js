@@ -7,8 +7,20 @@ import Session from './components/session/Session';
 import { Provider } from 'react-redux';
 import store from './redux/store';
 import './App.css';
+import setAuthToken from './redux/utils/setAuthToken';
+import jwt_decode from 'jwt-decode';
+import {setCurrentUser} from './redux/actions/authAction';
 
 
+// check token 
+if(localStorage.jwtToken) {
+  // set token header auth
+  setAuthToken(localStorage.jwtToken);
+  // decode token and get user info and exp
+  const decoded = jwt_decode(localStorage.jwtToken);
+  // set user and isAuth
+  store.dispatch(setCurrentUser(decoded));
+}
 
 
 class App extends Component {
