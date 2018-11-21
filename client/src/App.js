@@ -9,7 +9,7 @@ import store from './redux/store';
 import './App.css';
 import setAuthToken from './redux/utils/setAuthToken';
 import jwt_decode from 'jwt-decode';
-import {setCurrentUser} from './redux/actions/authAction';
+import {setCurrentUser, logOutUser} from './redux/actions/authAction';
 
 
 // check token 
@@ -20,6 +20,12 @@ if(localStorage.jwtToken) {
   const decoded = jwt_decode(localStorage.jwtToken);
   // set user and isAuth
   store.dispatch(setCurrentUser(decoded));
+  // check expried token
+  const currentTime = Date.now() / 1000;
+  if(decoded.exp < currentTime) {
+    store.dispatch(logOutUser());
+    window.location.href = '/login';
+  }
 }
 
 

@@ -19,6 +19,8 @@ class Register extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
+  
+
   onChange(event) {
     this.setState({ [event.target.name]: event.target.value });
   }

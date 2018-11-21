@@ -6,11 +6,16 @@ import Typography from '@material-ui/core/Typography';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { withStyles } from '@material-ui/core/styles';
+import { withRouter } from 'react-router-dom';
 import MenuIcon from '@material-ui/icons/Menu';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import LoginIcon from '@material-ui/icons/AccountCircle';
 import LoginDialog from '../authenticate/LoginDialog';
 import RegisterDialog from '../authenticate/RegisterDialog';
+import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+import UserAppBar from './UserAppBar';
+
 
 const styles = theme => ({
   root: {
@@ -57,6 +62,24 @@ class AppBarComponent extends React.Component {
     mobileMoreAnchorEl: null,
   };
 
+  componentDidMount() {
+    if(this.props.auth.isAuthenticated === false) {
+      this.props.history.push('/');
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.auth.isAuthenticated) {
+      console.log('enter!!!');
+      this.props.history.push('/session');
+    }
+
+    if(nextProps.errors) {
+      this.setState({errors: nextProps.errors});
+    }
+  }
+
+
   handleProfileMenuOpen = event => {
     this.setState({ anchorEl: event.currentTarget });
   };
@@ -78,10 +101,40 @@ class AppBarComponent extends React.Component {
     this.setState({ mobileMoreAnchorEl: null });
   };
 
+  onLogOutClick = (e) => {
+    e.preventDefault();
+
+  }
+
   render() {
     const { mobileMoreAnchorEl } = this.state;
     const { classes } = this.props;
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+    const { isAuthenticated, user } = this.props.auth;
+    console.log(isAuthenticated);
+    
+    const renderGuest = (
+      <div>
+        <div className={classes.sectionDesktop}>
+
+          <LoginDialog />
+          <RegisterDialog style={{variant: 'contained'}} />
+          
+        </div>
+        <div className={classes.sectionMobile}>
+          <IconButton aria-haspopup="true" onClick={this.handleMobileMenuOpen} color="inherit">
+            <MoreIcon />
+          </IconButton>
+        </div>
+      </div>
+    );  
+
+    const renderUser = (
+      <div>
+        <UserAppBar />
+      </div>
+    );
+
 
     const renderMobileMenu = (
       <div>
@@ -121,18 +174,8 @@ class AppBarComponent extends React.Component {
             </Typography>
 
             <div className={classes.grow} />
-            <div className={classes.sectionDesktop}>
-              {/* <Button variant="contained" color="primary" className={classes.button}>Login</Button>
-              <Button variant="contained" color="primary">Sign Up</Button> */}
-              <LoginDialog />
-              <RegisterDialog style={{variant: 'contained'}} />
-              
-            </div>
-            <div className={classes.sectionMobile}>
-              <IconButton aria-haspopup="true" onClick={this.handleMobileMenuOpen} color="inherit">
-                <MoreIcon />
-              </IconButton>
-            </div>
+
+            {isAuthenticated ? renderUser : renderGuest }
           </Toolbar>
         </AppBar>
         {renderMobileMenu}
@@ -141,5 +184,14 @@ class AppBarComponent extends React.Component {
   }
 }
 
+AppBar.propTypes = {
+  logoutUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+};
 
-export default withStyles(styles)(AppBarComponent);
+const mapStatetoProps = (state) => ({
+  auth: state.auth,
+});
+
+
+export default connect(mapStatetoProps)(withRouter(withStyles(styles)(AppBarComponent)));

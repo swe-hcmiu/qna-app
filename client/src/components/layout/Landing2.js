@@ -3,6 +3,8 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import SearchIcon from '@material-ui/icons/Search';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import InputBase from '@material-ui/core/InputBase';
 import { withStyles } from '@material-ui/core/styles';
 import Background from '../../asset/img/blackboard-background.jpg';
@@ -67,6 +69,16 @@ const styles = theme => ({
 });
 
 class Landing extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount () {
+    if(this.props.isAuthenticated){
+      this.props.history.push('/session');
+    }
+  }
+
   render() {
     
     const { classes } = this.props;
@@ -101,4 +113,13 @@ class Landing extends Component {
   }
 }
 
-export default withStyles(styles)(Landing);
+Landing.propTypes = {
+  classes: PropTypes.object.isRequired,
+  isAuthenticated: PropTypes.bool.isRequired,
+}
+
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
+})
+ 
+export default connect(mapStateToProps)(withStyles(styles)(Landing));

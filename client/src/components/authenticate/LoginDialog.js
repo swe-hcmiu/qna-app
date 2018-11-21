@@ -40,8 +40,10 @@ class LoginDialog extends Component {
       };
     }
 
+
     componentWillReceiveProps(nextProps) {
-      if(nextProps.auth.isAuthenticated) {
+      if(nextProps.isAuthenticated) {
+        console.log('enter!!!');
         this.props.history.push('/session');
       }
 
@@ -50,6 +52,7 @@ class LoginDialog extends Component {
       }
     }
   
+    
     handleClickOpen = () => {
       this.setState({ open: true });
     };
@@ -72,8 +75,8 @@ class LoginDialog extends Component {
     }
 
     render() {
-      const { classes } = this.props;
-      console.log(this.state);
+      const { classes, errors } = this.props;
+      // console.log('errors', errors);
       return (
         <div className={classes.root}>
           <Button onClick={this.handleClickOpen} color='primary'>Login</Button>
@@ -93,6 +96,7 @@ class LoginDialog extends Component {
                   value={this.state.userName}
                   onChange={this.onChange}
                   variant="outlined"
+                 
                 />
                 <TextField   
                   id="outlined-password-input"
@@ -105,6 +109,7 @@ class LoginDialog extends Component {
                   variant="outlined"
                   value={this.state.password}
                   onChange={this.onChange}
+               
                 />
               
               
@@ -121,14 +126,14 @@ class LoginDialog extends Component {
 
 LoginDialog.propTypes = {
   classes: PropTypes.object.isRequired,
-  logginUser: PropTypes.object.isRequired,
+  logginUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = (state) => ({
+const mapStatetoProps = (state) => ({
   auth: state.auth,
   errors: state.errors,
 })
 
-export default connect(mapStateToProps, {loginUser})(withRouter(withStyles(styles)(LoginDialog)));
+export default connect(mapStatetoProps, {loginUser})(withRouter(withStyles(styles)(LoginDialog)));
