@@ -4,9 +4,10 @@ const { assert } = require('chai');
 const { Session } = require('./Session');
 const { SessionService } = require('./SessionService');
 const { User } = require('../users/User');
-const { EditorStrategy } = require('../roles/EditorStrategy');
-const { UserStrategy } = require('../roles/UserStrategy');
+const { EditorSessionStrategy } = require('../roles/EditorSessionStrategy');
+const { UserSessionStrategy } = require('../roles/UserSessionStrategy');
 const { Question } = require('../questions/Question');
+const { Role } = require('../roles/Role');
 const { knex } = require('../../config/mysql/mysql-config');
 
 describe('Unit Testing for Session', function () {
@@ -362,7 +363,10 @@ describe('Unit Testing for Session', function () {
         serviceExpect = new SessionService();
         serviceExpect.session = session;
         serviceExpect.user = user;
-        serviceExpect.role = 'user';
+        serviceExpect.role = new Role();
+        serviceExpect.role.sessionId = session.sessionId;
+        serviceExpect.role.userId = user.userId;
+        serviceExpect.role.role = 'user';
 
         service = await SessionService.getSessionService(session, user);
       });
@@ -372,8 +376,8 @@ describe('Unit Testing for Session', function () {
       });
 
       it('validate roleStrategy of service', function () {
-        assert.instanceOf(service.roleStrategy, UserStrategy,
-          'roleStrategy must be an instance of UserStrategy');
+        assert.instanceOf(service.roleStrategy, UserSessionStrategy,
+          'roleStrategy must be an instance of UserSessionStrategy');
       });
     });
 
@@ -393,7 +397,10 @@ describe('Unit Testing for Session', function () {
         serviceExpect = new SessionService();
         serviceExpect.session = session;
         serviceExpect.user = user;
-        serviceExpect.role = 'editor';
+        serviceExpect.role = new Role();
+        serviceExpect.role.sessionId = session.sessionId;
+        serviceExpect.role.userId = user.userId;
+        serviceExpect.role.role = 'editor';
 
         service = await SessionService.getSessionService(session, user);
       });
@@ -403,8 +410,8 @@ describe('Unit Testing for Session', function () {
       });
 
       it('validate roleStrategy of service', function () {
-        assert.instanceOf(service.roleStrategy, EditorStrategy,
-          'roleStrategy must be an instance of EditorStrategy');
+        assert.instanceOf(service.roleStrategy, EditorSessionStrategy,
+          'roleStrategy must be an instance of EditorSessionStrategy');
       });
     });
 

@@ -1,4 +1,4 @@
-class UserStrategy {
+class EditorSessionStrategy {
   async getInvalidQuestiosOfSession(session) {
 
   }
@@ -33,5 +33,5 @@ class UserStrategy {
 }
 
 module.exports = {
-  UserStrategy,
+  EditorSessionStrategy,
 };

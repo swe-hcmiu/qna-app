@@ -7,25 +7,24 @@ const { Session } = require('../sessions/Session');
 
 class SessionService {
   static async getSessionService(session, user) {
-    this.session = session;
-    this.user = user;
+    const service = new SessionService();
+    service.session = _.cloneDeep(session);
+    service.user = _.cloneDeep(user);
 
     try {
-      const roles = await session
+      const roles = await service.session
         .$relatedQuery('roles')
         .where({
-          userId: this.user.userId,
+          userId: service.user.userId,
         });
-      if (roles) [this.role] = roles;
-      else this.role = RoleService.getUserRole(this.session, this.user);
-      this.roleStrategy(this.role);
+      if (!_.isEmpty(roles)) [service.role] = roles;
+      else service.role = RoleService.getUserRole(service.session, service.user);
+      service.roleStrategy = RoleService.getStrategyByRole(service.role);
+
+      return service;
     } catch (err) {
       throw err;
     }
-  }
-
-  set roleStrategy(role) {
-    this.roleStrategy = RoleService.getStrategyByRole(role);
   }
 
   static async createSession(session, user) {
@@ -78,15 +77,50 @@ class SessionService {
   }
 
   async getNewestQuestionsOfSession() {
+    try {
+      const listOfOpeningSessions = await this.session
+        .$relatedQuery('questions')
+        .where({
+          questionStatus: 'unanswered',
+        })
+        .orderBy('updatedAt', 'desc');
 
+      return listOfOpeningSessions;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async getTopFavoriteQuestionsOfSession() {
+    try {
+      const listOfTopFavoriteQuestions = await this.session
+        .$relatedQuery('questions')
+        .where({
+          questionStatus: 'unanswered',
+        })
+        .orderBy('voteByEditor', 'desc')
+        .orderBy('voteByUser', 'desc')
+        .orderBy('updatedAt', 'desc');
 
+      return listOfTopFavoriteQuestions;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async getAnsweredQuestionsOfSession() {
+    try {
+      const listOfAnsweredQuestions = await this.session
+        .$relatedQuery('questions')
+        .where({
+          questionStatus: 'answered',
+        })
+        .orderBy('updatedAt', 'desc');
 
+      return listOfAnsweredQuestions;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async getInvalidQuestiosOfSession() {
