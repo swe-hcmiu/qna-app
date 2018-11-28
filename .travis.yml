@@ -1,0 +1,21 @@
+language: node_js
+
+node_js:
+ - "node"
+
+services:
+ - mysql
+
+env :
+ - NODE_ENV=testing
+
+install:
+ - npm i
+
+before_script:
+ - mysql -e 'CREATE DATABASE `qasys2`;'
+ - mysql -e 'CREATE DATABASE `qasys2-testing`;'
+ - knex migrate:latest --env = testing
+
+script:
+ - npm test
