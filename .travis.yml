@@ -15,7 +15,7 @@ install:
 before_script:
  - mysql -e 'CREATE DATABASE `qasys2`;'
  - mysql -e 'CREATE DATABASE `qasys2-testing`;'
- - knex migrate:latest --env = testing
+ - knex migrate:latest --env=testing
 
 script:
  - npm test
