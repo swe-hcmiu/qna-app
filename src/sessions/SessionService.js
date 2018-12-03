@@ -151,7 +151,8 @@ class SessionService {
 
   async addQuestionToSession(question) {
     try {
-      await this.roleStrategy.addQuestionToSession(question, this.session, this.user);
+      const recvQuestion = await this.roleStrategy.addQuestionToSession(question, this.session, this.user);
+      return recvQuestion;
     } catch (err) {
       throw err;
     }
