@@ -160,7 +160,8 @@ class SessionService {
 
   async addVoteToQuestion(question) {
     try {
-      await this.roleStrategy.addVoteToQuestion(question, this.session, this.user);
+      const recvQuestion = await this.roleStrategy.addVoteToQuestion(question, this.user);
+      return recvQuestion;
     } catch (err) {
       throw err;
     }
