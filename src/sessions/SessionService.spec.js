@@ -184,19 +184,19 @@ describe('Unit Testing for Session', function () {
         session.sessionId = 2;
 
         user = new User();
-        user.userId = 2;
+        user.userId = 1;
 
         service = await SessionService.getSessionService(session, user);
 
-        const questions = Question
+        const questions = await Question
           .query()
           .where({
-            quesitonId: 6
+            questionId: 6
           });
 
         question = questions[0];
 
-        recvQuestion = await service.addVoteToQuestion(question);
+        recvQuestion = await service.addVoteToQuestion(question, user);
       });
 
       it('check question vote by user increased by 1', function () {
@@ -227,22 +227,22 @@ describe('Unit Testing for Session', function () {
 
       before(async function () {
         session = new Session();
-        session.sessionId = 2;
+        session.sessionId = 3;
 
         user = new User();
-        user.userId = 3;
+        user.userId = 1;
 
         service = await SessionService.getSessionService(session, user);
 
-        const questions = Question
+        const questions = await Question
           .query()
           .where({
-            quesitonId: 6
+            questionId: 11
           });
 
         question = questions[0];
 
-        recvQuestion = await service.addVoteToQuestion(question);
+        recvQuestion = await service.addVoteToQuestion(question, user);
       });
 
       it('check question vote by editor increased by 1', function () {
@@ -633,7 +633,7 @@ describe('Unit Testing for Session', function () {
 
       before(async function () {
         session = new Session();
-        session.sessionId = 1;
+        session.sessionId = 6;
 
         user = new User();
         user.userId = 2;
@@ -657,10 +657,10 @@ describe('Unit Testing for Session', function () {
 
       before(async function () {
         session = new Session();
-        session.sessionId = 1;
+        session.sessionId = 7;
 
         user = new User();
-        user.userId = 1;
+        user.userId = 13;
 
         service = await SessionService.getSessionService(session, user);
 
@@ -758,7 +758,7 @@ describe('Unit Testing for Session', function () {
       await setUpSuite.call(this);
     });
 
-    describe('Cancle Vote To Question(User Role)', function () {
+    describe('Cancel Vote To Question(User Role)', function () {
       let user;
       let session;
       let service;
@@ -770,19 +770,19 @@ describe('Unit Testing for Session', function () {
         session.sessionId = 2;
 
         user = new User();
-        user.userId = 2;
+        user.userId = 1;
 
         service = await SessionService.getSessionService(session, user);
 
-        const questions = Question
+        const questions = await Question
           .query()
           .where({
-            quesitonId: 6
+            questionId: 6
           });
 
         question = questions[0];
 
-        recvQuestion = await service.cancleVoteInQuestion(question);
+        recvQuestion = await service.cancelVoteInQuestion(question);
       });
 
       it('check question vote by user decreased by 1', function () {
@@ -797,11 +797,11 @@ describe('Unit Testing for Session', function () {
             questionId: recvQuestion.questionId
           });
 
-        assert.notExists(votings, 'voting record has not been deleted in database');
+        assert.isEmpty(votings, 'voting record has not been deleted in database');
       });
     });
 
-    describe('Cancle Vote To Question(Editor Role)', function () {
+    describe('Cancel Vote To Question(Editor Role)', function () {
       let user;
       let session;
       let service;
@@ -810,22 +810,22 @@ describe('Unit Testing for Session', function () {
 
       before(async function () {
         session = new Session();
-        session.sessionId = 2;
+        session.sessionId = 3;
 
         user = new User();
-        user.userId = 3;
+        user.userId = 1;
 
         service = await SessionService.getSessionService(session, user);
 
-        const questions = Question
+        const questions = await Question
           .query()
           .where({
-            quesitonId: 6
+            questionId: 11
           });
 
         question = questions[0];
 
-        recvQuestion = await service.cancleVoteInQuestion(question);
+        recvQuestion = await service.cancelVoteInQuestion(question, user);
       });
 
       it('check question vote by editor decreased by 1', function () {
@@ -840,7 +840,7 @@ describe('Unit Testing for Session', function () {
             questionId: recvQuestion.questionId
           });
 
-        assert.notExists(votings, 'voting record has not been deleted in database');
+        assert.isEmpty(votings, 'voting record has not been deleted in database');
       });
     });
 
@@ -863,7 +863,7 @@ describe('Unit Testing for Session', function () {
         const questions = Question
           .query()
           .where({
-            quesitonId: 6
+            questionId: 6
           });
         question = questions[0];
 
@@ -882,7 +882,7 @@ describe('Unit Testing for Session', function () {
         const questions = Question
           .query()
           .where({
-            quesitonId: 6
+            questionId: 6
           });
         const questionDb = questions[0];
 
@@ -910,7 +910,7 @@ describe('Unit Testing for Session', function () {
         const questions = Question
           .query()
           .where({
-            quesitonId: 6
+            questionId: 6
           });
         question = questions[0];
 
@@ -921,7 +921,7 @@ describe('Unit Testing for Session', function () {
         const questions = Question
           .query()
           .where({
-            quesitonId: 6
+            questionId: 6
           });
         const questionDb = questions[0];
 

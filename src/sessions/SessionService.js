@@ -167,9 +167,10 @@ class SessionService {
     }
   }
 
-  async cancleVoteInQuestion(question) {
+  async cancelVoteInQuestion(question) {
     try {
-      await this.roleStrategy.cancleVoteInQuestion(question, this.session, this.user);
+      const recvQuestion = await this.roleStrategy.cancelVoteInQuestion(question, this.user);
+      return recvQuestion;
     } catch (err) {
       throw err;
     }
