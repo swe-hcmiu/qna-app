@@ -186,7 +186,9 @@ class SessionService {
 
   async addEditorToSession(editor) {
     try {
-      await this.roleStrategy.addEditorToSession(editor, this.session, this.user);
+      const recvRecord = await this.roleStrategy
+        .addEditorToSession(editor, this.session);
+      return recvRecord;
     } catch (err) {
       throw err;
     }

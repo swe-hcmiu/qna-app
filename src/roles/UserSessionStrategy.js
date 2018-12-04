@@ -3,6 +3,8 @@ const _ = require('lodash');
 
 const { Question } = require('../questions/Question');
 const { Session } = require('../sessions/Session');
+const { Voting } = require('../votings/Voting');
+const { Model } = require('../../config/mysql/mysql-config');
 
 class UserSessionStrategy {
   async getInvalidQuestionsOfSession(session) {
@@ -53,12 +55,24 @@ class UserSessionStrategy {
     try {
       const inputQuestion = _.cloneDeep(question);
 
-      const recvQuestion = await transaction(Question.knex(), async (trx) => {
-        const updatedQuestion = await inputQuestion
-          .$query(trx)
-          .updateAndFetch({ voteByUser: inputQuestion.voteByUser - 1 });
+      const recvQuestion = await transaction(Model.knex(), async (trx) => {
+        let updatedQuestion = null;
 
-        await user.$relatedQuery('votings', trx).delete().where({ questionId: inputQuestion.questionId });
+        const votings = await user
+          .$relatedQuery('votings')
+          .where({
+            questionId: inputQuestion.questionId,
+          });
+
+        if (votings[0]) {
+          updatedQuestion = await inputQuestion
+            .$query(trx)
+            .updateAndFetch({ voteByUser: inputQuestion.voteByUser - 1 });
+          await user
+            .$relatedQuery('votings', trx)
+            .delete()
+            .where({ questionId: inputQuestion.questionId });
+        }
         return updatedQuestion;
       });
 

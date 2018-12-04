@@ -1,10 +1,11 @@
 const { transaction } = require('objection');
 const _ = require('lodash');
 
+const { Role } = require('./Role');
 const { Question } = require('../questions/Question');
 const { Session } = require('../sessions/Session');
-const { User } = require('../users/User');
 const { Voting } = require('../votings/Voting');
+const { Model } = require('../../config/mysql/mysql-config');
 
 class EditorSessionStrategy {
   async getInvalidQuestionsOfSession(session) {
@@ -63,12 +64,25 @@ class EditorSessionStrategy {
     try {
       const inputQuestion = _.cloneDeep(question);
 
-      const recvQuestion = await transaction(Question.knex(), async (trx) => {
-        const updatedQuestion = await inputQuestion
-          .$query(trx)
-          .updateAndFetch({ voteByEditor: inputQuestion.voteByEditor - 1 });
+      const recvQuestion = await transaction(Model.knex(), async (trx) => {
+        let updatedQuestion = null;
 
-        await user.$relatedQuery('votings', trx).delete().where({ questionId: inputQuestion.questionId });
+        const votings = await user
+          .$relatedQuery('votings')
+          .where({
+            questionId: inputQuestion.questionId,
+          });
+
+        if (votings[0]) {
+          updatedQuestion = await inputQuestion
+            .$query(trx)
+            .updateAndFetch({ voteByEditor: inputQuestion.voteByEditor - 1 });
+          await user
+            .$relatedQuery('votings', trx)
+            .delete()
+            .where({ questionId: inputQuestion.questionId });
+        }
+
         return updatedQuestion;
       });
 
@@ -82,8 +96,17 @@ class EditorSessionStrategy {
 
   }
 
-  async addEditorToSession(editor, session, user) {
+  async addEditorToSession(editor, session) {
+    try {
+      const assignedEditor = _.cloneDeep(editor);
 
+      await assignedEditor
+        .$relatedQuery('roles')
+        .insert({ sessionId: session.sessionId, role: 'editor' });
+      return assignedEditor;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async removeEditorFromSession(editor, session, user) {
