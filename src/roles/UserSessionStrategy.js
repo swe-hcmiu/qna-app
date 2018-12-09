@@ -90,7 +90,7 @@ class UserSessionStrategy {
 
   }
 
-  async removeEditorFromSession(editor, session, user) {
+  async removeEditorFromSession(editor, session) {
 
   }
 }

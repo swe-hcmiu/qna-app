@@ -8,6 +8,7 @@ const { EditorSessionStrategy } = require('../roles/EditorSessionStrategy');
 const { UserSessionStrategy } = require('../roles/UserSessionStrategy');
 const { Question } = require('../questions/Question');
 const { Role } = require('../roles/Role');
+const { RoleService } = require('../roles/RoleService');
 const { knex } = require('../../config/mysql/mysql-config');
 
 describe('Unit Testing for Session', function () {
@@ -367,6 +368,7 @@ describe('Unit Testing for Session', function () {
         serviceExpect.role.sessionId = session.sessionId;
         serviceExpect.role.userId = user.userId;
         serviceExpect.role.role = 'user';
+        serviceExpect.roleStrategy = RoleService.getStrategyByRole(serviceExpect.role);
 
         service = await SessionService.getSessionService(session, user);
       });
@@ -701,7 +703,7 @@ describe('Unit Testing for Session', function () {
 
         listOfVotedQuestionsDb = await user
           .$relatedQuery('votingQuestions')
-          .select('questionId')
+          .select('votings.questionId')
           .where({
             sessionId: session.sessionId
           });
@@ -902,7 +904,7 @@ describe('Unit Testing for Session', function () {
 
         service = await SessionService.getSessionService(session, user);
 
-        const questions = Question
+        const questions = await Question
           .query()
           .where({
             questionId: 6
@@ -910,7 +912,7 @@ describe('Unit Testing for Session', function () {
         question = questions[0];
 
         try {
-          recvQuestion = service.updateQuestionStatus(question, 'answered');
+          recvQuestion = await service.updateQuestionStatus(question, 'answered');
         } catch (err) {
           // do nothing
         }
@@ -921,7 +923,7 @@ describe('Unit Testing for Session', function () {
       });
 
       it('check question status has not changed in database', async function () {
-        const questions = Question
+        const questions = await Question
           .query()
           .where({
             questionId: 6
@@ -949,18 +951,18 @@ describe('Unit Testing for Session', function () {
 
         service = await SessionService.getSessionService(session, user);
 
-        const questions = Question
+        const questions = await Question
           .query()
           .where({
             questionId: 6
           });
         question = questions[0];
 
-        recvQuestion = service.updateQuestionStatus(question, 'answered');
+        recvQuestion = await service.updateQuestionStatus(question, 'answered');
       });
 
       it('check question status has changed in database', async function () {
-        const questions = Question
+        const questions = await Question
           .query()
           .where({
             questionId: 6
@@ -1005,16 +1007,16 @@ describe('Unit Testing for Session', function () {
       });
 
       it('check recvEditor does not exist', function () {
-        assert.notExists(recvEditor, 'recvQuestion must not exist');
+        assert.notExists(recvEditor, 'recvEditor must not exist');
       });
 
       it('check role record has not been changed in database', async function () {
-        const roles = editor
+        const roles = await editor
           .$relatedQuery('roles')
           .where({
             sessionId: session.sessionId
           });
-        const roleDb = roles[0].role;
+        const roleDb = roles[0];
 
         assert.equal(roleDb.role, 'editor', 'role record must not be changed in database');
       });
@@ -1047,14 +1049,13 @@ describe('Unit Testing for Session', function () {
       });
 
       it('check role record has been changed in database', async function () {
-        const roles = editor
+        const roles = await editor
           .$relatedQuery('roles')
           .where({
             sessionId: session.sessionId
           });
-        
         if (roles.length === 0) return;
-        const roleDb = roles[0].role;
+        const roleDb = roles[0];
 
         assert.notEqual(roleDb.role, 'editor', 'role record must be changed in database');
       });

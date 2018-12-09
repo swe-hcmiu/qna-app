@@ -3,13 +3,23 @@ const _ = require('lodash');
 
 const { Role } = require('./Role');
 const { Question } = require('../questions/Question');
-const { Session } = require('../sessions/Session');
+const { User } = require('../users/User');
 const { Voting } = require('../votings/Voting');
 const { Model } = require('../../config/mysql/mysql-config');
 
 class EditorSessionStrategy {
   async getInvalidQuestionsOfSession(session) {
-
+    try {
+      const listOfInvalidQuestions = await session
+        .$relatedQuery('questions')
+        .where({
+          questionStatus: 'invalid',
+        })
+        .orderBy('updatedAt', 'desc');
+      return listOfInvalidQuestions;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async getPendingQuestionsOfSession(session) {
@@ -93,7 +103,14 @@ class EditorSessionStrategy {
   }
 
   async updateQuestionStatus(question, status, user) {
-
+    try {
+      const updateQuestion = await question
+      .$query()
+      .updateAndFetch({questionStatus: status});
+      return updateQuestion;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async addEditorToSession(editor, session) {
@@ -109,8 +126,15 @@ class EditorSessionStrategy {
     }
   }
 
-  async removeEditorFromSession(editor, session, user) {
+  async removeEditorFromSession(editor, session) {
+    try {
+      const removedEditor = _.cloneDeep(editor);
+      await removedEditor.$relatedQuery('roles').delete().where(session);
 
+      return removedEditor;
+    } catch (err) {
+      throw err;
+    }
   }
 }
 
