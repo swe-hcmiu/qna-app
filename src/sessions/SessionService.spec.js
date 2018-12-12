@@ -8,6 +8,7 @@ const { EditorSessionStrategy } = require('../roles/EditorSessionStrategy');
 const { UserSessionStrategy } = require('../roles/UserSessionStrategy');
 const { Question } = require('../questions/Question');
 const { Role } = require('../roles/Role');
+const { UserService } = require('../users/UserService');
 const { RoleService } = require('../roles/RoleService');
 const { knex } = require('../../config/mysql/mysql-config');
 
@@ -88,6 +89,32 @@ describe('Unit Testing for Session', function () {
         assert.isEmpty(sessions, 'rollback must occur when errors happended in transactions');
       });
     });
+
+    describe('Create Session (Unloggedin User)', function () {
+      before(async function () {
+        try {
+          user = undefined;
+
+          session = new Session();
+          session.sessionName = 'Case of Unloggedin User';
+          session.sessionType = 'default';
+          session.sessionStatus = 'opening';
+
+          recvSession = await SessionService.createSession(session, user);
+        } catch (err) {
+          throw err;
+        }
+      });
+
+      it('return null', function () {
+        assert.isNull(recvSession, 'should have returned null session');
+      })
+
+      it('check for no record in db', async function () {
+        const sessions = await Session.query().where(session);
+        assert.isEmpty(sessions, 'record should not be created in db');
+      })
+    })
 
     describe('Add Question To Session(User Role)', function () {
       let user;
@@ -265,6 +292,39 @@ describe('Unit Testing for Session', function () {
       });
     });
 
+    describe('Add Vote To Question(Question already voted)', function () {
+      let user;
+      let session;
+      let service;
+      let question;
+      let recvQuestion;
+
+      before(async function () {
+        session = new Session();
+        session.sessionId = 1;
+
+        user = new User();
+        user.userId = 1;
+
+        service = await SessionService.getSessionService(session, user);
+
+        const questions = await Question
+          .query()
+          .where({
+            questionId: 1
+          });
+
+        question = questions[0];
+
+        recvQuestion = await service.addVoteToQuestion(question);
+      });
+
+      it('check question vote not increased', function () {
+        assert.equal(recvQuestion.voteByEditor + recvQuestion.voteByUser, question.voteByEditor + question.voteByUser,
+          'question vote must not change');
+      });
+    });
+
     describe('Add Editor To Session(User Role)', function () {
       let user;
       let session;
@@ -363,7 +423,16 @@ describe('Unit Testing for Session', function () {
 
         serviceExpect = new SessionService();
         serviceExpect.session = session;
-        serviceExpect.user = user;
+        serviceExpect.user = await user
+          .$query()
+          .eager('[votings, questions]')
+          .modifyEager('votings', (builder) => {
+            builder.select('questionId');
+          })
+          .modifyEager('questions', (builder) => {
+            builder.select('questionId');
+          })
+          .select('userId');
         serviceExpect.role = new Role();
         serviceExpect.role.sessionId = session.sessionId;
         serviceExpect.role.userId = user.userId;
@@ -398,7 +467,16 @@ describe('Unit Testing for Session', function () {
 
         serviceExpect = new SessionService();
         serviceExpect.session = session;
-        serviceExpect.user = user;
+        serviceExpect.user = await user
+          .$query()
+          .eager('[votings, questions]')
+          .modifyEager('votings', (builder) => {
+            builder.select('questionId');
+          })
+          .modifyEager('questions', (builder) => {
+            builder.select('questionId');
+          })
+          .select('userId');
         serviceExpect.role = new Role();
         serviceExpect.role.sessionId = session.sessionId;
         serviceExpect.role.userId = user.userId;
@@ -414,6 +492,26 @@ describe('Unit Testing for Session', function () {
       it('validate roleStrategy of service', function () {
         assert.instanceOf(service.roleStrategy, EditorSessionStrategy,
           'roleStrategy must be an instance of EditorSessionStrategy');
+      });
+    });
+
+    describe('Get Session Service(Anonymous User)', function () {
+      let session;
+      let user;
+      let service;
+      let serviceExpect;
+
+      before(async function () {
+        session = new Session();
+        session.sessionId = 1;
+
+        user = await UserService.getUserInstance(undefined);
+        service = await SessionService.getSessionService(session, user);
+      });
+
+      it('validate roleStrategy of service', function () {
+        assert.instanceOf(service.roleStrategy, UserSessionStrategy,
+          'roleStrategy must be an instance of UserSessionStrategy');
       });
     });
 

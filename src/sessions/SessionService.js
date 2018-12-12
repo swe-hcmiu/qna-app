@@ -1,5 +1,6 @@
 const { transaction } = require('objection');
 const _ = require('lodash');
+const { can } = require('../../config/cancan/cancan-config');
 
 const { RoleService } = require('../roles/RoleService');
 const { Role } = require('../roles/Role');
@@ -10,7 +11,17 @@ class SessionService {
   static async getSessionService(session, user) {
     const service = new SessionService();
     service.session = _.cloneDeep(session);
-    service.user = _.cloneDeep(user);
+    const userOfService = _.cloneDeep(user);
+    service.user = await userOfService
+      .$query()
+      .eager('[votings, questions]')
+      .modifyEager('votings', (builder) => {
+        builder.select('questionId');
+      })
+      .modifyEager('questions', (builder) => {
+        builder.select('questionId');
+      })
+      .select('userId');
 
     try {
       const roles = await Role
@@ -23,7 +34,7 @@ class SessionService {
       if (!_.isEmpty(roles)) [service.role] = roles;
       else service.role = RoleService.getUserRole(service.session, service.user);
       service.roleStrategy = RoleService.getStrategyByRole(service.role);
-
+      
       return service;
     } catch (err) {
       throw err;
@@ -31,24 +42,27 @@ class SessionService {
   }
 
   static async createSession(session, user) {
-    try {
-      const inputSession = _.cloneDeep(session);
+    let recvSession = null;
+    if (can(user, 'create', session)) {
+      try {
+        const inputSession = _.cloneDeep(session);
 
-      inputSession.roles = new Role();
-      inputSession.roles.role = 'editor';
-      inputSession.roles.userId = user.userId;
+        inputSession.roles = new Role();
+        inputSession.roles.role = 'editor';
+        inputSession.roles.userId = user.userId;
 
-      let recvSession;
-      await transaction(Session.knex(), async (trx) => {
-        recvSession = await Session
-          .query(trx)
-          .insertGraphAndFetch(inputSession);
-      });
+        await transaction(Session.knex(), async (trx) => {
+          recvSession = await Session
+            .query(trx)
+            .insertGraphAndFetch(inputSession);
+        });
 
-      return recvSession;
-    } catch (err) {
-      throw err;
+        return recvSession;
+      } catch (err) {
+        throw err;
+      }
     }
+    return recvSession;
   }
 
   static async getListOfOpeningSessions() {
@@ -79,16 +93,23 @@ class SessionService {
     }
   }
 
+  static getSessionInstance(sessionId) {
+    const returnSession = new Session();
+    returnSession.sessionId = sessionId;
+
+    return returnSession;
+  }
+
   async getNewestQuestionsOfSession() {
     try {
-      const listOfOpeningSessions = await this.session
+      const listOfNewestQuestions = await this.session
         .$relatedQuery('questions')
         .where({
           questionStatus: 'unanswered',
         })
         .orderBy('updatedAt', 'desc');
 
-      return listOfOpeningSessions;
+      return listOfNewestQuestions;
     } catch (err) {
       throw err;
     }
@@ -163,7 +184,7 @@ class SessionService {
     try {
       const listOfEditors = await this.session
         .$relatedQuery('roleUsers')
-        .where({ role: 'editor'});
+        .where({ role: 'editor' });
       return listOfEditors;
     } catch (err) {
       throw err;
@@ -180,21 +201,27 @@ class SessionService {
   }
 
   async addVoteToQuestion(question) {
-    try {
-      const recvQuestion = await this.roleStrategy.addVoteToQuestion(question, this.user);
-      return recvQuestion;
-    } catch (err) {
-      throw err;
+    if (can(this.user, 'vote', question)) {
+      try {
+        const recvQuestion = await this.roleStrategy.addVoteToQuestion(question, this.user);
+        return recvQuestion;
+      } catch (err) {
+        throw err;
+      }
     }
+    return question;
   }
 
   async cancelVoteInQuestion(question) {
-    try {
-      const recvQuestion = await this.roleStrategy.cancelVoteInQuestion(question, this.user);
-      return recvQuestion;
-    } catch (err) {
-      throw err;
+    if (can(this.user, 'unvote', question)) {
+      try {
+        const recvQuestion = await this.roleStrategy.cancelVoteInQuestion(question, this.user);
+        return recvQuestion;
+      } catch (err) {
+        throw err;
+      }
     }
+    return question;
   }
 
   async updateQuestionStatus(question, status) {

@@ -75,24 +75,13 @@ class EditorSessionStrategy {
       const inputQuestion = _.cloneDeep(question);
 
       const recvQuestion = await transaction(Model.knex(), async (trx) => {
-        let updatedQuestion = null;
-
-        const votings = await user
-          .$relatedQuery('votings')
-          .where({
-            questionId: inputQuestion.questionId,
-          });
-
-        if (votings[0]) {
-          updatedQuestion = await inputQuestion
-            .$query(trx)
-            .updateAndFetch({ voteByEditor: inputQuestion.voteByEditor - 1 });
-          await user
-            .$relatedQuery('votings', trx)
-            .delete()
-            .where({ questionId: inputQuestion.questionId });
-        }
-
+        const updatedQuestion = await inputQuestion
+          .$query(trx)
+          .updateAndFetch({ voteByEditor: inputQuestion.voteByEditor - 1 });
+        await user
+          .$relatedQuery('votings', trx)
+          .delete()
+          .where({ questionId: inputQuestion.questionId });
         return updatedQuestion;
       });
 
@@ -105,8 +94,8 @@ class EditorSessionStrategy {
   async updateQuestionStatus(question, status, user) {
     try {
       const updateQuestion = await question
-      .$query()
-      .updateAndFetch({questionStatus: status});
+        .$query()
+        .updateAndFetch({ questionStatus: status });
       return updateQuestion;
     } catch (err) {
       throw err;
@@ -130,8 +119,13 @@ class EditorSessionStrategy {
     try {
       const removedEditor = _.cloneDeep(editor);
       await removedEditor.$relatedQuery('roles').delete().where(session);
-
-      return removedEditor;
+      const returnEditor = await removedEditor
+        .$query()
+        .eager('roles')
+        .modifyEager('roles', (builder) => {
+          builder.where(session);
+        });
+      return returnEditor;
     } catch (err) {
       throw err;
     }

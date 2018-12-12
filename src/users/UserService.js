@@ -37,6 +37,19 @@ class UserService {
     }
   }
 
+  static async createAnonymousUser() {
+    try {
+      const user = new User();
+      user.displayName = Math.random().toString(36);
+      user.provider = 'anonymous';
+
+      const returnUser = await this.createUser(user);
+      return returnUser;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   static async createQnAUser(user) {
     try {
       const inputUser = _.cloneDeep(user);
@@ -80,6 +93,23 @@ class UserService {
     } catch (err) {
       throw err;
     }
+  }
+
+  static async getUserInstance(user) {
+    let returnUser;
+    if (user) {
+      returnUser = new User();
+      returnUser.userId = user.userId;
+    } else {
+      returnUser = await this.createAnonymousUser();
+    }
+    return returnUser;
+  }
+
+  static getUserInstanceWithId(userId) {
+    const user = new User();
+    user.userId = userId;
+    return user;
   }
 }
 
