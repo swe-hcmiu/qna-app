@@ -59,6 +59,20 @@ class Session extends Model {
       },
     };
   }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['sessionName'],
+
+      properties: {
+        sessionId: { type: 'integer' },
+        sessionName: { type: 'string', minLength: 1, maxLength: 70 },
+        sessionType: { enum: ['default', 'needs_verfication'] },
+        sessionStatus: { enum: ['opening', 'closed'] },
+      },
+    };
+  }
 }
 
 module.exports = { Session };

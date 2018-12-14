@@ -97,6 +97,18 @@ class User extends Model {
       },
     };
   }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+
+      properties: {
+        userId: { type: 'integer' },
+        displayName: { type: 'string', minLength: 6, maxLength: 50 },
+        provider: { enum: ['qna', 'google', 'anonymous'] },
+      },
+    };
+  }
 }
 
 class QnAUser extends Model {
@@ -116,6 +128,19 @@ class QnAUser extends Model {
       },
     };
   }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['userId'],
+
+      properties: {
+        userId: { type: 'integer' },
+        username: { type: 'string', minLength: 2, maxLength: 50 },
+        userpass: { type: 'string', minLength: 2, maxLength: 70 },
+      },
+    };
+  }
 }
 
 class GoogleUser extends Model {
@@ -132,6 +157,18 @@ class GoogleUser extends Model {
           from: 'googleusers.userId',
           to: 'users.userId',
         },
+      },
+    };
+  }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['userId'],
+
+      properties: {
+        userId: { type: 'integer' },
+        email: { type: 'string', minLength: 2, maxLength: 255 },
       },
     };
   }

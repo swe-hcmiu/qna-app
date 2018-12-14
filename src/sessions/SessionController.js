@@ -8,7 +8,7 @@ async function getSessionServiceInstance(req) {
     const session = SessionService.getSessionInstance(sessionId);
     const currentUser = await UserService.getUserInstance(user);
 
-    //log anonymous user in
+    // log anonymous user in
     if (currentUser.provider === 'anonymous') {
       const createSessionPromise = () => (
         new Promise((resolve, reject) => {

@@ -45,6 +45,23 @@ class Question extends Model {
       },
     };
   }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+
+      properties: {
+        questionId: { type: 'integer' },
+        sessionId: { type: 'integer' },
+        userId: { type: 'integer' },
+        title: { type: 'string', minLength: 6, maxLength: 255 },
+        content: { type: 'text', minLength: 6, maxLength: 255 },
+        voteByUser: { type: 'integer' },
+        voteByEditor: { type: 'integer' },
+        questionStatus: { enum: ['pending', 'unanswered', 'answered'] },
+      },
+    };
+  }
 }
 
 module.exports = { Question };
