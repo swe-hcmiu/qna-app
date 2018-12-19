@@ -1,5 +1,5 @@
-const UserService = require('../services/UserService');
-const validateUserHandler = require('../validator/user');
+const UserService = require('./UserService');
+// const validateUserHandler = require('../validator/user');
 
 exports.user_register_get = async (req, res) => {
   res.render('register', { errors: null });
@@ -13,7 +13,7 @@ exports.user_register_post = async (req, res, next) => {
       UserName: req.body.UserName,
       UserPass: req.body.UserPass,
     };
-    await validateUserHandler.validateRegisterInput(validateObj);
+    // await validateUserHandler.validateRegisterInput(validateObj);
 
     const newUser = {
       DisplayName: `${req.body.FirstName} ${req.body.LastName}`,
@@ -58,7 +58,7 @@ exports.user_info_get = async (req, res, next) => {
     const validateObj = {
       user: req.user,
     };
-    await validateUserHandler.validateUserLogin(validateObj);
+    // await validateUserHandler.validateUserLogin(validateObj);
     res.send(req.user);
   } catch (err) {
     next(err);

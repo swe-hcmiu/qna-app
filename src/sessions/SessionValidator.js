@@ -1,7 +1,7 @@
 const Validator = require('validator');
 const isEmpty = require('./isEmpty');
-const SessionService = require('../services/SessionService');
-const UserService = require('../services/UserService');
+const SessionService = require('./SessionService');
+const UserService = require('../users/UserService');
 // const userService = require('../services/UserService');
 
 module.exports = {

@@ -9,9 +9,9 @@ const passport = require('passport');
 const expressValidator = require('express-validator');
 const bodyParser = require('body-parser');
 
-const passportConfig = require('./src/config/passport-config');
-const mysqlConfig = require('./src/config/mysql-config');
-const winstonConfig = require('./src/config/winston-config');
+const passportConfig = require('./config/passport/passport-config');
+const mysqlConfig = require('./config/mysql/mysql-config');
+const winstonConfig = require('./config/winston/winston-config');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');

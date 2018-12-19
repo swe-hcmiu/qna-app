@@ -1,10 +1,12 @@
 const express = require('express');
 
 const router = express.Router();
-const SessionController = require('../src/controller/SessionController');
+const SessionController = require('../src/sessions/SessionController');
 
 router.get('/', SessionController.session_get);
 router.post('/', SessionController.session_post);
+router.get('/opening', SessionController.session_get_opening);
+router.get('/closed', SessionController.session_get_closed);
 
 router.get('/:sessionId', SessionController.sessionId_get);
 router.delete('/:sessionId', SessionController.sessionId_delete);
@@ -15,6 +17,7 @@ router.get('/:sessionId/questions/newest', SessionController.sessionId_question_
 router.get('/:sessionId/questions/top', SessionController.sessionId_question_top);
 router.get('/:sessionId/questions/answered', SessionController.sessionId_question_answered);
 router.get('/:sessionId/questions/pending', SessionController.sessionId_question_pending);
+router.get('/:sessionId/questions/invalid', SessionController.sessionId_question_invalid);
 router.post('/:sessionId/questions/', SessionController.sessionId_question_post);
 
 router.get('/:sessionId/questions/:questionId', SessionController.sessionId_questionId_get);

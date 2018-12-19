@@ -63,7 +63,6 @@ class Session extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['sessionName'],
 
       properties: {
         sessionId: { type: 'integer' },

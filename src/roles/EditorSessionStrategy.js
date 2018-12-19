@@ -91,7 +91,7 @@ class EditorSessionStrategy {
     }
   }
 
-  async updateQuestionStatus(question, status, user) {
+  async updateQuestionStatus(question, status) {
     try {
       const updateQuestion = await question
         .$query()
