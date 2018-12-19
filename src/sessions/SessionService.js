@@ -2,26 +2,68 @@ const { transaction } = require('objection');
 const _ = require('lodash');
 const { can } = require('../../config/cancan/cancan-config');
 
+const { User } = require('../users/User');
 const { RoleService } = require('../roles/RoleService');
 const { Role } = require('../roles/Role');
 const { Session } = require('../sessions/Session');
 const { Voting } = require('../votings/Voting');
+
+async function getVotingList(session, user) {
+  try {
+    const result = await User
+      .query()
+      .joinEager()
+      .eager('votings.questions')
+      .modifyEager('votings', (builder) => {
+        builder.select('questionId');
+      })
+      .modifyEager('votings.questions', (builder) => {
+        builder.select('questionId', 'sessionId');
+      })
+      .where('users.userId', user.userId)
+      .andWhere('votings:questions.sessionId', session.sessionId);
+
+    if (_.isEmpty(result)) return [];
+
+    const votingList = result[0].votings.map((element) => {
+      return {
+        questionId: element.questionId,
+      };
+    });
+    return votingList;
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function getQuestionList(session, user) {
+  try {
+    const result = await user
+      .$relatedQuery('questions')
+      .where({ sessionId: session.sessionId })
+      .select('questionId');
+
+    const questionList = result.map((element) => {
+      return {
+        questionId: element.questionId,
+      };
+    });
+    return questionList;
+  } catch (err) {
+    throw err;
+  }
+}
 
 class SessionService {
   static async getSessionService(session, user) {
     const service = new SessionService();
     service.session = _.cloneDeep(session);
     const userOfService = _.cloneDeep(user);
-    service.user = await userOfService
-      .$query()
-      .eager('[votings, questions]')
-      .modifyEager('votings', (builder) => {
-        builder.select('questionId');
-      })
-      .modifyEager('questions', (builder) => {
-        builder.select('questionId');
-      })
-      .select('userId');
+
+    service.user = userOfService;
+
+    [service.user.votings, service.user.questions] = await Promise
+      .all([getVotingList(service.session, service.user), getQuestionList(service.session, service.user)]);
 
     try {
       const roles = await Role
@@ -31,10 +73,12 @@ class SessionService {
           sessionId: service.session.sessionId,
         })
         .select('userId', 'sessionId', 'role');
+
       if (!_.isEmpty(roles)) [service.role] = roles;
       else service.role = RoleService.getUserRole(service.session, service.user);
+
       service.roleStrategy = RoleService.getStrategyByRole(service.role);
-      
+
       return service;
     } catch (err) {
       throw err;
@@ -255,4 +299,6 @@ class SessionService {
 
 module.exports = {
   SessionService,
+  getVotingList,
+  getQuestionList,
 };

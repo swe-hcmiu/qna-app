@@ -43,6 +43,14 @@ class Question extends Model {
           to: 'users.userId',
         },
       },
+      votings: {
+        relation: Model.HasManyRelation,
+        modelClass: Voting,
+        join: {
+          from: 'questions.questionId',
+          to: 'votings.questionId',
+        },
+      },
     };
   }
 

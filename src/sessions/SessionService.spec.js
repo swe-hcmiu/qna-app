@@ -11,6 +11,8 @@ const { Role } = require('../roles/Role');
 const { UserService } = require('../users/UserService');
 const { RoleService } = require('../roles/RoleService');
 const { knex } = require('../../config/mysql/mysql-config');
+const { getVotingList } = require('./SessionService');
+const { getQuestionList } = require('./SessionService');
 
 describe('Unit Testing for Session', function () {
 
@@ -345,7 +347,7 @@ describe('Unit Testing for Session', function () {
         editor.userId = 2;
 
         try {
-          
+
         } catch (err) {
           //do nothing
         }
@@ -423,16 +425,11 @@ describe('Unit Testing for Session', function () {
 
         serviceExpect = new SessionService();
         serviceExpect.session = session;
-        serviceExpect.user = await user
-          .$query()
-          .eager('[votings, questions]')
-          .modifyEager('votings', (builder) => {
-            builder.select('questionId');
-          })
-          .modifyEager('questions', (builder) => {
-            builder.select('questionId');
-          })
-          .select('userId');
+        serviceExpect.user = user;
+        [serviceExpect.user.votings, serviceExpect.user.questions] = await Promise
+          .all([getVotingList(serviceExpect.session, serviceExpect.user),
+            getQuestionList(serviceExpect.session, serviceExpect.user)]);
+
         serviceExpect.role = new Role();
         serviceExpect.role.sessionId = session.sessionId;
         serviceExpect.role.userId = user.userId;
@@ -467,16 +464,11 @@ describe('Unit Testing for Session', function () {
 
         serviceExpect = new SessionService();
         serviceExpect.session = session;
-        serviceExpect.user = await user
-          .$query()
-          .eager('[votings, questions]')
-          .modifyEager('votings', (builder) => {
-            builder.select('questionId');
-          })
-          .modifyEager('questions', (builder) => {
-            builder.select('questionId');
-          })
-          .select('userId');
+        serviceExpect.user = user;
+        [serviceExpect.user.votings, serviceExpect.user.questions] = await Promise
+          .all([getVotingList(serviceExpect.session, serviceExpect.user),
+            getQuestionList(serviceExpect.session, serviceExpect.user)]);
+
         serviceExpect.role = new Role();
         serviceExpect.role.sessionId = session.sessionId;
         serviceExpect.role.userId = user.userId;

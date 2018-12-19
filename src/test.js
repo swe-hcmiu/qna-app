@@ -5,18 +5,18 @@ const { Voting } = require('./votings/Voting');
 const { User } = require('./users/User');
 const { QnAUser } = require('./users/User');
 const { assert } = require('chai');
+const { getVotingList } = require('./sessions/SessionService');
+const { getQuestionList } = require('./sessions/SessionService');
 
 async function runTest() {
-  // const user = new User();
-  // user.displayName = 'Duy Phan';
-  // user.provider = 'qna';
-
-  // user.qnaUsers = new QnAUser();
-  // user.qnaUsers.username = 'duyphan123';
-  // user.qnaUsers.userpass = '123';
-
-  // await User.query().insertGraph(user);
-  
+  const session = await Session.query().where('sessionId', 1);
+  const user = await User.query().where('userId', 1);
+  console.log(session);
+  console.log(user);
+  const result = await getVotingList(session[0], user[0]);
+  const result2 = await getQuestionList(session[0], user[0]);
+  console.log(result);
+  console.log(result2);
+}
 
 runTest().then(() => { });
-
