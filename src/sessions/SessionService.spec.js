@@ -675,7 +675,7 @@ describe('Unit Testing for Session', function () {
 
         service = await SessionService.getSessionService(session, user);
 
-        listOfInvalidQuestions = await service.getInvalidQuestiosOfSession();
+        listOfInvalidQuestions = await service.getInvalidQuestionsOfSession();
       });
 
       it('check listOfInvalidQuestions does not exists', function () {
@@ -706,7 +706,7 @@ describe('Unit Testing for Session', function () {
           })
           .orderBy('updatedAt', 'desc');
 
-        listOfInvalidQuestions = await service.getInvalidQuestiosOfSession();
+        listOfInvalidQuestions = await service.getInvalidQuestionsOfSession();
       });
 
       it('check listOfInvalidQuestions is an array', function () {
