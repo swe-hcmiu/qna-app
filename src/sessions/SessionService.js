@@ -272,7 +272,7 @@ class SessionService {
     try {
       const listOfInvalidQuestions = await this.roleStrategy.getInvalidQuestionsOfSession(this.session);
 
-      return listOfInvalidQuestions || [];
+      return listOfInvalidQuestions;
     } catch (err) {
       throw err;
     }
@@ -282,7 +282,7 @@ class SessionService {
     try {
       const listOfPendingQuestions = await this.roleStrategy.getPendingQuestionsOfSession(this.session);
 
-      return listOfPendingQuestions || [];
+      return listOfPendingQuestions;
     } catch (err) {
       throw err;
     }
