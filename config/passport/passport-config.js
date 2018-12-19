@@ -1,7 +1,7 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
-const UserService = require('../services/UserService');
+const { UserService } = require('../../src/users/UserService');
 
 passport.use(new GoogleStrategy({
   clientID: '481461792112-5kkhv66re36p7jmvs74hbmnbu1ndgnn2.apps.googleusercontent.com',
@@ -20,8 +20,8 @@ passport.use(new GoogleStrategy({
 passport.use(new LocalStrategy(
   (username, password, done) => {
     const user = {
-      UserName: username,
-      UserPass: password,
+      userName: username,
+      userPass: password,
     };
     UserService.authenticateQnAUser(user)
       .then((result) => {
@@ -34,7 +34,7 @@ passport.use(new LocalStrategy(
 ));
 
 passport.serializeUser((user, done) => {
-  done(null, user.UserId);
+  done(null, user.userId);
 });
 
 passport.deserializeUser((id, done) => {

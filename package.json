@@ -7,9 +7,12 @@
     "test": "NODE_ENV=testing mocha --exit src/**/*.spec.js"
   },
   "dependencies": {
+    "app-root-path": "^2.1.0",
     "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
     "cancan": "^3.1.0",
     "chai": "^4.2.0",
+    "connect-flash": "^0.1.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "dotenv": "^6.1.0",
@@ -17,6 +20,7 @@
     "express": "~4.16.0",
     "express-session": "^1.15.6",
     "express-validator": "^5.3.0",
+    "express-winston": "^3.0.1",
     "http-errors": "~1.6.2",
     "knex": "^0.15.2",
     "knex-migrate": "^1.7.0",
@@ -25,7 +29,10 @@
     "morgan": "~1.9.0",
     "mysql": "^2.16.0",
     "objection": "^1.4.0",
-    "passport": "^0.4.0"
+    "passport": "^0.4.0",
+    "passport-google-oauth20": "^1.0.0",
+    "passport-local": "^1.0.0",
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "eslint": "^5.9.0",

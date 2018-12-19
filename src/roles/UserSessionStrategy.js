@@ -71,7 +71,7 @@ class UserSessionStrategy {
     }
   }
 
-  async updateQuestionStatus(question, status, user) {
+  async updateQuestionStatus(question, status) {
 
   }
 

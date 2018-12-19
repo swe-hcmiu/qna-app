@@ -111,6 +111,14 @@ class UserService {
     user.userId = userId;
     return user;
   }
+
+  static async getUserById(userId) {
+    const user = this.getUserInstanceWithId(userId);
+    let returnUser = null;
+    const returnUsers = await User.query().where(user).select('userId');
+    if (!_.isEmpty(returnUsers)) returnUser = returnUsers[0];
+    return returnUser;
+  }
 }
 
 module.exports = {
