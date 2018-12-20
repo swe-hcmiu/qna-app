@@ -2,7 +2,8 @@ const { transaction } = require('objection');
 const bcrypt = require('bcryptjs');
 const _ = require('lodash');
 
-const { User } = require('./User');
+const { User, QnAUser, GoogleUser } = require('./User');
+const { AppError } = require('../errors/AppError');
 
 function hashing(userpass) {
   return new Promise((resolve, reject) => {
@@ -56,6 +57,7 @@ class UserService {
 
       let recvUser;
       inputUser.qnaUsers.userpass = await hashing(inputUser.qnaUsers.userpass);
+      inputUser.provider = 'qna';
 
       await transaction(User.knex(), async (trx) => {
         recvUser = await User
@@ -64,6 +66,27 @@ class UserService {
       });
 
       return recvUser;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  static async authenticateQnAUser(user) {
+    try {
+      const users = await QnAUser.query().where({ username: user.username });
+      if (_.isEmpty(users)) {
+        throw new AppError(404, 'Username does not exist');
+      }
+
+      const recvQnAUser = users[0];
+      const isMatch = await this.comparePasswordQnAUser(user.userpass, recvQnAUser.userpass);
+      if (isMatch) {
+        const recvUsers = await User.query().eager('qnaUsers').where({ userId: recvQnAUser.userId });
+        const recvUser = recvUsers[0];
+
+        return recvUser;
+      }
+      throw new AppError(401, 'Incorrect password');
     } catch (err) {
       throw err;
     }
@@ -81,6 +104,33 @@ class UserService {
       });
 
       return recvUser;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  static async authenticateGoogleUser(profile) {
+    try {
+      const googleUsers = await GoogleUser.query().where({
+        email: profile.emails[0].value,
+      });
+
+      if (!_.isEmpty(googleUsers)) {
+        const recvUsers = await User.query().eager('googleUsers').where({ userId: googleUsers[0].userId });
+        const recvUser = recvUsers[0];
+
+        return recvUser;
+      }
+
+      const inputUser = new User();
+      inputUser.displayName = profile.displayName;
+      inputUser.provider = 'google';
+      inputUser.googleUsers = new GoogleUser();
+      inputUser.googleUsers.email = profile.emails[0].value;
+
+      const recvGoogleUser = await this.createGoogleUser(inputUser);
+
+      return recvGoogleUser;
     } catch (err) {
       throw err;
     }
@@ -114,9 +164,11 @@ class UserService {
 
   static async getUserById(userId) {
     const user = this.getUserInstanceWithId(userId);
+    const returnUsers = await User.query().where(user).select('userId', 'displayName', 'provider');
+
     let returnUser = null;
-    const returnUsers = await User.query().where(user).select('userId');
-    if (!_.isEmpty(returnUsers)) returnUser = returnUsers[0];
+    if (!_.isEmpty(returnUsers)) [returnUser] = returnUsers;
+
     return returnUser;
   }
 }

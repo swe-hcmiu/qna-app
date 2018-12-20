@@ -3,8 +3,6 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
-const flash = require('connect-flash');
-const session = require('express-session');
 const passport = require('passport');
 const expressValidator = require('express-validator');
 const bodyParser = require('body-parser');
@@ -14,7 +12,6 @@ const mysqlConfig = require('./config/mysql/mysql-config');
 const winstonConfig = require('./config/winston/winston-config');
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 const userAPIRouter = require('./routes/userAPI');
 const authRouter = require('./routes/auth');
 const sessionRouter = require('./routes/sessions');
@@ -37,28 +34,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-// Express Session
-app.use(session({
-  secret: 'secret',
-  saveUninitialized: true,
-  resave: true,
-}));
-
-// Passport init
+// passport middleware
 app.use(passport.initialize());
-app.use(passport.session());
 
-// Connect Flash
-app.use(flash());
-
-app.use((req, res, next) => {
-  res.locals.success_msg = req.flash('success_msg');
-  res.locals.error_msg = req.flash('error_msg');
-  res.locals.error = req.flash('error');
-  res.locals.success = req.flash('success');
-  res.locals.user = req.user || null;
-  next();
-});
+// passport config
+passportConfig(passport);
 
 // express validator
 app.use(expressValidator({
@@ -81,7 +61,6 @@ app.use(expressValidator({
 app.use(winstonConfig.consoleLogger, winstonConfig.infoFileLogger);
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/api/users', userAPIRouter);
 app.use('/auth', authRouter);
 app.use('/sessions', sessionRouter);
