@@ -67,6 +67,14 @@ class UserService {
 
       return recvUser;
     } catch (err) {
+      switch (err.code) {
+        case 'ER_DUP_ENTRY': {
+          throw new AppError('Username already exists', 409, err);
+        }
+        default: {
+          break;
+        }
+      }
       throw err;
     }
   }
@@ -75,7 +83,7 @@ class UserService {
     try {
       const users = await QnAUser.query().where({ username: user.username });
       if (_.isEmpty(users)) {
-        throw new AppError(404, 'Username does not exist');
+        throw new AppError('Username does not exist', 404);
       }
 
       const recvQnAUser = users[0];
@@ -86,7 +94,7 @@ class UserService {
 
         return recvUser;
       }
-      throw new AppError(401, 'Incorrect password');
+      throw new AppError('Incorrect password', 401);
     } catch (err) {
       throw err;
     }

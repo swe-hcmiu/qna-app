@@ -30,16 +30,6 @@ exports.user_register_post = async (req, res, next) => {
 
     res.send(userReturn);
   } catch (err) {
-    switch (err.code) {
-      case 'ER_DUP_ENTRY': {
-        err.httpCode = 409;
-        err.description = 'Username already exists';
-        break;
-      }
-      default: {
-        break;
-      }
-    }
     next(err);
   }
 };

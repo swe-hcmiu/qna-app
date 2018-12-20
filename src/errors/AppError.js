@@ -1,9 +1,11 @@
 class AppError extends Error {
-  constructor(httpCode, description, innerError) {
-    super(innerError);
+  constructor(message, httpCode, innerError) {
+    super(message);
+    this.name = this.constructor.name;
     this.httpCode = httpCode;
-    this.description = description;
-    if (!innerError) super.message = this.description;
+    this.innerError = innerError;
+    Error.stackTraceLimit = 1;
+    Error.captureStackTrace(this, this.constructor);
   }
 }
 
