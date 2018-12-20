@@ -14,8 +14,6 @@ allow(User, 'create', Session, (user) => {
 });
 
 allow(User, 'vote', Question, (user, question) => {
-  console.log(user.votings);
-  console.log(question.questionId);
   if (_.find(user.votings, { questionId: question.questionId })) return false;
   return true;
 });
