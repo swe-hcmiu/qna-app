@@ -6,7 +6,6 @@ import DialogContent from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import withStyles from '@material-ui/core/styles/withStyles';
-import FormControl from '@material-ui/core/FormControl';
 import { registerUser } from '../../redux/actions/authAction';
 import {connect} from 'react-redux';
 import PropsTypes from 'prop-types';
@@ -67,7 +66,6 @@ class RegisterDialog extends Component {
     }
 
     onChange(e) {
-      // console.log( `target name ${e.target.name} value  ${e.target.value}`);
       this.setState({ [e.target.name]: e.target.value });
     }
   
@@ -115,7 +113,7 @@ class RegisterDialog extends Component {
             <DialogTitle id="Sign Up" className={classes.dialogTitle}>Register</DialogTitle>
             
             <DialogContent className={classes.dialogContent}>
-              <FormControl>
+              <form>
                 <TextField
                   id="outlined-fname"
                   label="First Name"
@@ -163,7 +161,7 @@ class RegisterDialog extends Component {
                   error ={errors.password}
                   onChange ={this.onChange}
                 />
-              </FormControl>
+              </form>
               
            </DialogContent>
            <DialogActions>

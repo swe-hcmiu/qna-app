@@ -1,19 +1,32 @@
-import { GET_ERRORS, CREATE_ACCOUNT_SUCCESS, SET_CURRENT_USER } from "./type";
+import { GET_ERRORS, REQUEST_POST, RECEIVE_POST, SET_CURRENT_USER } from "./type";
 import axios from 'axios';
 import setAuthToken from '../utils/setAuthToken';
 import jwt_decode from 'jwt-decode';
+import config from '../../config';
+
+
+// Action
+const requestPost = (userInput) => ({
+  type: REQUEST_POST,
+  userInput,
+});
+
+const receivePost = (userInput) => ({
+  type: RECEIVE_POST,
+  userInput,
+});
+
+
+
 // Register
-export const registerUser = (userData) => (dispach) => {
+export const registerUser = (userInput) => (dispatch) => {
+
+  dispatch(requestPost(userInput));
+  
   axios
-    .post('http://localhost:5000/users/register', userData)
-    .then(res => {
-      dispach({
-        type: CREATE_ACCOUNT_SUCCESS,
-        payload: {
-          isRegisterSuccess: true,
-        },
-      });
-    })
+    .post(config.url + 'users/register', userInput)
+    .then(res => res.json)
+    .then(json => dispatch( receivePost(userInput, json)))
     .catch(err => {
       console.log(err);
       let tempErr = Object.values(err.response.data.errors.description);
@@ -25,19 +38,22 @@ export const registerUser = (userData) => (dispach) => {
         }
         return res;
       }, {});
-      // console.log('first Name', resObject.FirstName);
-      dispach({
+      
+      // dispatch action
+      dispatch({
         type: GET_ERRORS, 
         payload: resObject,
       });
-      // this.setState({ errors: resObject })
-    });
+    }); 
 }
 
 
 // Login
-export const loginUser = (userData) => (dispach) => {
-  axios.post('http://localhost:5000/users/login', userData) 
+export const loginUser = (userInput) => (dispatch) => {
+
+  dispatch(requestPost(userInput));
+
+  axios.post(`${config.url}users/login`, userInput) 
   .then(res => {
     // save to local storage
     const { token } = res.data;
@@ -47,12 +63,12 @@ export const loginUser = (userData) => (dispach) => {
     console.log('decode', decoded);
     
     // set current user
-    dispach(setCurrentUser(decoded));
+    dispatch(setCurrentUser(decoded));
   })
   .catch(err => {
     console.log(err);
     let tempErr = Object.values(err.response.data.errors);    
-    dispach({
+    dispatch({
       type: GET_ERRORS,
       payload: tempErr,
     })
@@ -68,10 +84,10 @@ export const setCurrentUser = (decoded) => {
 }
 
 // user log out
-export const logOutUser = () => (dispach) => {
+export const logOutUser = () => (dispatch) => {
   localStorage.removeItem('jwtToken');
   // remove auth header for future req
   setAuthToken(false);
   // set current to empty object => is authenticate = false
-  dispach(setCurrentUser({}));
+  dispatch(setCurrentUser({}));
 }

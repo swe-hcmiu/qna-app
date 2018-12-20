@@ -43,7 +43,7 @@ class LoginDialog extends Component {
 
     componentWillReceiveProps(nextProps) {
       if(nextProps.isAuthenticated) {
-        console.log('enter!!!');
+       // console.log('enter!!!');
         this.props.history.push('/session');
       }
 
@@ -126,7 +126,7 @@ class LoginDialog extends Component {
 
 LoginDialog.propTypes = {
   classes: PropTypes.object.isRequired,
-  logginUser: PropTypes.func.isRequired,
+  loginUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
 };

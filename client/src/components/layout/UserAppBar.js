@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import defaultAvatar from '../../asset/avatar/default.jpg';
 import LogOutIcon from '@material-ui/icons/PowerSettingsNewSharp';
+import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import { connect } from 'react-redux';
 import { logOutUser } from '../../redux/actions/authAction';
@@ -40,14 +41,20 @@ class UserAppBar extends Component {
   }
 
   render () {
-    const { DisplayName } = this.props.auth;
+    const { DisplayName } = this.props.auth.user;
+    console.log('displayname:', this.props);
+    
     const { classes } = this.props;
     return (
         <div className={classes.row}>
-          <Avatar alt={DisplayName} src={defaultAvatar} className={classes.avatar} />
-          <IconButton onClick={this.handleLogOut}>
-            <LogOutIcon />
-          </IconButton>
+          <Tooltip title={DisplayName}>
+            <Avatar alt={DisplayName} src={defaultAvatar} className={classes.avatar} />
+          </Tooltip>
+          <Tooltip title="Log Out">
+            <IconButton onClick={this.handleLogOut}>
+              <LogOutIcon />
+            </IconButton>
+          </Tooltip>
         </div>
       );
   }

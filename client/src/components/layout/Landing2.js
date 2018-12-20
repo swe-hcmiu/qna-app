@@ -1,18 +1,12 @@
 import React, { Component } from 'react';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import SearchIcon from '@material-ui/icons/Search';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import InputBase from '@material-ui/core/InputBase';
 import { withStyles } from '@material-ui/core/styles';
 import Background from '../../asset/img/blackboard-background.jpg';
 
 const styles = theme => ({
-  root: {
-    flexGrow: 1,
-  },
+ 
   landing: {
     backgroundPosition: 'center',
     backgroundImage: `url(${Background})`,
@@ -69,9 +63,7 @@ const styles = theme => ({
 });
 
 class Landing extends Component {
-  constructor(props) {
-    super(props);
-  }
+  
 
   componentDidMount () {
     if(this.props.isAuthenticated){
@@ -83,32 +75,10 @@ class Landing extends Component {
     
     const { classes } = this.props;
 
-    return (
-      <div className={classes.root}>
+    return (  
       <div className={classes.landing}>      
-        <div className={classes.layout}>
-          <Typography className={classes.Title} variant="h2" align='center' color="textPrimary" >
-              Question And Answers
-            </Typography>
-            
-            <Grid item xs={10} >
-              <div className={classes.search}>
-                <div className={classes.searchIcon}>
-                  <SearchIcon />
-                </div>
-                <InputBase
-                  placeholder="Find Your Session..."
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput,
-                  }}
-                />
-              </div>       
-            </Grid>  
-        </div>
+     
       </div>
-      </div>
-      
     );
   }
 }

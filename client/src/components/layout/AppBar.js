@@ -10,11 +10,9 @@ import { withRouter } from 'react-router-dom';
 import MenuIcon from '@material-ui/icons/Menu';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import LoginIcon from '@material-ui/icons/AccountCircle';
-import LoginDialog from '../authenticate/LoginDialog';
-import RegisterDialog from '../authenticate/RegisterDialog';
-import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import UserAppBar from './UserAppBar';
+import Button from '@material-ui/core/Button';
 
 
 const styles = theme => ({
@@ -64,7 +62,7 @@ class AppBarComponent extends React.Component {
 
   componentDidMount() {
     if(this.props.auth.isAuthenticated === false) {
-      this.props.history.push('/');
+      //this.props.history.push('/');
     }
   }
 
@@ -111,15 +109,13 @@ class AppBarComponent extends React.Component {
     const { classes } = this.props;
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
     const { isAuthenticated, user } = this.props.auth;
-    console.log(isAuthenticated);
+
     
     const renderGuest = (
       <div>
         <div className={classes.sectionDesktop}>
-
-          <LoginDialog />
-          <RegisterDialog style={{variant: 'contained'}} />
-          
+          <Button>Login</Button>
+          <Button variant='contained' color='primary'>Sign In</Button>
         </div>
         <div className={classes.sectionMobile}>
           <IconButton aria-haspopup="true" onClick={this.handleMobileMenuOpen} color="inherit">
@@ -149,13 +145,13 @@ class AppBarComponent extends React.Component {
             <IconButton color="primary">
               <LoginIcon />
             </IconButton>
-            <LoginDialog />
+            <Button>Login</Button>
           </MenuItem>
           <MenuItem>
             <IconButton color="primary">
               <LoginIcon onClick={this.handleMenuClose}/>
             </IconButton>
-            <RegisterDialog style={{variant: 'text'}} />
+             <Button variant='contained' color='primary'>Sign In</Button>
           </MenuItem>
 
         </Menu>
@@ -185,8 +181,7 @@ class AppBarComponent extends React.Component {
 }
 
 AppBar.propTypes = {
-  logoutUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired,
+
 };
 
 const mapStatetoProps = (state) => ({
