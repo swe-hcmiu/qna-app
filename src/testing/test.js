@@ -147,21 +147,21 @@ describe('/:sessionId/questions/', () => {
       });
   });
 
-  it('GET api/sessions/:sessionId/top, statusCode 200, return list top 10 question', (done) => {
-    authenticateUser
-      .get(`/api/sessions/${dumpObject.sessionId}/questions/top`)
-      .end((err, res) => {
-        if (err) { done(err); }
-        // console.log(res.body);
-        expect(res.status).to.equal(200);
-        expect(res.body).to.be.an('array');
-        expect(res.body.length).to.equal(10);
-        res.body.forEach((element) => {
-          expect(element).to.include.any.keys('QuestionId', 'SessionId, UserId, Title, Content, VoteByUser, VoteByEditor, Status, CreatetionTime, UpdateTime');
-        });
-        done();
-      });
-  });
+  // it('GET api/sessions/:sessionId/top, statusCode 200, return list top 10 question', (done) => {
+  //   authenticateUser
+  //     .get(`/api/sessions/${dumpObject.sessionId}/questions/top`)
+  //     .end((err, res) => {
+  //       if (err) { done(err); }
+  //       // console.log(res.body);
+  //       expect(res.status).to.equal(200);
+  //       expect(res.body).to.be.an('array');
+  //       expect(res.body.length).to.equal(10);
+  //       res.body.forEach((element) => {
+  //         expect(element).to.include.any.keys('QuestionId', 'SessionId, UserId, Title, Content, VoteByUser, VoteByEditor, Status, CreatetionTime, UpdateTime');
+  //       });
+  //       done();
+  //     });
+  // });
 
   it('GET api/sessions/:sessionId/answered, statusCode 200, return list answered', (done) => {
     authenticateUser
