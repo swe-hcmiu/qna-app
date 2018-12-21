@@ -6,8 +6,8 @@ const createRandomString = (length) => {
 
 module.exports = {
   user: {
-    username: 'testUserName',
-    password: 'testPassword',
+    username: 'thanhtung',
+    password: '123',
   },
   newSession: {
     // sessionName: fuzzer.mutate.string('userNameT2est'),
