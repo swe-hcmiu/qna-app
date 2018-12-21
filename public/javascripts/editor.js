@@ -8,20 +8,17 @@ submitBtn.addEventListener("click", function (e) {
 })
 
 function addEditor() {
-  // const data = { UserId: Number(document.getElementById("editorInput").value) };
-  // const url = "/api/sessions/" + sessionId + "/editors/permissions";
-  // fetch(url, {
-  //   method: 'PUT',
-  //   body: JSON.stringify(data),
-  //   headers: {
-  //     'Content-Type': 'application/json'
-  //   }
-  // }).then(response => getEditor())
-  //   .catch(error => console.error('Error:', error));
   const userId = document.getElementById("editorInput").value;
   const url = "/api/sessions/" + sessionId + "/editors/permissions";
   axios.post(url, { userId })
     .then((res) => getEditor());
+}
+
+function removeEditor(e) {
+  const url = "/api/sessions/" + sessionId + "/editors/permissions";
+  axios.delete(url, { userID: Number(e.id)})
+    .then(res => getEditor())
+    .catch(err => console.log(err));
 }
 
 function getEditor() {
@@ -32,7 +29,7 @@ function getEditor() {
       console.log(res);
       let htmlString = '';
       editorList = res.data.forEach(e => {
-        htmlString += '<li>EditorId: ' + e.UserId + '</li>'
+        htmlString += '<li id='+e.UserId+' onClick="removeEditor(this)">EditorId: ' + e.UserId + '</li>'
       });
       document.getElementById("editorList").innerHTML = htmlString;
     });
