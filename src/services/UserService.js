@@ -39,6 +39,7 @@ module.exports = {
   async authenticateQnAUser(user) {
     try {
       const userReturn = await User.getQnAUserByUserName(user.UserName);
+      console.log(userReturn);
       if (!userReturn) return { user: false, message: 'Unknown User' };
 
       const isMatch = await User.comparePasswordQnAUser(user.UserPass, userReturn.UserPass);

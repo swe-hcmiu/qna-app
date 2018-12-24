@@ -105,6 +105,8 @@ module.exports = {
 
       const description = [];
 
+      console.log(data);
+
       if (!Validator.isLength(data.title, { min: 6, max: 100 })) {
         description.push({ title: 'title must between 6 and 100 characters' });
       }
