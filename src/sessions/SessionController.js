@@ -1,29 +1,27 @@
+const jwt = require('jsonwebtoken');
+const keys = require('../../config/passport/keys');
 const { SessionService } = require('./SessionService');
 const { UserService } = require('../users/UserService');
 const { Question } = require('../questions/Question');
 
 async function getSessionServiceInstance(req) {
   try {
+    var token = req.headers['x-access-token'] || req.headers.authorization;
     const { sessionId } = req.params;
-    const user = req.user;
     const session = SessionService.getSessionInstance(sessionId);
-    const currentUser = await UserService.getUserInstance(user);
-
-    // log anonymous user in
-    if (currentUser.provider === 'anonymous') {
-      const createSessionPromise = () => (
-        new Promise((resolve, reject) => {
-          req.login(currentUser, (err) => {
-            if (err) reject(err);
-            resolve();
-          });
-        })
-      );
-
-      await createSessionPromise();
+    if (token && token.startsWith('Bearer ')) {
+      // Remove Bearer from string
+      token = token.slice(7, token.length).trimLeft();
+    } else {
+      const currentUser = await UserService.createAnonymousUser();
+      const payload = { userId: currentUser.userId };
+      token = jwt.sign(payload, keys.tokenSecret, {
+        expiresIn: '7d',
+      });
     }
-
-    const service = await SessionService.getSessionService(session, currentUser);
+    const decoded = jwt.verify(token, keys.tokenSecret);
+    const user = await UserService.getUserById(decoded.userId);
+    const service = await SessionService.getSessionService(session, user);
     return service;
   } catch (err) {
     throw err;

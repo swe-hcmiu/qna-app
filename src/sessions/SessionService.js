@@ -1,6 +1,7 @@
 const { transaction } = require('objection');
 const _ = require('lodash');
 const { can } = require('../../config/cancan/cancan-config');
+const { AppError } = require('../errors/AppError');
 
 const { User } = require('../users/User');
 const { RoleService } = require('../roles/RoleService');
@@ -106,7 +107,7 @@ class SessionService {
         throw err;
       }
     } else {
-      throw new Error('user cannot create session');
+      throw new AppError('User cannot create session', 401);
     }
   }
 
@@ -184,16 +185,16 @@ class SessionService {
       throw err;
     }
   }
-  //TODO add cancan here
+  
   async deleteSession() {
-    if (this.role.role === 'editor') {
+    if (can(this.role, 'delete', this.session)) {
       try {
         await Session.query().delete().where(this.session);
       } catch (err) {
         throw err;
       }
     } else {
-      throw new Error('Authorization required');
+      throw new AppError('Authorization required', 401);
     }
   }
 
@@ -207,9 +208,9 @@ class SessionService {
       throw err;
     }
   }
-  // TODO add cancan here
+
   async updateSessionStatus(status) {
-    if (this.role.role === 'editor') {
+    if (can(this.role, 'update', this.session)) {
       try {
         const recvSession = await this.session.$query().updateAndFetch({ sessionStatus: status });
         return recvSession;
@@ -217,7 +218,7 @@ class SessionService {
         throw err;
       }
     } else {
-      throw new Error('Authorization required');
+      throw new AppError('Authorization required', 401);
     }
   }
 
@@ -334,7 +335,7 @@ class SessionService {
         throw err;
       }
     } else {
-      throw new Error('user already voted for question');
+      throw new AppError('User has already voted for question', 409);
     }
     // return question;
   }
@@ -350,20 +351,23 @@ class SessionService {
         throw err;
       }
     } else {
-      throw new Error('user has not voted for question');
+      throw new AppError('User has not voted for question', 409);
     }
     // return question;
   }
 
-  // TODO add cancan
   async updateQuestionStatus(question, status) {
     const questions = await Question.query().where(question);
     const inputQuestion = questions[0];
-    try {
-      const recvQuestion = await this.roleStrategy.updateQuestionStatus(inputQuestion, status);
-      return recvQuestion;
-    } catch (err) {
-      throw err;
+    if (can(this.role, 'update', inputQuestion)) {
+      try {
+        const recvQuestion = await this.roleStrategy.updateQuestionStatus(inputQuestion, status);
+        return recvQuestion;
+      } catch (err) {
+        throw err;
+      }
+    } else {
+      throw new AppError('Authorization required', 401);
     }
   }
 
@@ -372,7 +376,7 @@ class SessionService {
     try {
       const recvRecord = await this.roleStrategy
         .addEditorToSession(editor, this.session);
-      return recvRecord || {};
+      return recvRecord;
     } catch (err) {
       throw err;
     }

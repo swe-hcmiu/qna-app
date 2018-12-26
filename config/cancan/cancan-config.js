@@ -6,7 +6,7 @@ const { allow, can } = cancan;
 const { User } = require('../../src/users/User');
 const { Session } = require('../../src/sessions/Session');
 const { Question } = require('../../src/questions/Question');
-const { Voting } = require('../../src/votings/Voting');
+const { Role } = require('../../src/roles/Role');
 
 allow(User, 'create', Session, (user) => {
   if (user) return true;
@@ -21,6 +21,18 @@ allow(User, 'vote', Question, (user, question) => {
 allow(User, 'unvote', Question, (user, question) => {
   if (_.find(user.votings, { questionId: question.questionId })) return true;
   return false;
+});
+
+allow(Role, 'delete', Session, (role, session) => {
+  return (role.sessionId === session.sessionId) && (role.role === 'editor');
+});
+
+allow(Role, 'update', Session, (role, session) => {
+  return (role.sessionId === session.sessionId) && (role.role === 'editor');
+});
+
+allow(Role, 'update', Question, (role, question) => {
+  return (role.sessionId === question.sessionId) && (role.role === 'editor');
 });
 
 module.exports = { can };
