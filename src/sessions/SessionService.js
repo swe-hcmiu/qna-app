@@ -371,24 +371,50 @@ class SessionService {
     }
   }
 
-  // TODO add cancan
   async addEditorToSession(editor) {
-    try {
-      const recvRecord = await this.roleStrategy
-        .addEditorToSession(editor, this.session);
-      return recvRecord;
-    } catch (err) {
-      throw err;
+    const editors = await User
+      .query()
+      .where(editor)
+      .eager('roles')
+      .modifyEager('roles', (builder) => {
+        builder.where({ sessionId: this.session.sessionId });
+      });
+    const inputEditor = editors[0];
+
+    if (can(this.role, 'add', inputEditor)) {
+      try {
+        const recvRecord = await this.roleStrategy
+          .addEditorToSession(inputEditor, this.session);
+        return recvRecord;
+      } catch (err) {
+        throw err;
+      }
+    } else if (this.role.role === 'user') {
+      throw new AppError('Authorization required', 401);
+    } else {
+      throw new AppError('Editor already belongs to this session', 403);
     }
   }
 
-  // TODO add cancan
   async removeEditorFromSession(editor) {
-    try {
-      const recvRecord = await this.roleStrategy.removeEditorFromSession(editor, this.session);
-      return recvRecord;
-    } catch (err) {
-      throw err;
+    const roles = await editor
+      .$relatedQuery('roles')
+      .where({
+        sessionId: this.session.sessionId,
+      });
+    const role = roles[0];
+
+    if (can(this.role, 'remove', role)) {
+      try {
+        const recvRecord = await this.roleStrategy.removeEditorFromSession(editor, this.session);
+        return recvRecord;
+      } catch (err) {
+        throw err;
+      }
+    } else if (this.role.role === 'user') {
+      throw new AppError('Authorization required', 401);
+    } else {
+      throw new AppError('Editor does not belong to this session', 403);
     }
   }
 }

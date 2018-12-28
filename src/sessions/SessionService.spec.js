@@ -92,31 +92,32 @@ describe('Unit Testing for Session', function () {
       });
     });
 
-    // describe('Create Session (Unloggedin User)', function () {
-    //   before(async function () {
-    //     try {
-    //       user = undefined;
+    describe('Create Session (Unloggedin User)', function () {
+      let error;
+      before(async function () {
+        try {
+          user = undefined;
 
-    //       session = new Session();
-    //       session.sessionName = 'Case of Unloggedin User';
-    //       session.sessionType = 'default';
-    //       session.sessionStatus = 'opening';
+          session = new Session();
+          session.sessionName = 'Case of Unloggedin User';
+          session.sessionType = 'default';
+          session.sessionStatus = 'opening';
 
-    //       recvSession = await SessionService.createSession(session, user);
-    //     } catch (err) {
-    //       throw err;
-    //     }
-    //   });
+          recvSession = await SessionService.createSession(session, user);
+        } catch (err) {
+          error = err;
+        }
+      });
 
-    //   it('return null', function () {
-    //     assert.isNull(recvSession, 'should have returned null session');
-    //   })
+      it('should return 401 error', async function () {
+        assert.equal(error.httpCode, 401, 'httpCode of error must be 401')
+      })
 
-    //   it('check for no record in db', async function () {
-    //     const sessions = await Session.query().where(session);
-    //     assert.isEmpty(sessions, 'record should not be created in db');
-    //   })
-    // })
+      it('check for no record in db', async function () {
+        const sessions = await Session.query().where(session);
+        assert.isEmpty(sessions, 'record should not be created in db');
+      })
+    })
 
     describe('Add Question To Session(User Role)', function () {
       let user;
@@ -294,38 +295,55 @@ describe('Unit Testing for Session', function () {
       });
     });
 
-    // describe('Add Vote To Question(Question already voted)', function () {
-    //   let user;
-    //   let session;
-    //   let service;
-    //   let question;
-    //   let recvQuestion;
+    describe('Add Vote To Question(Question already voted)', function () {
+      let user;
+      let session;
+      let service;
+      let question;
+      let recvQuestion;
+      let error;
 
-    //   before(async function () {
-    //     session = new Session();
-    //     session.sessionId = 1;
+      before(async function () {
+        session = new Session();
+        session.sessionId = 1;
 
-    //     user = new User();
-    //     user.userId = 1;
+        user = new User();
+        user.userId = 1;
 
-    //     service = await SessionService.getSessionService(session, user);
+        service = await SessionService.getSessionService(session, user);
 
-    //     const questions = await Question
-    //       .query()
-    //       .where({
-    //         questionId: 1
-    //       });
+        const questions = await Question
+          .query()
+          .where({
+            questionId: 1
+          });
 
-    //     question = questions[0];
+        question = questions[0];
+        
+        try {
+          recvQuestion = await service.addVoteToQuestion(question);
+        } catch (err) {
+          error = err;
+        }
 
-    //     recvQuestion = await service.addVoteToQuestion(question);
-    //   });
+      });
 
-    //   it('check question vote not increased', function () {
-    //     assert.equal(recvQuestion.voteByEditor + recvQuestion.voteByUser, question.voteByEditor + question.voteByUser,
-    //       'question vote must not change');
-    //   });
-    // });
+      it('should return 409 error', function() {
+        assert.equal(error.httpCode, 409, 'httpCode of error must be 409')
+      })
+
+      it('check question vote not increased', async function () {
+        const questionsAfterVoting = await Question
+          .query()
+          .where({
+            questionId: 1
+        });
+
+        const questionAfterVoting = questionsAfterVoting[0];
+        assert.equal(questionAfterVoting.voteByEditor + questionAfterVoting.voteByUser, question.voteByEditor + question.voteByUser,
+          'question vote must not change');
+      });
+    });
 
     describe('Add Editor To Session(User Role)', function () {
       let user;
@@ -333,6 +351,7 @@ describe('Unit Testing for Session', function () {
       let service;
       let editor;
       let recvEditor;
+      let error;
 
       before(async function () {
         session = new Session();
@@ -347,15 +366,19 @@ describe('Unit Testing for Session', function () {
         editor.userId = 2;
 
         try {
-
+          recvEditor = await service.addEditorToSession(editor);
         } catch (err) {
-          //do nothing
+          error = err;
         }
       });
 
       it('check recvEditor does not exist', function () {
-        assert.notExists(recvEditor, 'recvQuestion must not exist');
+        assert.notExists(recvEditor, 'recvEditor must not exist');
       });
+
+      it('should return 401 error', function () {
+        assert.equal(error.httpCode, 401, 'httpCode of error must be 401');
+      })
 
       it('check role record has not been created in database', async function () {
         const roles = await editor
@@ -401,6 +424,42 @@ describe('Unit Testing for Session', function () {
           });
         const roleDb = roles[0];
         assert.equal(roleDb.role, 'editor', 'role record must be created in database');
+      });
+    });
+
+    describe('Add Editor To Session(Existing Editor)', function () {
+      let user;
+      let session;
+      let service;
+      let editor;
+      let recvEditor;
+      let error;
+
+      before(async function () {
+        session = new Session();
+        session.sessionId = 2;
+
+        user = new User();
+        user.userId = 3;
+
+        service = await SessionService.getSessionService(session, user);
+
+        editor = new User();
+        editor.userId = 3;
+
+        try {
+          recvEditor = await service.addEditorToSession(editor);
+        } catch (err) {
+          error = err;
+        }
+      });
+
+      it('check recvEditor does not exist', function () {
+        assert.notExists(recvEditor, 'recvEditor must not exist');
+      });
+
+      it('should return 403 error', function () {
+        assert.equal(error.httpCode, 403, 'httpCode of error must be 401');
       });
     });
   });
@@ -935,48 +994,57 @@ describe('Unit Testing for Session', function () {
       });
     });
 
-    // describe('Cancel Vote To Question(Voting does not exist)', function () {
-    //   let user;
-    //   let session;
-    //   let service;
-    //   let question;
-    //   let recvQuestion;
+    describe('Cancel Vote To Question(Voting does not exist)', function () {
+      let user;
+      let session;
+      let service;
+      let question;
+      let recvQuestion;
+      let error;
 
-    //   before(async function () {
-    //     session = new Session();
-    //     session.sessionId = 2;
+      before(async function () {
+        session = new Session();
+        session.sessionId = 2;
 
-    //     user = new User();
-    //     user.userId = 1;
+        user = new User();
+        user.userId = 1;
 
-    //     service = await SessionService.getSessionService(session, user);
+        service = await SessionService.getSessionService(session, user);
 
-    //     const questions = await Question
-    //       .query()
-    //       .where({
-    //         questionId: 7
-    //       });
+        const questions = await Question
+          .query()
+          .where({
+            questionId: 7
+          });
 
-    //     question = questions[0];
+        question = questions[0];
 
-    //     recvQuestion = await service.cancelVoteInQuestion(question);
+        try {
+          recvQuestion = await service.cancelVoteInQuestion(question);
+        } catch (err) {
+          error = err;
+        }
 
-    //     const questionsAfterCancelVote = await Question
-    //       .query()
-    //       .where({
-    //         questionId: 7
-    //       });
+      });
 
-    //     questionAfterCancelVote = questionsAfterCancelVote[0];
+      it('should return 409 error', function() {
+        assert.equal(error.httpCode, 409, 'httpCode of error must be 409')
+      })
 
-    //   });
+      it('check question vote does not change', async function () {
+        const questionsAfterCancelVote = await Question
+          .query()
+          .where({
+            questionId: 7
+          });
 
-    //   it('check question vote does not change', function () {
-    //     assert.equal(questionAfterCancelVote.voteByEditor + questionAfterCancelVote.voteByUser,
-    //       question.voteByEditor + question.voteByUser,
-    //       'question vote by editor must not change');
-    //   });
-    // });
+        const questionAfterCancelVote = questionsAfterCancelVote[0];
+
+        assert.equal(questionAfterCancelVote.voteByEditor + questionAfterCancelVote.voteByUser,
+          question.voteByEditor + question.voteByUser,
+          'question vote by editor must not change');
+      });
+    });
 
     describe('Update Question Status(User Role)', function () {
       let user;
@@ -1076,6 +1144,7 @@ describe('Unit Testing for Session', function () {
       let service;
       let editor;
       let recvEditor;
+      let error;
 
       before(async function () {
         session = new Session();
@@ -1092,9 +1161,13 @@ describe('Unit Testing for Session', function () {
         try {
           recvEditor = await service.removeEditorFromSession(editor);
         } catch (err) {
-          //do nothing
+          error = err;
         }
       });
+
+      it('should return 401 error', function () {
+        assert.equal(error.httpCode, 401, 'httpCode of error should be 401');
+      })
 
       it('check recvEditor does not exist', function () {
         assert.notExists(recvEditor, 'recvEditor must not exist');
@@ -1148,6 +1221,53 @@ describe('Unit Testing for Session', function () {
         const roleDb = roles[0];
 
         assert.notEqual(roleDb.role, 'editor', 'role record must be changed in database');
+      });
+    });
+
+    describe('Remove Editor From Session(Non-existing Editor)', function () {
+      let user;
+      let session;
+      let service;
+      let editor;
+      let recvEditor;
+      let error;
+
+      before(async function () {
+        session = new Session();
+        session.sessionId = 1;
+
+        user = new User();
+        user.userId = 1;
+
+        service = await SessionService.getSessionService(session, user);
+
+        editor = new User();
+        editor.userId = 3;
+
+        try {
+          recvEditor = await service.removeEditorFromSession(editor);
+        } catch (err) {
+          error = err;
+        }
+      });
+
+      it('should return 403 error', function () {
+        assert.equal(error.httpCode, 403, 'httpCode of error should be 403');
+      })
+
+      it('check recvEditor does not exist', function () {
+        assert.notExists(recvEditor, 'recvEditor must not exist');
+      });
+
+      it('check role record has not been changed in database', async function () {
+        const roles = await editor
+          .$relatedQuery('roles')
+          .where({
+            sessionId: session.sessionId
+          });
+        // const roleDb = roles[0];
+
+        assert.isEmpty(roles, 'editor', 'role record must not be changed in database');
       });
     });
   });

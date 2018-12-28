@@ -35,4 +35,12 @@ allow(Role, 'update', Question, (role, question) => {
   return (role.sessionId === question.sessionId) && (role.role === 'editor');
 });
 
+allow(Role, 'add', User, (role, user) => {
+  return (role.role === 'editor') && (_.isEmpty(user.roles));
+});
+
+allow(Role, 'remove', Role, (role, removedRole) => {
+  return (role.sessionId === removedRole.sessionId) && (role.role === 'editor') && (removedRole.role === 'editor');
+});
+
 module.exports = { can };
