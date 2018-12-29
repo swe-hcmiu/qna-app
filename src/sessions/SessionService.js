@@ -316,24 +316,34 @@ class SessionService {
   }
 
   async addQuestionToSession(question) {
-    try {
-      const recvQuestion = await this.roleStrategy.addQuestionToSession(question, this.session, this.user);
-      return recvQuestion;
-    } catch (err) {
-      throw err;
+    const session = await this.session.$query().select(['sessionId', 'sessionStatus', 'sessionType']);
+
+    if (can(this.user, 'add', question, { session })) {
+      try {
+        const recvQuestion = await this.roleStrategy
+          .addQuestionToSession(question, session, this.user);
+        return recvQuestion;
+      } catch (err) {
+        throw err;
+      }  
+    } else {
+      throw new AppError('Session is closed', 403);
     }
   }
 
   async addVoteToQuestion(question) {
     const questions = await Question.query().where(question);
     const inputQuestion = questions[0];
-    if (can(this.user, 'vote', inputQuestion)) {
+    const session = await this.session.$query().select(['sessionId', 'sessionStatus', 'sessionType']);
+    if (can(this.user, 'vote', inputQuestion, { session })) {
       try {
         const recvQuestion = await this.roleStrategy.addVoteToQuestion(inputQuestion, this.user);
         return recvQuestion;
       } catch (err) {
         throw err;
       }
+    } else if (session.sessionStatus === 'closed') {
+      throw new AppError('Session is closed', 403);
     } else {
       throw new AppError('User has already voted for question', 409);
     }
@@ -343,13 +353,16 @@ class SessionService {
   async cancelVoteInQuestion(question) {
     const questions = await Question.query().where(question);
     const inputQuestion = questions[0];
-    if (can(this.user, 'unvote', inputQuestion)) {
+    const session = await this.session.$query().select(['sessionId', 'sessionStatus', 'sessionType']);
+    if (can(this.user, 'unvote', inputQuestion, { session })) {
       try {
         const recvQuestion = await this.roleStrategy.cancelVoteInQuestion(inputQuestion, this.user);
         return recvQuestion;
       } catch (err) {
         throw err;
       }
+    } else if (session.sessionStatus === 'closed') {
+      throw new AppError('Session is closed', 403);
     } else {
       throw new AppError('User has not voted for question', 409);
     }
@@ -359,13 +372,16 @@ class SessionService {
   async updateQuestionStatus(question, status) {
     const questions = await Question.query().where(question);
     const inputQuestion = questions[0];
-    if (can(this.role, 'update', inputQuestion)) {
+    const session = await this.session.$query().select(['sessionId', 'sessionStatus', 'sessionType']);
+    if (can(this.role, 'update', inputQuestion, { session })) {
       try {
         const recvQuestion = await this.roleStrategy.updateQuestionStatus(inputQuestion, status);
         return recvQuestion;
       } catch (err) {
         throw err;
       }
+    } else if (session.sessionStatus === 'closed') {
+      throw new AppError('Session is closed', 403);
     } else {
       throw new AppError('Authorization required', 401);
     }

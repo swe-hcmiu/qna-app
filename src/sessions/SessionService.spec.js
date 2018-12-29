@@ -203,6 +203,43 @@ describe('Unit Testing for Session', function () {
       });
     });
 
+    describe('Add Question To Session(Closed Session)', function () {
+      let user;
+      let session;
+      let service;
+      let question;
+      let recvQuestion;
+      let error;
+
+      before(async function () {
+        session = new Session();
+        session.sessionId = 4;
+
+        user = new User();
+        user.userId = 2;
+
+        service = await SessionService.getSessionService(session, user);
+
+        question = new Question();
+        question.title = 'Add Question User Test';
+        question.content = 'Add Question User Test Content';
+
+        try {
+          recvQuestion = await service.addQuestionToSession(question);
+        } catch (err) {
+          error = err;
+        }
+      });
+
+      it('should return error 403', function() {
+        assert.equal(error.httpCode, 403, 'httpCode of error must be 403');
+      });
+
+      it('should not return recvQuestion', function() {
+        assert.notExists(recvQuestion, 'recvQuestion must not be returned');
+      });
+    });
+
     describe('Add Vote To Question(User Role)', function () {
       let user;
       let session;
@@ -337,6 +374,56 @@ describe('Unit Testing for Session', function () {
           .query()
           .where({
             questionId: 1
+        });
+
+        const questionAfterVoting = questionsAfterVoting[0];
+        assert.equal(questionAfterVoting.voteByEditor + questionAfterVoting.voteByUser, question.voteByEditor + question.voteByUser,
+          'question vote must not change');
+      });
+    });
+
+    describe('Add Vote To Question(Closed Session)', function () {
+      let user;
+      let session;
+      let service;
+      let question;
+      let recvQuestion;
+      let error;
+
+      before(async function () {
+        session = new Session();
+        session.sessionId = 4;
+
+        user = new User();
+        user.userId = 1;
+
+        service = await SessionService.getSessionService(session, user);
+
+        const questions = await Question
+          .query()
+          .where({
+            questionId: 12
+          });
+
+        question = questions[0];
+        
+        try {
+          recvQuestion = await service.addVoteToQuestion(question);
+        } catch (err) {
+          error = err;
+        }
+
+      });
+
+      it('should return 403 error', function() {
+        assert.equal(error.httpCode, 403, 'httpCode of error must be 403')
+      })
+
+      it('check question vote not increased', async function () {
+        const questionsAfterVoting = await Question
+          .query()
+          .where({
+            questionId: 12
         });
 
         const questionAfterVoting = questionsAfterVoting[0];
@@ -1046,12 +1133,63 @@ describe('Unit Testing for Session', function () {
       });
     });
 
+    describe('Cancel Vote To Question(Closed Session)', function () {
+      let user;
+      let session;
+      let service;
+      let question;
+      let recvQuestion;
+      let error;
+
+      before(async function () {
+        session = new Session();
+        session.sessionId = 4;
+
+        user = new User();
+        user.userId = 1;
+
+        service = await SessionService.getSessionService(session, user);
+
+        const questions = await Question
+          .query()
+          .where({
+            questionId: 12
+          });
+
+        question = questions[0];
+        
+        try {
+          recvQuestion = await service.cancelVoteInQuestion(question);
+        } catch (err) {
+          error = err;
+        }
+
+      });
+
+      it('should return 403 error', function() {
+        assert.equal(error.httpCode, 403, 'httpCode of error must be 403')
+      })
+
+      it('check question vote not increased', async function () {
+        const questionsAfterCancelVote = await Question
+          .query()
+          .where({
+            questionId: 12
+        });
+
+        const questionAfterCancelVote = questionsAfterCancelVote[0];
+        assert.equal(questionAfterCancelVote.voteByEditor + questionAfterCancelVote.voteByUser, question.voteByEditor + question.voteByUser,
+          'question vote must not change');
+      });
+    });
+
     describe('Update Question Status(User Role)', function () {
       let user;
       let session;
       let service;
       let question;
       let recvQuestion;
+      let error;
 
       before(async function () {
         session = new Session();
@@ -1072,13 +1210,17 @@ describe('Unit Testing for Session', function () {
         try {
           recvQuestion = await service.updateQuestionStatus(question, 'answered');
         } catch (err) {
-          // do nothing
+          error = err;
         }
       });
 
       it('check recvQuestion does not exist', function () {
         assert.notExists(recvQuestion, 'recvQuestion must not exist');
       });
+
+      it('should return 401 error', function () {
+        assert.equal(error.httpCode, 401, 'httpCode of error must be 401');
+      })
 
       it('check question status has not changed in database', async function () {
         const questions = await Question
@@ -1129,6 +1271,58 @@ describe('Unit Testing for Session', function () {
 
         assert.equal(questionDb.questionStatus, recvQuestion.questionStatus,
           'question status must be changed in database');
+      });
+    });
+    
+    describe('Update Question Status(Closed Session)', function () {
+      let user;
+      let session;
+      let service;
+      let question;
+      let recvQuestion;
+      let error;
+
+      before(async function () {
+        session = new Session();
+        session.sessionId = 4;
+
+        user = new User();
+        user.userId = 1;
+
+        service = await SessionService.getSessionService(session, user);
+
+        const questions = await Question
+          .query()
+          .where({
+            questionId: 12
+          });
+        question = questions[0];
+
+        try {
+          recvQuestion = await service.updateQuestionStatus(question, 'answered');
+        } catch (err) {
+          error = err;
+        }
+      });
+
+      it('check recvQuestion does not exist', function () {
+        assert.notExists(recvQuestion, 'recvQuestion must not exist');
+      });
+
+      it('should return error 403', function () {
+        assert.equal(error.httpCode, 403, 'httpCode of error must be 403');
+      })
+
+      it('check question status has not changed in database', async function () {
+        const questions = await Question
+          .query()
+          .where({
+            questionId: 12
+          });
+        const questionDb = questions[0];
+
+        assert.equal(questionDb.questionStatus, question.questionStatus,
+          'question status must not be changed in database');
       });
     });
   });

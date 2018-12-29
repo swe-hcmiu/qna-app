@@ -126,4 +126,15 @@ exports.seed = async function(knex, Promise) {
     vote_by_editor: 0,
     question_status: 'unanswered'
   });
+
+  await knex('questions').insert({
+    question_id: 12,
+    session_id: 4,
+    user_id: 1,
+    title: 'blablablabla',
+    content: 'blablablabla',
+    vote_by_user: 1,
+    vote_by_editor: 1,
+    question_status: 'unanswered'
+  });
 };

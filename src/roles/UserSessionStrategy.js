@@ -18,12 +18,11 @@ class UserSessionStrategy {
   async addQuestionToSession(question, session, user) {
     try {
       const inputQuestion = _.cloneDeep(question);
-      let inputSession = _.cloneDeep(session);
-      inputSession = await inputSession.$query().select('sessionType');
-  
+      // const inputSession = _.cloneDeep(session);
+      // inputSession = await inputSession.$query().select('sessionType');
       inputQuestion.sessionId = session.sessionId;
       inputQuestion.userId = user.userId;
-      inputQuestion.questionStatus = (inputSession.sessionType === 'needs_verification') ? 'pending' : 'unanswered';
+      inputQuestion.questionStatus = (session.sessionType === 'needs_verification') ? 'pending' : 'unanswered';
       const recvQuestion = await Question.query().insertAndFetch(inputQuestion);
       return recvQuestion;
     } catch (err) {

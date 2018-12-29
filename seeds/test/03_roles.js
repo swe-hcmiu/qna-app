@@ -38,4 +38,10 @@ exports.seed = async function(knex, Promise) {
     session_id: 3,
     role: 'editor'
   });
+
+  await knex('roles').insert({
+    user_id: 1,
+    session_id: 4,
+    role: 'editor'
+  });
 };

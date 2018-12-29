@@ -63,4 +63,15 @@ exports.seed = async function (knex, Promise) {
     user_id: 4,
     question_id: 9
   });
+
+  // question 12
+  await knex('votings').insert({
+    user_id: 1,
+    question_id: 12
+  });
+
+  await knex('votings').insert({
+    user_id: 2,
+    question_id: 12
+  });
 };

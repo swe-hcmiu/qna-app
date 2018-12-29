@@ -13,26 +13,28 @@ allow(User, 'create', Session, (user) => {
   return false;
 });
 
-allow(User, 'vote', Question, (user, question) => {
-  if (_.find(user.votings, { questionId: question.questionId })) return false;
-  return true;
+allow(User, 'add', Question, (user, question, options) => {
+  return options.session.sessionStatus === 'opening';
 });
 
-allow(User, 'unvote', Question, (user, question) => {
-  if (_.find(user.votings, { questionId: question.questionId })) return true;
-  return false;
+allow(User, 'vote', Question, (user, question, options) => {
+  return (options.session.sessionStatus === 'opening') && (!_.find(user.votings, { questionId: question.questionId }));
 });
 
-allow(Role, 'delete', Session, (role, session) => {
+allow(User, 'unvote', Question, (user, question, options) => {
+  return (options.session.sessionStatus === 'opening') && (_.find(user.votings, { questionId: question.questionId }));
+});
+
+allow(Role, ['delete', 'update'], Session, (role, session) => {
   return (role.sessionId === session.sessionId) && (role.role === 'editor');
 });
 
-allow(Role, 'update', Session, (role, session) => {
-  return (role.sessionId === session.sessionId) && (role.role === 'editor');
-});
+// allow(Role, 'update', Session, (role, session) => {
+//   return (role.sessionId === session.sessionId) && (role.role === 'editor');
+// });
 
-allow(Role, 'update', Question, (role, question) => {
-  return (role.sessionId === question.sessionId) && (role.role === 'editor');
+allow(Role, 'update', Question, (role, question, options) => {
+  return (options.session.sessionStatus === 'opening') && (role.sessionId === question.sessionId) && (role.role === 'editor');
 });
 
 allow(Role, 'add', User, (role, user) => {
