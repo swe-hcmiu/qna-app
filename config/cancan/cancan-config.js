@@ -18,11 +18,13 @@ allow(User, 'add', Question, (user, question, options) => {
 });
 
 allow(User, 'vote', Question, (user, question, options) => {
-  return (options.session.sessionStatus === 'opening') && (!_.find(user.votings, { questionId: question.questionId }));
+  return (options.session.sessionStatus === 'opening') && (_.isEmpty(user.votings))
+    && ((question.questionStatus === 'unanswered') || (question.questionStatus === 'pending'));
 });
 
 allow(User, 'unvote', Question, (user, question, options) => {
-  return (options.session.sessionStatus === 'opening') && (_.find(user.votings, { questionId: question.questionId }));
+  return (options.session.sessionStatus === 'opening') && (!_.isEmpty(user.votings))
+  && ((question.questionStatus === 'unanswered') || (question.questionStatus === 'pending'));
 });
 
 allow(Role, ['delete', 'update'], Session, (role, session) => {

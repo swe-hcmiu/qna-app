@@ -37,7 +37,28 @@ exports.up = async (knex) => {
     table
       .enu('question_status', ['pending', 'unanswered', 'answered', 'invalid'])
       .defaultTo(null);
+
+    table
+      .bigInteger('uuid')
+      .unsigned();
   });
+
+  await knex.raw(`
+      create trigger before_question_insert
+      before insert on questions
+        for each row 
+        set new.uuid = uuid_short();
+      `);
+
+  await knex.raw(`
+      create trigger before_question_update
+      before update on questions
+        for each row 
+        begin
+          if new.question_status <> old.question_status then set new.uuid = uuid_short();
+          end if;
+        end
+      `);
 };
 
 exports.down = async (knex) => {

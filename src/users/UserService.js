@@ -53,7 +53,12 @@ class UserService {
 
   static async createQnAUser(user) {
     try {
-      const inputUser = _.cloneDeep(user);
+      const inputUser = Object.assign(new User(), _.cloneDeep(user));
+      inputUser.qnaUsers = Object.assign(new QnAUser(), _.cloneDeep(user.qnaUsers));
+      if (!inputUser.displayName) inputUser.displayName = inputUser.qnaUsers.username;
+
+      inputUser.$validate();
+      inputUser.qnaUsers.$validate();
 
       let recvUser;
       inputUser.qnaUsers.userpass = await hashing(inputUser.qnaUsers.userpass);

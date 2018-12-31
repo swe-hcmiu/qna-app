@@ -104,7 +104,7 @@ class User extends Model {
 
       properties: {
         userId: { type: 'integer' },
-        displayName: { type: 'string', minLength: 6, maxLength: 50 },
+        displayName: { type: 'string', minLength: 2, maxLength: 50 },
         provider: { enum: ['qna', 'google', 'anonymous'] },
       },
     };
@@ -132,7 +132,6 @@ class QnAUser extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['userId'],
 
       properties: {
         userId: { type: 'integer' },
@@ -164,7 +163,6 @@ class GoogleUser extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['userId'],
 
       properties: {
         userId: { type: 'integer' },

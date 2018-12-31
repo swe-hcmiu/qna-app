@@ -1,52 +1,7 @@
-const jwt = require('jsonwebtoken');
-const keys = require('../../config/passport/keys');
 const { SessionService } = require('./SessionService');
 const { UserService } = require('../users/UserService');
-const { Question } = require('../questions/Question');
-
-async function getSessionServiceInstance(req) {
-  try {
-    var token = req.headers['x-access-token'] || req.headers.authorization;
-    const { sessionId } = req.params;
-    const session = SessionService.getSessionInstance(sessionId);
-    if (token && token.startsWith('Bearer ')) {
-      // Remove Bearer from string
-      token = token.slice(7, token.length).trimLeft();
-    } else {
-      const currentUser = await UserService.createAnonymousUser();
-      const payload = { userId: currentUser.userId };
-      token = jwt.sign(payload, keys.tokenSecret, {
-        expiresIn: '7d',
-      });
-    }
-    const decoded = jwt.verify(token, keys.tokenSecret);
-    const user = await UserService.getUserById(decoded.userId);
-    const service = await SessionService.getSessionService(session, user);
-    return service;
-  } catch (err) {
-    throw err;
-  }
-}
-
-// async function createAnonymousSession(req, userId) {
-//   try {
-//     if (!req.user) {
-//       const user = await UserService.getUserById(userId);
-//       const createSessionPromise = () => (
-//         new Promise((resolve, reject) => {
-//           req.login(user, (err) => {
-//             if (err) reject(err);
-//             resolve();
-//           });
-//         })
-//       );
-
-//       await createSessionPromise();
-//     }
-//   } catch (err) {
-//     next(err);
-//   }
-// }
+const { User } = require('../users/User');
+const { Session } = require('../sessions/Session');
 
 exports.session_get = async (req, res, next) => {
   try {
@@ -78,11 +33,12 @@ exports.session_get_closed = async (req, res, next) => {
 // TODO
 exports.session_post = async (req, res, next) => {
   try {
-    const user = req.user;
-    const { sessionName, sessionType } = req.body;
-    const session = { sessionName, sessionType };
+    let { user } = req;
+    let { session } = req.body;
+    user = Object.assign(new User(), user);
+    session = Object.assign(new Session(), session);
 
-    const recvSession = await SessionService.createSession(user, session);
+    const recvSession = await SessionService.createSession(session, user);
     res.send(recvSession);
   } catch (err) {
     next(err);
@@ -91,7 +47,11 @@ exports.session_post = async (req, res, next) => {
 
 exports.sessionId_get = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
+    const { user } = req;
+    const { sessionId } = req.params;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
     const recvSession = await service.getInfoOfSession();
     res.send(recvSession);
   } catch (err) {
@@ -101,7 +61,11 @@ exports.sessionId_get = async (req, res, next) => {
 
 exports.sessionId_delete = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
+    const { user } = req;
+    const { sessionId } = req.params;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
     await service.deleteSession();
 
     res.sendStatus(200);
@@ -112,8 +76,12 @@ exports.sessionId_delete = async (req, res, next) => {
 
 exports.sessionId_status_put = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
-    const status = req.body.Status;
+    const { user } = req;
+    const { sessionId } = req.params;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
+    const { status } = req.body;
     const recvSession = await service.updateSessionStatus(status);
 
     res.send(recvSession);
@@ -125,8 +93,14 @@ exports.sessionId_status_put = async (req, res, next) => {
 
 exports.sessionId_question_newest = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
-    const listOfNewestQuestions = await service.getNewestQuestionsOfSession();
+    const { user } = req;
+    const { sessionId } = req.params;
+    const { cursor, limit, pagingDirection } = req.query;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
+    const listOfNewestQuestions = await service
+      .getNewestQuestionsOfSession(cursor, limit, pagingDirection);
     res.send(listOfNewestQuestions);
   } catch (err) {
     next(err);
@@ -135,8 +109,13 @@ exports.sessionId_question_newest = async (req, res, next) => {
 
 exports.sessionId_question_top = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
-    const listOfFavouriteQuestions = await service.getTopFavoriteQuestionsOfSession();
+    const { user } = req;
+    const { sessionId } = req.params;
+    const { limit } = req.query;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
+    const listOfFavouriteQuestions = await service.getTopFavoriteQuestionsOfSession(limit);
     res.send(listOfFavouriteQuestions);
   } catch (err) {
     next(err);
@@ -145,8 +124,14 @@ exports.sessionId_question_top = async (req, res, next) => {
 
 exports.sessionId_question_answered = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
-    const listOfAnsweredQuestions = await service.getAnsweredQuestionsOfSession();
+    const { user } = req;
+    const { sessionId } = req.params;
+    const { cursor, limit, pagingDirection } = req.query;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
+    const listOfAnsweredQuestions = await service
+      .getAnsweredQuestionsOfSession(cursor, limit, pagingDirection);
     res.send(listOfAnsweredQuestions);
   } catch (err) {
     next(err);
@@ -155,8 +140,14 @@ exports.sessionId_question_answered = async (req, res, next) => {
 
 exports.sessionId_question_pending = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
-    const listOfPendingQuestions = await service.getPendingQuestionsOfSession();
+    const { user } = req;
+    const { sessionId } = req.params;
+    const { cursor, limit, pagingDirection } = req.query;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
+    const listOfPendingQuestions = await service
+      .getPendingQuestionsOfSession(cursor, limit, pagingDirection);
     res.send(listOfPendingQuestions);
   } catch (err) {
     next(err);
@@ -165,8 +156,14 @@ exports.sessionId_question_pending = async (req, res, next) => {
 
 exports.sessionId_question_invalid = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
-    const listOfInvalidQuestions = await service.getInvalidQuestionsOfSession();
+    const { user } = req;
+    const { sessionId } = req.params;
+    const { cursor, limit, pagingDirection } = req.query;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
+    const listOfInvalidQuestions = await service
+      .getInvalidQuestionsOfSession(cursor, limit, pagingDirection);
     res.send(listOfInvalidQuestions);
   } catch (err) {
     next(err);
@@ -175,11 +172,13 @@ exports.sessionId_question_invalid = async (req, res, next) => {
 
 exports.sessionId_question_post = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
-    const { title, content } = req.body;
-    const question = new Question();
-    question.title = title;
-    question.content = content;
+    const { user } = req;
+    const { sessionId } = req.params;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
+
+    const { question } = req.body;
     const recvQuestion = await service.addQuestionToSession(question);
     res.send(recvQuestion);
   } catch (err) {
@@ -189,7 +188,11 @@ exports.sessionId_question_post = async (req, res, next) => {
 
 exports.sessionId_questionId_get = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
+    const { user } = req;
+    const { sessionId } = req.params;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
     const { questionId } = req.params;
     const question = { questionId };
 
@@ -202,7 +205,11 @@ exports.sessionId_questionId_get = async (req, res, next) => {
 
 exports.sessionId_questionId_vote_put = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
+    const { user } = req;
+    const { sessionId } = req.params;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
     const { questionId } = req.params;
     const question = { questionId };
 
@@ -215,7 +222,11 @@ exports.sessionId_questionId_vote_put = async (req, res, next) => {
 
 exports.sessionId_questionId_vote_delete = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
+    const { user } = req;
+    const { sessionId } = req.params;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
     const { questionId } = req.params;
     const question = { questionId };
 
@@ -228,10 +239,14 @@ exports.sessionId_questionId_vote_delete = async (req, res, next) => {
 
 exports.sessionId_questionId_status_put = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
+    const { user } = req;
+    const { sessionId } = req.params;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
     const { questionId } = req.params;
     const question = { questionId };
-    const status = req.body.Status;
+    const { status } = req.body;
     const recvQuestion = await service.updateQuestionStatus(question, status);
 
     res.send(recvQuestion);
@@ -242,7 +257,11 @@ exports.sessionId_questionId_status_put = async (req, res, next) => {
 
 exports.sessionId_user_vote = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
+    const { user } = req;
+    const { sessionId } = req.params;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
     const listOfVotedQuestions = await service.getListOfVotedQuestion();
     res.send(listOfVotedQuestions);
   } catch (err) {
@@ -252,7 +271,11 @@ exports.sessionId_user_vote = async (req, res, next) => {
 
 exports.sessionId_editor_get = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
+    const { user } = req;
+    const { sessionId } = req.params;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
     const listOfEditors = await service.getListOfEditors();
     res.send(listOfEditors);
   } catch (err) {
@@ -262,7 +285,11 @@ exports.sessionId_editor_get = async (req, res, next) => {
 
 exports.sessionId_editor_permission_post = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
+    const { user } = req;
+    const { sessionId } = req.params;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
     const { userId } = req.body;
     const editor = UserService.getUserInstanceWithId(userId);
 
@@ -275,7 +302,11 @@ exports.sessionId_editor_permission_post = async (req, res, next) => {
 
 exports.sessionId_editor_permission_delete = async (req, res, next) => {
   try {
-    const service = await getSessionServiceInstance(req);
+    const { user } = req;
+    const { sessionId } = req.params;
+    const session = await SessionService.getSessionInstance(sessionId);
+
+    const service = await SessionService.getSessionService(session, user);
     const { userId } = req.body;
     const editor = UserService.getUserInstanceWithId(userId);
 

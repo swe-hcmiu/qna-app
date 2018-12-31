@@ -1,12 +1,16 @@
 const express = require('express');
 
 const router = express.Router();
+const passport = require('passport');
 const SessionController = require('../src/sessions/SessionController');
 
 router.get('/', SessionController.session_get);
-router.post('/', SessionController.session_post);
 router.get('/opening', SessionController.session_get_opening);
 router.get('/closed', SessionController.session_get_closed);
+
+router.use(passport.authenticate('jwt', { session: false }));
+
+router.post('/', SessionController.session_post);
 
 router.get('/:sessionId', SessionController.sessionId_get);
 router.delete('/:sessionId', SessionController.sessionId_delete);

@@ -1,4 +1,3 @@
-const { transaction } = require('objection');
 const _ = require('lodash');
 const { can } = require('../../config/cancan/cancan-config');
 const { AppError } = require('../errors/AppError');
@@ -6,65 +5,19 @@ const { AppError } = require('../errors/AppError');
 const { User } = require('../users/User');
 const { RoleService } = require('../roles/RoleService');
 const { Role } = require('../roles/Role');
-const { Session } = require('../sessions/Session');
 const { Question } = require('../questions/Question');
-
-async function getVotingList(session, user) {
-  try {
-    const result = await User
-      .query()
-      .joinEager()
-      .eager('votings.questions')
-      .modifyEager('votings', (builder) => {
-        builder.select('questionId');
-      })
-      .modifyEager('votings.questions', (builder) => {
-        builder.select('questionId', 'sessionId');
-      })
-      .where('users.userId', user.userId)
-      .andWhere('votings:questions.sessionId', session.sessionId);
-
-    if (_.isEmpty(result)) return [];
-
-    const votingList = result[0].votings.map((element) => {
-      return {
-        questionId: element.questionId,
-      };
-    });
-    return votingList;
-  } catch (err) {
-    throw err;
-  }
-}
-
-async function getQuestionList(session, user) {
-  try {
-    const result = await user
-      .$relatedQuery('questions')
-      .where({ sessionId: session.sessionId })
-      .select('questionId');
-
-    const questionList = result.map((element) => {
-      return {
-        questionId: element.questionId,
-      };
-    });
-    return questionList;
-  } catch (err) {
-    throw err;
-  }
-}
+const { SessionStrategy } = require('./SessionStrategy');
+const { EditorSessionStrategy } = require('./EditorSessionStrategy');
+const { UserSessionStrategy } = require('./UserSessionStrategy');
+const appConfig = require('../../config/app/app-config');
 
 class SessionService {
   static async getSessionService(session, user) {
     const service = new SessionService();
     service.session = _.cloneDeep(session);
+
     const userOfService = _.cloneDeep(user);
-
     service.user = userOfService;
-
-    [service.user.votings, service.user.questions] = await Promise
-      .all([getVotingList(service.session, service.user), getQuestionList(service.session, service.user)]);
 
     try {
       const roles = await Role
@@ -78,7 +31,7 @@ class SessionService {
       if (!_.isEmpty(roles)) [service.role] = roles;
       else service.role = RoleService.getUserRole(service.session, service.user);
 
-      service.roleStrategy = RoleService.getStrategyByRole(service.role);
+      service.roleStrategy = service.getStrategyByRole();
 
       return service;
     } catch (err) {
@@ -86,38 +39,32 @@ class SessionService {
     }
   }
 
-  static async createSession(session, user) {
-    if (can(user, 'create', session)) {
-      try {
-        const inputSession = _.cloneDeep(session);
-        let recvSession = null;
-
-        inputSession.roles = new Role();
-        inputSession.roles.role = 'editor';
-        inputSession.roles.userId = user.userId;
-
-        await transaction(Session.knex(), async (trx) => {
-          recvSession = await Session
-            .query(trx)
-            .insertGraphAndFetch(inputSession);
-        });
-
-        return recvSession;
-      } catch (err) {
-        throw err;
+  getStrategyByRole() {
+    switch (this.role.role) {
+      case 'editor': {
+        return new EditorSessionStrategy(this.user, this.session, this.role);
       }
-    } else {
-      throw new AppError('User cannot create session', 401);
+      case 'user': {
+        return new UserSessionStrategy(this.user, this.session, this.role);
+      }
+      default: {
+        return null;
+      }
+    }
+  }
+
+  static async createSession(session, user) {
+    try {
+      const recvSession = await SessionStrategy.createSession(session, user);
+      return recvSession;
+    } catch (err) {
+      throw err;
     }
   }
 
   static async getListOfOpeningSessions() {
     try {
-      const listOfOpeningSessions = await Session
-        .query()
-        .where({
-          sessionStatus: 'opening',
-        });
+      const listOfOpeningSessions = await SessionStrategy.getListOfOpeningSessions();
 
       return listOfOpeningSessions;
     } catch (err) {
@@ -127,11 +74,7 @@ class SessionService {
 
   static async getListOfClosedSessions() {
     try {
-      const listOfClosedSessions = await Session
-        .query()
-        .where({
-          sessionStatus: 'closed',
-        });
+      const listOfClosedSessions = await SessionStrategy.getListOfClosedSessions();
 
       return listOfClosedSessions;
     } catch (err) {
@@ -139,24 +82,19 @@ class SessionService {
     }
   }
 
-  static getSessionInstance(sessionId) {
-    const returnSession = new Session();
-    returnSession.sessionId = sessionId;
-
-    return returnSession;
+  static async getSessionInstance(sessionId) {
+    try {
+      const session = await SessionStrategy.getSessionInstance(sessionId);
+      return session;
+    } catch (err) {
+      throw err;
+    }
   }
 
   static async getListOfSessions() {
     try {
-      const [listOfOpeningSessions, listOfClosedSessions] = await Promise.all([
-        this.getListOfOpeningSessions(),
-        this.getListOfClosedSessions(),
-      ]);
-      const returnObject = {
-        listOfOpeningSessions,
-        listOfClosedSessions,
-      };
-      return returnObject;
+      const returnObj = await SessionStrategy.getListOfSessions();
+      return returnObj;
     } catch (err) {
       throw err;
     }
@@ -164,72 +102,45 @@ class SessionService {
 
   async getInfoOfSession() {
     try {
-      const { session } = this.session;
-      const [listOfNewestQuestions, listOfTopFavoriteQuestions, listOfAnsweredQuestions, listOfInvalidQuestions, listOfPendingQuestions] = await Promise.all([
-        this.getNewestQuestionsOfSession(),
-        this.getTopFavoriteQuestionsOfSession(),
-        this.getAnsweredQuestionsOfSession(),
-        this.getInvalidQuestionsOfSession(),
-        this.getPendingQuestionsOfSession(),
-      ]);
-      const returnObj = {
-        session,
-        listOfNewestQuestions,
-        listOfTopFavoriteQuestions,
-        listOfAnsweredQuestions,
-        listOfInvalidQuestions,
-        listOfPendingQuestions,
-      };
-      return returnObj;
+      const result = await this.roleStrategy.getInfoOfSession();
+      return result;
     } catch (err) {
       throw err;
     }
   }
-  
+
   async deleteSession() {
-    if (can(this.role, 'delete', this.session)) {
-      try {
-        await Session.query().delete().where(this.session);
-      } catch (err) {
-        throw err;
-      }
-    } else {
-      throw new AppError('Authorization required', 401);
-    }
-  }
-
-  // TODO: Return question based on roles
-  async getQuestion(question) {
     try {
-      const returnQuestions = await Question.query().where(question);
-
-      return returnQuestions[0];
+      await this.roleStrategy.deleteSession();
     } catch (err) {
       throw err;
     }
   }
 
   async updateSessionStatus(status) {
-    if (can(this.role, 'update', this.session)) {
-      try {
-        const recvSession = await this.session.$query().updateAndFetch({ sessionStatus: status });
-        return recvSession;
-      } catch (err) {
-        throw err;
-      }
-    } else {
-      throw new AppError('Authorization required', 401);
+    try {
+      const recvSession = await this.roleStrategy.updateSessionStatus(status);
+      return recvSession;
+    } catch (err) {
+      throw err;
     }
   }
 
-  async getNewestQuestionsOfSession() {
+  // TODO: Return question based on roles
+  async getQuestion(question) {
     try {
-      const listOfNewestQuestions = await this.session
-        .$relatedQuery('questions')
-        .where({
-          questionStatus: 'unanswered',
-        })
-        .orderBy('updatedAt', 'desc');
+      const recvQuestion = await this.roleStrategy.getQuestion(question);
+      return recvQuestion;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async getNewestQuestionsOfSession(cursor = appConfig.defaultCursor,
+    limit = appConfig.defaultLimit, pagingDirection = appConfig.defautPagingDirection) {
+    try {
+      const listOfNewestQuestions = await this.roleStrategy
+        .getNewestQuestionsOfSession(cursor, limit, pagingDirection);
 
       return listOfNewestQuestions;
     } catch (err) {
@@ -237,16 +148,10 @@ class SessionService {
     }
   }
 
-  async getTopFavoriteQuestionsOfSession() {
+  async getTopFavoriteQuestionsOfSession(limit = appConfig.topFavoriteDefaultLimit) {
     try {
-      const listOfTopFavoriteQuestions = await this.session
-        .$relatedQuery('questions')
-        .where({
-          questionStatus: 'unanswered',
-        })
-        .orderBy('voteByEditor', 'desc')
-        .orderBy('voteByUser', 'desc')
-        .orderBy('updatedAt', 'desc');
+      const listOfTopFavoriteQuestions = await this.roleStrategy
+        .getTopFavoriteQuestionsOfSession(limit);
 
       return listOfTopFavoriteQuestions;
     } catch (err) {
@@ -254,14 +159,11 @@ class SessionService {
     }
   }
 
-  async getAnsweredQuestionsOfSession() {
+  async getAnsweredQuestionsOfSession(cursor = appConfig.defaultCursor,
+    limit = appConfig.defaultLimit, pagingDirection = appConfig.defautPagingDirection) {
     try {
-      const listOfAnsweredQuestions = await this.session
-        .$relatedQuery('questions')
-        .where({
-          questionStatus: 'answered',
-        })
-        .orderBy('updatedAt', 'desc');
+      const listOfAnsweredQuestions = await this.roleStrategy
+        .getAnsweredQuestionsOfSession(cursor, limit, pagingDirection);
 
       return listOfAnsweredQuestions;
     } catch (err) {
@@ -269,9 +171,11 @@ class SessionService {
     }
   }
 
-  async getInvalidQuestionsOfSession() {
+  async getInvalidQuestionsOfSession(cursor = appConfig.defaultCursor,
+    limit = appConfig.defaultLimit, pagingDirection = appConfig.defautPagingDirection) {
     try {
-      const listOfInvalidQuestions = await this.roleStrategy.getInvalidQuestionsOfSession(this.session);
+      const listOfInvalidQuestions = await this.roleStrategy
+        .getInvalidQuestionsOfSession(cursor, limit, pagingDirection);
 
       return listOfInvalidQuestions;
     } catch (err) {
@@ -279,9 +183,11 @@ class SessionService {
     }
   }
 
-  async getPendingQuestionsOfSession() {
+  async getPendingQuestionsOfSession(cursor = appConfig.defaultCursor,
+    limit = appConfig.defaultLimit, pagingDirection = appConfig.defautPagingDirection) {
     try {
-      const listOfPendingQuestions = await this.roleStrategy.getPendingQuestionsOfSession(this.session);
+      const listOfPendingQuestions = await this.roleStrategy
+        .getPendingQuestionsOfSession(cursor, limit, pagingDirection);
 
       return listOfPendingQuestions;
     } catch (err) {
@@ -289,14 +195,25 @@ class SessionService {
     }
   }
 
+  async addQuestionToSession(question) {
+    const session = await this.session.$query().select(['sessionId', 'sessionStatus', 'sessionType']);
+
+    if (can(this.user, 'add', Question, { session })) {
+      try {
+        const recvQuestion = await this.roleStrategy
+          .addQuestionToSession(question);
+        return recvQuestion;
+      } catch (err) {
+        throw err;
+      }
+    } else {
+      throw new AppError('Session is closed', 403);
+    }
+  }
+
   async getListOfVotedQuestion() {
     try {
-      const listOfVotedQuestions = await this.user
-        .$relatedQuery('votingQuestions')
-        .select('votings.questionId')
-        .where({
-          sessionId: this.session.sessionId,
-        });
+      const listOfVotedQuestions = await this.roleStrategy.getListOfVotedQuestion();
 
       return listOfVotedQuestions;
     } catch (err) {
@@ -306,71 +223,81 @@ class SessionService {
 
   async getListOfEditors() {
     try {
-      const listOfEditors = await this.session
-        .$relatedQuery('roleUsers')
-        .where({ role: 'editor' });
+      const listOfEditors = await this.roleStrategy.getListOfEditors();
+
       return listOfEditors;
     } catch (err) {
       throw err;
     }
   }
 
-  async addQuestionToSession(question) {
-    const session = await this.session.$query().select(['sessionId', 'sessionStatus', 'sessionType']);
-
-    if (can(this.user, 'add', question, { session })) {
-      try {
-        const recvQuestion = await this.roleStrategy
-          .addQuestionToSession(question, session, this.user);
-        return recvQuestion;
-      } catch (err) {
-        throw err;
-      }  
-    } else {
-      throw new AppError('Session is closed', 403);
-    }
-  }
-
   async addVoteToQuestion(question) {
     const questions = await Question.query().where(question);
+    if (_.isEmpty(questions) || questions[0].sessionId !== this.session.sessionId) {
+      throw new AppError('Not Found', 404);
+    }
+
     const inputQuestion = questions[0];
+
+    const user = _.cloneDeep(this.user);
+    await user.$relatedQuery('votings').where({
+      questionId: inputQuestion.questionId,
+    });
+
     const session = await this.session.$query().select(['sessionId', 'sessionStatus', 'sessionType']);
-    if (can(this.user, 'vote', inputQuestion, { session })) {
+
+    if (can(user, 'vote', inputQuestion, { session })) {
       try {
-        const recvQuestion = await this.roleStrategy.addVoteToQuestion(inputQuestion, this.user);
+        const recvQuestion = await this.roleStrategy.addVoteToQuestion(inputQuestion);
         return recvQuestion;
       } catch (err) {
         throw err;
       }
     } else if (session.sessionStatus === 'closed') {
       throw new AppError('Session is closed', 403);
+    } else if (inputQuestion.questionStatus !== 'unanswered' && inputQuestion.questionStatus !== 'pending') {
+      throw new AppError('Cannot vote this type of question', 403);
     } else {
       throw new AppError('User has already voted for question', 409);
     }
-    // return question;
   }
 
   async cancelVoteInQuestion(question) {
     const questions = await Question.query().where(question);
+    if (_.isEmpty(questions) || questions[0].sessionId !== this.session.sessionId) {
+      throw new AppError('Not Found', 404);
+    }
+
     const inputQuestion = questions[0];
+
+    const user = _.cloneDeep(this.user);
+    await user.$relatedQuery('votings').where({
+      questionId: inputQuestion.questionId,
+    });
+
     const session = await this.session.$query().select(['sessionId', 'sessionStatus', 'sessionType']);
-    if (can(this.user, 'unvote', inputQuestion, { session })) {
+    if (can(user, 'unvote', inputQuestion, { session })) {
       try {
-        const recvQuestion = await this.roleStrategy.cancelVoteInQuestion(inputQuestion, this.user);
+        const recvQuestion = await this.roleStrategy.cancelVoteInQuestion(inputQuestion);
         return recvQuestion;
       } catch (err) {
         throw err;
       }
     } else if (session.sessionStatus === 'closed') {
       throw new AppError('Session is closed', 403);
+    } else if (inputQuestion.questionStatus !== 'unanswered' && inputQuestion.questionStatus !== 'pending') {
+      throw new AppError('Cannot unvote this type of question', 403);
     } else {
       throw new AppError('User has not voted for question', 409);
     }
-    // return question;
   }
 
   async updateQuestionStatus(question, status) {
     const questions = await Question.query().where(question);
+    if (_.isEmpty(questions) || questions[0].sessionId !== this.session.sessionId) {
+      throw new AppError('Not Found', 404);
+    }
+
     const inputQuestion = questions[0];
     const session = await this.session.$query().select(['sessionId', 'sessionStatus', 'sessionType']);
     if (can(this.role, 'update', inputQuestion, { session })) {
@@ -395,12 +322,16 @@ class SessionService {
       .modifyEager('roles', (builder) => {
         builder.where({ sessionId: this.session.sessionId });
       });
+    if (_.isEmpty(editors)) {
+      throw new AppError('Not Found', 404);
+    }
+
     const inputEditor = editors[0];
 
     if (can(this.role, 'add', inputEditor)) {
       try {
         const recvRecord = await this.roleStrategy
-          .addEditorToSession(inputEditor, this.session);
+          .addEditorToSession(inputEditor);
         return recvRecord;
       } catch (err) {
         throw err;
@@ -418,11 +349,14 @@ class SessionService {
       .where({
         sessionId: this.session.sessionId,
       });
+    if (_.isEmpty(roles)) {
+      throw new AppError('Not Found', 404);
+    }
     const role = roles[0];
 
     if (can(this.role, 'remove', role)) {
       try {
-        const recvRecord = await this.roleStrategy.removeEditorFromSession(editor, this.session);
+        const recvRecord = await this.roleStrategy.removeEditorFromSession(editor);
         return recvRecord;
       } catch (err) {
         throw err;
@@ -437,6 +371,4 @@ class SessionService {
 
 module.exports = {
   SessionService,
-  getVotingList,
-  getQuestionList,
 };
