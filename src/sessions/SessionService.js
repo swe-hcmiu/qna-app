@@ -364,8 +364,8 @@ class SessionService {
     } else if (this.role.role === 'user') {
       throw new AppError('Authorization required', 401);
     } else {
-      throw new AppError('Editor does not belong to this session', 403);
-    }
+      throw new AppError('Internal Server Error', 500);
+    };
   }
 }
 
