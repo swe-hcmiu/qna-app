@@ -196,7 +196,7 @@ class SessionService {
   }
 
   async addQuestionToSession(question) {
-    const session = await this.session.$query().select(['sessionId', 'sessionStatus', 'sessionType']);
+    const { session } = this;
 
     if (can(this.user, 'add', Question, { session })) {
       try {
@@ -244,7 +244,7 @@ class SessionService {
       questionId: inputQuestion.questionId,
     });
 
-    const session = await this.session.$query().select(['sessionId', 'sessionStatus', 'sessionType']);
+    const { session } = this;
 
     if (can(user, 'vote', inputQuestion, { session })) {
       try {
@@ -275,7 +275,7 @@ class SessionService {
       questionId: inputQuestion.questionId,
     });
 
-    const session = await this.session.$query().select(['sessionId', 'sessionStatus', 'sessionType']);
+    const { session } = this;
     if (can(user, 'unvote', inputQuestion, { session })) {
       try {
         const recvQuestion = await this.roleStrategy.cancelVoteInQuestion(inputQuestion);
@@ -299,7 +299,7 @@ class SessionService {
     }
 
     const inputQuestion = questions[0];
-    const session = await this.session.$query().select(['sessionId', 'sessionStatus', 'sessionType']);
+    const { session } = this;
     if (can(this.role, 'update', inputQuestion, { session })) {
       try {
         const recvQuestion = await this.roleStrategy.updateQuestionStatus(inputQuestion, status);

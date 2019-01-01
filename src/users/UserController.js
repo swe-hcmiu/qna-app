@@ -34,6 +34,24 @@ exports.user_register_post = async (req, res, next) => {
   }
 };
 
+exports.user_register_anonymous_get = async (req, res, next) => {
+  try {
+    const anonymousUser = await UserService.createAnonymousUser();
+
+    const payload = JSON.parse(JSON.stringify(anonymousUser));
+    const token = jwt.sign(payload, keys.tokenSecret, {
+      expiresIn: '7d',
+    });
+
+    res.send({
+      success: true,
+      token,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.user_login_get = async (req, res) => {
   res.render('login');
 };
@@ -54,14 +72,6 @@ exports.user_login_post = async (req, res, next) => {
       success: true,
       token,
     });
-  } catch (err) {
-    next(err);
-  }
-};
-
-exports.user_info_get = async (req, res, next) => {
-  try {
-
   } catch (err) {
     next(err);
   }

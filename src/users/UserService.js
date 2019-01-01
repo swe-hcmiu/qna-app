@@ -177,7 +177,7 @@ class UserService {
 
   static async getUserById(userId) {
     const user = this.getUserInstanceWithId(userId);
-    const returnUsers = await User.query().where(user).select('userId', 'displayName', 'provider');
+    const returnUsers = await User.query().where(user);
 
     let returnUser = null;
     if (!_.isEmpty(returnUsers)) [returnUser] = returnUsers;

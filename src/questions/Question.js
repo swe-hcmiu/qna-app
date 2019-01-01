@@ -66,7 +66,7 @@ class Question extends Model {
         content: { type: 'text', minLength: 6, maxLength: 255 },
         voteByUser: { type: 'integer' },
         voteByEditor: { type: 'integer' },
-        questionStatus: { enum: ['pending', 'unanswered', 'answered'] },
+        questionStatus: { enum: ['pending', 'unanswered', 'answered', 'invalid'] },
       },
     };
   }

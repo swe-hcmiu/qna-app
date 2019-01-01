@@ -35,14 +35,6 @@ function getUniqueQuestionList(...args) {
 }
 
 async function runTest() {
-  const question = {
-    title: 'b',
-    content: 'd',
-    userId: 6,
-    sessionId: 7,
-    questionStatus: 'unanswered',
-  };
-  await Question.query().insertAndFetch(question);
   // const sessions = await Session.query().where({ sessionId: 1 });
 
   // const listOfNewestQuestions = await sessions[0]
