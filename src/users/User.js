@@ -103,7 +103,7 @@ class User extends Model {
       type: 'object',
 
       properties: {
-        userId: { type: 'integer' },
+        userId: { type: ['integer', 'string'] },
         displayName: { type: 'string', minLength: 2, maxLength: 50 },
         provider: { enum: ['qna', 'google', 'anonymous'] },
       },
@@ -134,7 +134,7 @@ class QnAUser extends Model {
       type: 'object',
 
       properties: {
-        userId: { type: 'integer' },
+        userId: { type: ['integer', 'string'] },
         username: { type: 'string', minLength: 2, maxLength: 50 },
         userpass: { type: 'string', minLength: 2, maxLength: 70 },
       },
@@ -165,7 +165,7 @@ class GoogleUser extends Model {
       type: 'object',
 
       properties: {
-        userId: { type: 'integer' },
+        userId: { type: ['integer', 'string'] },
         email: { type: 'string', minLength: 2, maxLength: 255 },
       },
     };

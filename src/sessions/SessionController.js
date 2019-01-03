@@ -1,7 +1,5 @@
 const { SessionService } = require('./SessionService');
 const { UserService } = require('../users/UserService');
-const { User } = require('../users/User');
-const { Session } = require('../sessions/Session');
 
 exports.session_get = async (req, res, next) => {
   try {
@@ -33,10 +31,8 @@ exports.session_get_closed = async (req, res, next) => {
 // TODO
 exports.session_post = async (req, res, next) => {
   try {
-    let { user } = req;
-    let { session } = req.body;
-    user = Object.assign(new User(), user);
-    session = Object.assign(new Session(), session);
+    const { user } = req;
+    const { session } = req.body;
 
     const recvSession = await SessionService.createSession(session, user);
     res.send(recvSession);

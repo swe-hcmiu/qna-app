@@ -5,6 +5,7 @@ const { AppError } = require('../errors/AppError');
 const { User } = require('../users/User');
 const { RoleService } = require('../roles/RoleService');
 const { Role } = require('../roles/Role');
+const { Session } = require('./Session');
 const { Question } = require('../questions/Question');
 const { SessionStrategy } = require('./SessionStrategy');
 const { EditorSessionStrategy } = require('./EditorSessionStrategy');
@@ -12,7 +13,10 @@ const { UserSessionStrategy } = require('./UserSessionStrategy');
 const appConfig = require('../../config/app/app-config');
 
 class SessionService {
-  static async getSessionService(session, user) {
+  static async getSessionService(rawSession, rawUser) {
+    const session = SessionService.convertObjectToModel(rawSession, Session);
+    const user = SessionService.convertObjectToModel(rawUser, User);
+
     const service = new SessionService();
     service.session = _.cloneDeep(session);
 
@@ -39,6 +43,15 @@ class SessionService {
     }
   }
 
+  // convert object to Model and validate
+  static convertObjectToModel(obj, ObjectModel) {
+    let clonedObj = _.cloneDeep(obj);
+    if (!(clonedObj instanceof ObjectModel)) {
+      clonedObj = ObjectModel.fromJson(obj);
+    }
+    return clonedObj;
+  }
+
   getStrategyByRole() {
     switch (this.role.role) {
       case 'editor': {
@@ -53,8 +66,11 @@ class SessionService {
     }
   }
 
-  static async createSession(session, user) {
+  static async createSession(rawSession, rawUser) {
     try {
+      const session = SessionService.convertObjectToModel(rawSession, Session);
+      const user = SessionService.convertObjectToModel(rawUser, User);
+
       const recvSession = await SessionStrategy.createSession(session, user);
       return recvSession;
     } catch (err) {
@@ -126,9 +142,10 @@ class SessionService {
     }
   }
 
-  // TODO: Return question based on roles
-  async getQuestion(question) {
+  async getQuestion(rawQuestion) {
     try {
+      const question = SessionService.convertObjectToModel(rawQuestion, Question);
+
       const recvQuestion = await this.roleStrategy.getQuestion(question);
       return recvQuestion;
     } catch (err) {
@@ -195,7 +212,8 @@ class SessionService {
     }
   }
 
-  async addQuestionToSession(question) {
+  async addQuestionToSession(rawQuestion) {
+    const question = SessionService.convertObjectToModel(rawQuestion, Question);
     const { session } = this;
 
     if (can(this.user, 'add', Question, { session })) {
@@ -206,8 +224,10 @@ class SessionService {
       } catch (err) {
         throw err;
       }
-    } else {
+    } else if (session.sessionStatus === 'closed') {
       throw new AppError('Session is closed', 403);
+    } else {
+      throw new AppError('Internal Server Error', 500);
     }
   }
 
@@ -231,7 +251,9 @@ class SessionService {
     }
   }
 
-  async addVoteToQuestion(question) {
+  async addVoteToQuestion(rawQuestion) {
+    const question = SessionService.convertObjectToModel(rawQuestion, Question);
+
     const questions = await Question.query().where(question);
     if (_.isEmpty(questions) || questions[0].sessionId !== this.session.sessionId) {
       throw new AppError('Not Found', 404);
@@ -262,7 +284,9 @@ class SessionService {
     }
   }
 
-  async cancelVoteInQuestion(question) {
+  async cancelVoteInQuestion(rawQuestion) {
+    const question = SessionService.convertObjectToModel(rawQuestion, Question);
+
     const questions = await Question.query().where(question);
     if (_.isEmpty(questions) || questions[0].sessionId !== this.session.sessionId) {
       throw new AppError('Not Found', 404);
@@ -292,7 +316,10 @@ class SessionService {
     }
   }
 
-  async updateQuestionStatus(question, status) {
+  async updateQuestionStatus(rawQuestion, status) {
+    console.log(rawQuestion);
+    const question = SessionService.convertObjectToModel(rawQuestion, Question);
+
     const questions = await Question.query().where(question);
     if (_.isEmpty(questions) || questions[0].sessionId !== this.session.sessionId) {
       throw new AppError('Not Found', 404);
@@ -314,7 +341,9 @@ class SessionService {
     }
   }
 
-  async addEditorToSession(editor) {
+  async addEditorToSession(rawEditor) {
+    const editor = SessionService.convertObjectToModel(rawEditor, User);
+
     const editors = await User
       .query()
       .where(editor)
@@ -343,7 +372,9 @@ class SessionService {
     }
   }
 
-  async removeEditorFromSession(editor) {
+  async removeEditorFromSession(rawEditor) {
+    const editor = SessionService.convertObjectToModel(rawEditor, User);
+
     const roles = await editor
       .$relatedQuery('roles')
       .where({
@@ -365,7 +396,7 @@ class SessionService {
       throw new AppError('Authorization required', 401);
     } else {
       throw new AppError('Internal Server Error', 500);
-    };
+    }
   }
 }
 

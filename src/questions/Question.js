@@ -59,13 +59,13 @@ class Question extends Model {
       type: 'object',
 
       properties: {
-        questionId: { type: 'integer' },
-        sessionId: { type: 'integer' },
-        userId: { type: 'integer' },
+        questionId: { type: ['integer', 'string'] },
+        sessionId: { type: ['integer', 'string'] },
+        userId: { type: ['integer', 'string'] },
         title: { type: 'string', minLength: 6, maxLength: 255 },
         content: { type: 'text', minLength: 6, maxLength: 255 },
-        voteByUser: { type: 'integer' },
-        voteByEditor: { type: 'integer' },
+        voteByUser: { type: ['integer', 'string'] },
+        voteByEditor: { type: ['integer', 'string'] },
         questionStatus: { enum: ['pending', 'unanswered', 'answered', 'invalid'] },
       },
     };

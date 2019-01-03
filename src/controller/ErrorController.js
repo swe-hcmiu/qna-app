@@ -3,9 +3,7 @@ const { AppError } = require('../errors/AppError');
 
 function processErrorWithoutHttpCode(err) {
   let returnErr;
-  if (err instanceof TypeError) {
-    returnErr = new AppError('Request data is not in correct format', 422, err);
-  } else if (err instanceof ValidationError) {
+  if (err instanceof ValidationError) {
     returnErr = new AppError(err.message, 400, err);
   } else {
     returnErr = new AppError('Internal Server Error', 500, err);

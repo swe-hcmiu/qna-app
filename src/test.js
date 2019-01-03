@@ -35,6 +35,20 @@ function getUniqueQuestionList(...args) {
 }
 
 async function runTest() {
+  const rawUser = {
+    displayName: 'duyphan',
+    provider: 'qna',
+    qnaUsers: {
+      username: 'd',
+      userpass: '1',
+    },
+  };
+  try {
+    const user = User.fromJson(rawUser);
+    console.log(user);
+  } catch (err) {
+    console.log(err);
+  }
   // const sessions = await Session.query().where({ sessionId: 1 });
 
   // const listOfNewestQuestions = await sessions[0]

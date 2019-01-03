@@ -65,7 +65,7 @@ class Session extends Model {
       type: 'object',
 
       properties: {
-        sessionId: { type: 'integer' },
+        sessionId: { type: ['integer', 'string'] },
         sessionName: { type: 'string', minLength: 1, maxLength: 70 },
         sessionType: { enum: ['default', 'needs_verification'] },
         sessionStatus: { enum: ['opening', 'closed'] },
